@@ -19,327 +19,178 @@
     <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <!-- React -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-        
-        body {
-            font-family: 'Urbanist', sans-serif;
-            background: #050505;
-            color: white;
-            min-height: 100vh;
-            min-height: -webkit-fill-available;
-            overflow-x: hidden;
-        }
-        
-        html {
-            height: -webkit-fill-available;
-        }
-        
-        #root {
-            min-height: 100vh;
-            min-height: -webkit-fill-available;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        /* Utility Classes */
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Urbanist', sans-serif; background: #050505; color: white; min-height: 100vh; min-height: -webkit-fill-available; overflow-x: hidden; }
+        html { height: -webkit-fill-available; }
+        #root { min-height: 100vh; min-height: -webkit-fill-available; display: flex; flex-direction: column; }
         .lucas-green { color: #deff9a; }
         .bg-lucas-green { background: #deff9a; }
-        .bg-dark { background: #050505; }
-        .bg-card { background: #111111; }
-        .bg-card-hover { background: #1a1a1a; }
-        .border-default { border-color: #262626; }
-        
-        /* Animations */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(100%); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-        
-        @keyframes success-pop {
-            0% { transform: scale(0); }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); }
-        }
-        
-        .fade-in {
-            animation: fadeIn 0.3s ease-out;
-        }
-        
-        .slide-up {
-            animation: slideUp 0.3s ease-out;
-        }
-        
-        .success-pop {
-            animation: success-pop 0.5s ease-out;
-        }
-        
-        .pulse {
-            animation: pulse 2s infinite;
-        }
-        
-        /* Safe Area for iOS */
-        .safe-top {
-            padding-top: env(safe-area-inset-top, 20px);
-        }
-        
-        .safe-bottom {
-            padding-bottom: env(safe-area-inset-bottom, 20px);
-        }
-        
-        /* Loading spinner */
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid #262626;
-            border-top-color: #deff9a;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        /* Camera styles */
-        .camera-container {
-            position: relative;
-            width: 100%;
-            flex: 1;
-            background: #000;
-            border-radius: 16px;
-            overflow: hidden;
-        }
-        
-        .camera-container video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .camera-overlay {
-            position: absolute;
-            bottom: 12px;
-            left: 12px;
-            right: 12px;
-            display: flex;
-            justify-content: space-between;
-        }
-        
-        .camera-badge {
-            background: rgba(0,0,0,0.7);
-            padding: 6px 10px;
-            border-radius: 8px;
-            font-size: 11px;
-            font-family: monospace;
-        }
-        
-        /* Hide scrollbar but allow scroll */
-        .hide-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-        .hide-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-        
-        /* Button press effect */
-        .btn-press:active {
-            transform: scale(0.97);
-        }
-        
-        /* Input styles */
-        input, select, textarea {
-            font-family: 'Urbanist', sans-serif;
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes success-pop { 0% { transform: scale(0); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+        .fade-in { animation: fadeIn 0.3s ease-out; }
+        .success-pop { animation: success-pop 0.5s ease-out; }
+        .safe-top { padding-top: env(safe-area-inset-top, 20px); }
+        .safe-bottom { padding-bottom: env(safe-area-inset-bottom, 20px); }
+        .spinner { width: 40px; height: 40px; border: 3px solid #262626; border-top-color: #deff9a; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .btn-press:active { transform: scale(0.97); }
+        input, select, textarea { font-family: 'Urbanist', sans-serif; }
+        .input-field { width: 100%; padding: 16px; background: #1a1a1a; border: 1px solid #262626; border-radius: 12px; color: white; font-size: 16px; outline: none; transition: border-color 0.2s; }
+        .input-field:focus { border-color: #deff9a; }
+        .input-field::placeholder { color: #6b7280; }
     </style>
 </head>
 <body>
     <div id="root"></div>
-    
-    <!-- Service Worker Registration -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
-                    .then((registration) => {
-                        console.log('LUCAS SW registered:', registration.scope);
-                    })
-                    .catch((error) => {
-                        console.log('LUCAS SW registration failed:', error);
-                    });
+                navigator.serviceWorker.register('/lucas-pwa/sw.js').catch(e => console.log('SW failed:', e));
             });
         }
     </script>
-    
     <script type="text/babel">
-        const { useState, useEffect, useRef, createContext, useContext } = React;
+        const { useState, useEffect, useRef } = React;
         
-        // ============================================
-        // CONTEXT & STATE MANAGEMENT
-        // ============================================
+        // SUPABASE CONFIG
+        const SUPABASE_URL = 'https://irztntmenxchzicfegid.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlyenRudG1lbnhjaHppY2ZlZ2lkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQxMTA4ODQsImV4cCI6MjA3OTY4Njg4NH0.EjaO-HXjzElo_eHqEWzagsqGg-gEVqUxY1ri-MhofPw';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
-        const AppContext = createContext();
+        // Welcome Screen
+        function WelcomeScreen({ setScreen }) {
+            return (
+                <div className="fade-in" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', padding: '40px 20px', textAlign: 'center' }}>
+                    <div style={{ width: '100px', height: '100px', background: 'rgba(222, 255, 154, 0.15)', borderRadius: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '32px' }}>
+                        <i className="fa-solid fa-location-dot" style={{ fontSize: '48px', color: '#deff9a' }}></i>
+                    </div>
+                    <h1 style={{ fontSize: '32px', fontWeight: 800, marginBottom: '12px' }}>LUCAS</h1>
+                    <p style={{ color: '#9ca3af', fontSize: '16px', marginBottom: '48px', maxWidth: '280px' }}>Gana USDT verificando el mundo real</p>
+                    <button onClick={() => setScreen('signup')} className="btn-press" style={{ width: '100%', maxWidth: '300px', padding: '16px', background: '#deff9a', color: '#050505', border: 'none', borderRadius: '12px', fontSize: '16px', fontWeight: 700, cursor: 'pointer', marginBottom: '12px' }}>Crear Cuenta</button>
+                    <button onClick={() => setScreen('login')} className="btn-press" style={{ width: '100%', maxWidth: '300px', padding: '16px', background: 'transparent', color: 'white', border: '1px solid #262626', borderRadius: '12px', fontSize: '16px', fontWeight: 600, cursor: 'pointer' }}>Ya tengo cuenta</button>
+                </div>
+            );
+        }
         
-        const initialState = {
-            user: {
-                name: 'Agustín',
-                phone: '+52 55 1234 5678',
-                balance: 42.50,
-                completedTasks: 12
-            },
-            tasks: [
-                {
-                    id: 1,
-                    type: 'RETAIL',
-                    title: 'Verificar Stock Coca-Cola',
-                    location: 'OXXO Polanco',
-                    address: 'Av. Presidente Masaryk 456',
-                    lat: 19.4326,
-                    lng: -99.1332,
-                    distance: 350,
-                    payout: 2.50,
-                    instructions: [
-                        'Ve a la tienda OXXO indicada',
-                        'Encuentra el refrigerador de bebidas',
-                        'Toma una foto clara del estante de Coca-Cola',
-                        'Asegúrate que se vean los precios'
-                    ],
-                    estimatedTime: '5-10 min'
-                },
-                {
-                    id: 2,
-                    type: 'MAPEO',
-                    title: 'Foto de Fachada',
-                    location: 'Negocio Local',
-                    address: 'Calle Anatole France 123, Polanco',
-                    lat: 19.4340,
-                    lng: -99.1380,
-                    distance: 800,
-                    payout: 3.00,
-                    instructions: [
-                        'Ubica la dirección indicada',
-                        'Toma una foto de la fachada completa',
-                        'Incluye el número de calle visible',
-                        'Si hay negocio, captura el nombre'
-                    ],
-                    estimatedTime: '5 min'
-                },
-                {
-                    id: 3,
-                    type: 'KYB',
-                    title: 'Verificar Negocio Activo',
-                    location: 'Taquería El Güero',
-                    address: 'Calle Durango 245, Roma Norte',
-                    lat: 19.4195,
-                    lng: -99.1650,
-                    distance: 1200,
-                    payout: 4.00,
-                    instructions: [
-                        'Confirma que el negocio existe',
-                        'Verifica que esté abierto/operando',
-                        'Toma foto del exterior con el nombre visible',
-                        'Si está cerrado, toma foto del letrero de horario'
-                    ],
-                    estimatedTime: '10 min'
-                },
-                {
-                    id: 4,
-                    type: 'RETAIL',
-                    title: 'Verificar Precios Sabritas',
-                    location: '7-Eleven Reforma',
-                    address: 'Paseo de la Reforma 222',
-                    lat: 19.4280,
-                    lng: -99.1520,
-                    distance: 1500,
-                    payout: 2.00,
-                    instructions: [
-                        'Ve a la tienda 7-Eleven',
-                        'Encuentra la sección de botanas',
-                        'Fotografía los precios de Sabritas',
-                        'Incluye al menos 3 productos diferentes'
-                    ],
-                    estimatedTime: '5-10 min'
-                }
-            ],
-            transactions: [
-                { id: 1, type: 'earning', title: 'Stock Coca-Cola', location: 'OXXO Polanco', amount: 2.50, time: 'Hace 2 min' },
-                { id: 2, type: 'earning', title: 'Verificar Precios', location: 'Reforma', amount: 1.50, time: 'Hace 1 hora' },
-                { id: 3, type: 'cashout', title: 'Cash Out a Bitso', amount: -30.00, time: 'Ayer' },
-                { id: 4, type: 'earning', title: 'Foto de Fachada', location: 'Condesa', amount: 3.00, time: 'Ayer' }
-            ]
-        };
-        
-        // ============================================
-        // COMPONENTS
-        // ============================================
-        
-        // Bottom Navigation
-        function BottomNav({ activeTab, setActiveTab, setScreen }) {
-            const tabs = [
-                { id: 'tasks', icon: 'fa-list-check', label: 'Tareas' },
-                { id: 'wallet', icon: 'fa-wallet', label: 'Wallet' },
-                { id: 'profile', icon: 'fa-user', label: 'Perfil' }
-            ];
+        // Signup Screen
+        function SignupScreen({ setScreen, setAgent }) {
+            const [name, setName] = useState('');
+            const [phone, setPhone] = useState('');
+            const [colonia, setColonia] = useState('');
+            const [pin, setPin] = useState('');
+            const [confirmPin, setConfirmPin] = useState('');
+            const [isLoading, setIsLoading] = useState(false);
+            const [error, setError] = useState('');
             
-            const handleTabClick = (tabId) => {
-                setActiveTab(tabId);
-                setScreen(tabId);
+            const handleSignup = async () => {
+                setError('');
+                if (!name.trim()) { setError('Ingresa tu nombre'); return; }
+                if (!phone.trim() || phone.length < 10) { setError('Ingresa un número de teléfono válido'); return; }
+                if (pin.length !== 4) { setError('El PIN debe ser de 4 dígitos'); return; }
+                if (pin !== confirmPin) { setError('Los PINs no coinciden'); return; }
+                
+                setIsLoading(true);
+                try {
+                    const { data: existing } = await supabase.from('agents').select('id').eq('phone', phone).single();
+                    if (existing) { setError('Este número ya está registrado'); setIsLoading(false); return; }
+                    
+                    const { data, error: insertError } = await supabase.from('agents').insert([{ name, phone, colonia, pin }]).select().single();
+                    if (insertError) throw insertError;
+                    
+                    localStorage.setItem('lucas_agent', JSON.stringify(data));
+                    setAgent(data);
+                    setScreen('tasks');
+                } catch (err) {
+                    console.error('Signup error:', err);
+                    setError('Error al crear cuenta. Intenta de nuevo.');
+                }
+                setIsLoading(false);
             };
             
             return (
-                <div className="safe-bottom" style={{
-                    position: 'fixed',
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    height: '70px',
-                    background: '#111',
-                    borderTop: '1px solid #262626',
-                    display: 'flex',
-                    justifyContent: 'space-around',
-                    alignItems: 'center',
-                    zIndex: 100
-                }}>
+                <div className="fade-in" style={{ minHeight: '100vh', padding: '20px', paddingTop: 'max(40px, env(safe-area-inset-top))' }}>
+                    <button onClick={() => setScreen('welcome')} style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#9ca3af', fontSize: '14px', background: 'none', border: 'none', marginBottom: '24px', cursor: 'pointer' }}>
+                        <i className="fa-solid fa-chevron-left"></i><span>Atrás</span>
+                    </button>
+                    <h1 style={{ fontSize: '28px', fontWeight: 700, marginBottom: '8px' }}>Crear Cuenta</h1>
+                    <p style={{ color: '#6b7280', marginBottom: '32px' }}>Regístrate para empezar a ganar</p>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                        <div><label style={{ fontSize: '14px', color: '#9ca3af', marginBottom: '8px', display: 'block' }}>Nombre completo</label><input type="text" className="input-field" placeholder="Tu nombre" value={name} onChange={(e) => setName(e.target.value)} /></div>
+                        <div><label style={{ fontSize: '14px', color: '#9ca3af', marginBottom: '8px', display: 'block' }}>Número de WhatsApp</label><input type="tel" className="input-field" placeholder="55 1234 5678" value={phone} onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))} /></div>
+                        <div><label style={{ fontSize: '14px', color: '#9ca3af', marginBottom: '8px', display: 'block' }}>Colonia (opcional)</label><input type="text" className="input-field" placeholder="Tu colonia en CDMX" value={colonia} onChange={(e) => setColonia(e.target.value)} /></div>
+                        <div><label style={{ fontSize: '14px', color: '#9ca3af', marginBottom: '8px', display: 'block' }}>Crea un PIN de 4 dígitos</label><input type="password" inputMode="numeric" maxLength={4} className="input-field" placeholder="••••" value={pin} onChange={(e) => setPin(e.target.value.replace(/\D/g, ''))} style={{ letterSpacing: '8px', textAlign: 'center' }} /></div>
+                        <div><label style={{ fontSize: '14px', color: '#9ca3af', marginBottom: '8px', display: 'block' }}>Confirma tu PIN</label><input type="password" inputMode="numeric" maxLength={4} className="input-field" placeholder="••••" value={confirmPin} onChange={(e) => setConfirmPin(e.target.value.replace(/\D/g, ''))} style={{ letterSpacing: '8px', textAlign: 'center' }} /></div>
+                        {error && <div style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '8px', padding: '12px', color: '#ef4444', fontSize: '14px' }}>{error}</div>}
+                        <button onClick={handleSignup} disabled={isLoading} className="btn-press" style={{ width: '100%', padding: '16px', background: isLoading ? '#666' : '#deff9a', color: '#050505', border: 'none', borderRadius: '12px', fontSize: '16px', fontWeight: 700, cursor: isLoading ? 'wait' : 'pointer', marginTop: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                            {isLoading ? <><div className="spinner" style={{ width: '20px', height: '20px', borderWidth: '2px' }}></div>Creando...</> : 'Crear Cuenta'}
+                        </button>
+                    </div>
+                </div>
+            );
+        }
+        
+        // Login Screen
+        function LoginScreen({ setScreen, setAgent }) {
+            const [phone, setPhone] = useState('');
+            const [pin, setPin] = useState('');
+            const [isLoading, setIsLoading] = useState(false);
+            const [error, setError] = useState('');
+            
+            const handleLogin = async () => {
+                setError('');
+                if (!phone.trim() || phone.length < 10) { setError('Ingresa tu número de teléfono'); return; }
+                if (pin.length !== 4) { setError('Ingresa tu PIN de 4 dígitos'); return; }
+                
+                setIsLoading(true);
+                try {
+                    const { data, error: fetchError } = await supabase.from('agents').select('*').eq('phone', phone).eq('pin', pin).single();
+                    if (fetchError || !data) { setError('Número o PIN incorrecto'); setIsLoading(false); return; }
+                    
+                    localStorage.setItem('lucas_agent', JSON.stringify(data));
+                    setAgent(data);
+                    setScreen('tasks');
+                } catch (err) {
+                    console.error('Login error:', err);
+                    setError('Error al iniciar sesión');
+                }
+                setIsLoading(false);
+            };
+            
+            return (
+                <div className="fade-in" style={{ minHeight: '100vh', padding: '20px', paddingTop: 'max(40px, env(safe-area-inset-top))' }}>
+                    <button onClick={() => setScreen('welcome')} style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#9ca3af', fontSize: '14px', background: 'none', border: 'none', marginBottom: '24px', cursor: 'pointer' }}>
+                        <i className="fa-solid fa-chevron-left"></i><span>Atrás</span>
+                    </button>
+                    <h1 style={{ fontSize: '28px', fontWeight: 700, marginBottom: '8px' }}>Iniciar Sesión</h1>
+                    <p style={{ color: '#6b7280', marginBottom: '32px' }}>Ingresa con tu número y PIN</p>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                        <div><label style={{ fontSize: '14px', color: '#9ca3af', marginBottom: '8px', display: 'block' }}>Número de WhatsApp</label><input type="tel" className="input-field" placeholder="55 1234 5678" value={phone} onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))} /></div>
+                        <div><label style={{ fontSize: '14px', color: '#9ca3af', marginBottom: '8px', display: 'block' }}>Tu PIN</label><input type="password" inputMode="numeric" maxLength={4} className="input-field" placeholder="••••" value={pin} onChange={(e) => setPin(e.target.value.replace(/\D/g, ''))} style={{ letterSpacing: '8px', textAlign: 'center' }} /></div>
+                        {error && <div style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '8px', padding: '12px', color: '#ef4444', fontSize: '14px' }}>{error}</div>}
+                        <button onClick={handleLogin} disabled={isLoading} className="btn-press" style={{ width: '100%', padding: '16px', background: isLoading ? '#666' : '#deff9a', color: '#050505', border: 'none', borderRadius: '12px', fontSize: '16px', fontWeight: 700, cursor: isLoading ? 'wait' : 'pointer', marginTop: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                            {isLoading ? <><div className="spinner" style={{ width: '20px', height: '20px', borderWidth: '2px' }}></div>Entrando...</> : 'Entrar'}
+                        </button>
+                    </div>
+                </div>
+            );
+        }
+        
+        // Bottom Navigation
+        function BottomNav({ activeTab, setActiveTab, setScreen }) {
+            const tabs = [{ id: 'tasks', icon: 'fa-list-check', label: 'Tareas' }, { id: 'wallet', icon: 'fa-wallet', label: 'Wallet' }, { id: 'profile', icon: 'fa-user', label: 'Perfil' }];
+            return (
+                <div className="safe-bottom" style={{ position: 'fixed', bottom: 0, left: 0, right: 0, height: '70px', background: '#111', borderTop: '1px solid #262626', display: 'flex', justifyContent: 'space-around', alignItems: 'center', zIndex: 100 }}>
                     {tabs.map(tab => (
-                        <button
-                            key={tab.id}
-                            onClick={() => handleTabClick(tab.id)}
-                            className="btn-press"
-                            style={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                alignItems: 'center',
-                                gap: '4px',
-                                background: 'none',
-                                border: 'none',
-                                color: activeTab === tab.id ? '#deff9a' : '#6b7280',
-                                fontSize: '10px',
-                                cursor: 'pointer',
-                                padding: '8px 16px',
-                                transition: 'color 0.2s'
-                            }}
-                        >
+                        <button key={tab.id} onClick={() => { setActiveTab(tab.id); setScreen(tab.id); }} className="btn-press" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', background: 'none', border: 'none', color: activeTab === tab.id ? '#deff9a' : '#6b7280', fontSize: '10px', cursor: 'pointer', padding: '8px 16px' }}>
                             <i className={`fa-solid ${tab.icon}`} style={{ fontSize: '20px' }}></i>
                             <span style={{ fontWeight: 500 }}>{tab.label}</span>
                         </button>
@@ -350,280 +201,66 @@
         
         // Task Card
         function TaskCard({ task, onClick }) {
-            const typeColors = {
-                'RETAIL': '#deff9a',
-                'MAPEO': '#60a5fa',
-                'KYB': '#f472b6'
-            };
-            
-            const formatDistance = (meters) => {
-                if (meters < 1000) return `${meters}m`;
-                return `${(meters / 1000).toFixed(1)}km`;
-            };
-            
-            const walkingTime = Math.ceil(task.distance / 80); // ~80m per minute walking
-            
+            const typeColors = { 'RETAIL': '#deff9a', 'MAPEO': '#60a5fa', 'KYB': '#f472b6' };
             return (
-                <div
-                    onClick={onClick}
-                    className="btn-press fade-in"
-                    style={{
-                        background: '#1a1a1a',
-                        border: '1px solid #262626',
-                        borderRadius: '12px',
-                        padding: '14px',
-                        marginBottom: '10px',
-                        cursor: 'pointer',
-                        transition: 'border-color 0.2s'
-                    }}
-                >
+                <div onClick={onClick} className="btn-press fade-in" style={{ background: '#1a1a1a', border: '1px solid #262626', borderRadius: '12px', padding: '14px', marginBottom: '10px', cursor: 'pointer' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '8px' }}>
-                        <span style={{
-                            fontSize: '10px',
-                            color: typeColors[task.type],
-                            background: `${typeColors[task.type]}15`,
-                            padding: '3px 8px',
-                            borderRadius: '20px',
-                            fontWeight: 600
-                        }}>
-                            {task.type}
-                        </span>
-                        <span style={{ fontWeight: 700, color: '#deff9a' }}>${task.payout.toFixed(2)}</span>
+                        <span style={{ fontSize: '10px', color: typeColors[task.type], background: `${typeColors[task.type]}15`, padding: '3px 8px', borderRadius: '20px', fontWeight: 600 }}>{task.type}</span>
+                        <span style={{ fontWeight: 700, color: '#deff9a' }}>${Number(task.payout).toFixed(2)}</span>
                     </div>
                     <div style={{ fontWeight: 600, fontSize: '15px', marginBottom: '6px' }}>{task.title}</div>
-                    <div style={{ fontSize: '12px', color: '#6b7280', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <i className="fa-solid fa-location-dot"></i>
-                        {task.location}, {task.address.split(',')[0]}
-                    </div>
-                    <div style={{ fontSize: '11px', color: '#9ca3af', marginTop: '8px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <i className="fa-solid fa-person-walking"></i>
-                        {formatDistance(task.distance)} • ~{walkingTime} min caminando
-                    </div>
+                    <div style={{ fontSize: '12px', color: '#6b7280', display: 'flex', alignItems: 'center', gap: '4px' }}><i className="fa-solid fa-location-dot"></i>{task.location}</div>
                 </div>
             );
         }
         
         // Tasks Screen
-        function TasksScreen({ state, setScreen, setSelectedTask }) {
+        function TasksScreen({ agent, tasks, setScreen, setSelectedTask }) {
             return (
                 <div className="fade-in" style={{ padding: '20px', paddingBottom: '90px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                        <h2 style={{ fontSize: '22px', fontWeight: 700 }}>Hola, {state.user.name} 👋</h2>
-                        <div style={{
-                            width: '40px',
-                            height: '40px',
-                            background: '#262626',
-                            borderRadius: '50%',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            color: '#deff9a'
-                        }}>
-                            <i className="fa-solid fa-user"></i>
-                        </div>
+                        <h2 style={{ fontSize: '22px', fontWeight: 700 }}>Hola, {agent.name.split(' ')[0]} 👋</h2>
+                        <div style={{ width: '40px', height: '40px', background: '#262626', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#deff9a' }}><i className="fa-solid fa-user"></i></div>
                     </div>
-                    
-                    {/* Balance Card */}
-                    <div style={{
-                        background: 'linear-gradient(135deg, #1a1a1a 0%, #111 100%)',
-                        border: '1px solid #262626',
-                        borderRadius: '16px',
-                        padding: '16px',
-                        marginBottom: '24px'
-                    }}>
-                        <div style={{ fontSize: '11px', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                            Tu Balance
-                        </div>
-                        <div style={{ fontSize: '32px', fontWeight: 800, marginTop: '4px' }}>
-                            ${state.user.balance.toFixed(2)} <span style={{ color: '#deff9a', fontSize: '16px', fontWeight: 600 }}>USDT</span>
-                        </div>
-                        <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '4px' }}>
-                            ≈ ${(state.user.balance * 17).toFixed(0)} MXN
-                        </div>
+                    <div style={{ background: 'linear-gradient(135deg, #1a1a1a 0%, #111 100%)', border: '1px solid #262626', borderRadius: '16px', padding: '16px', marginBottom: '24px' }}>
+                        <div style={{ fontSize: '11px', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '1px' }}>Tu Balance</div>
+                        <div style={{ fontSize: '32px', fontWeight: 800, marginTop: '4px' }}>${Number(agent.balance || 0).toFixed(2)} <span style={{ color: '#deff9a', fontSize: '16px', fontWeight: 600 }}>USDT</span></div>
+                        <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '4px' }}>≈ ${(Number(agent.balance || 0) * 17).toFixed(0)} MXN</div>
                     </div>
-                    
-                    {/* Tasks Section */}
-                    <div style={{ fontSize: '14px', fontWeight: 600, color: '#9ca3af', marginBottom: '12px' }}>
-                        Tareas Cercanas ({state.tasks.length})
-                    </div>
-                    
-                    {state.tasks.map(task => (
-                        <TaskCard
-                            key={task.id}
-                            task={task}
-                            onClick={() => {
-                                setSelectedTask(task);
-                                setScreen('taskDetail');
-                            }}
-                        />
-                    ))}
+                    <div style={{ fontSize: '14px', fontWeight: 600, color: '#9ca3af', marginBottom: '12px' }}>Tareas Disponibles ({tasks.length})</div>
+                    {tasks.length === 0 ? (
+                        <div style={{ textAlign: 'center', padding: '40px 20px', color: '#6b7280' }}><i className="fa-solid fa-clipboard-check" style={{ fontSize: '48px', marginBottom: '16px', opacity: 0.5 }}></i><div>No hay tareas disponibles ahora</div></div>
+                    ) : tasks.map(task => <TaskCard key={task.id} task={task} onClick={() => { setSelectedTask(task); setScreen('taskDetail'); }} />)}
                 </div>
             );
         }
         
         // Task Detail Screen
         function TaskDetailScreen({ task, setScreen, setActiveTab }) {
-            const openMaps = () => {
-                const url = `https://www.google.com/maps/dir/?api=1&destination=${task.lat},${task.lng}`;
-                window.open(url, '_blank');
-            };
-            
-            const typeColors = {
-                'RETAIL': '#deff9a',
-                'MAPEO': '#60a5fa',
-                'KYB': '#f472b6'
-            };
-            
+            const typeColors = { 'RETAIL': '#deff9a', 'MAPEO': '#60a5fa', 'KYB': '#f472b6' };
+            const openMaps = () => window.open(`https://www.google.com/maps/dir/?api=1&destination=${task.lat},${task.lng}`, '_blank');
             return (
                 <div className="fade-in" style={{ padding: '20px', paddingBottom: '90px' }}>
-                    <button
-                        onClick={() => {
-                            setScreen('tasks');
-                            setActiveTab('tasks');
-                        }}
-                        style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '8px',
-                            color: '#9ca3af',
-                            fontSize: '14px',
-                            background: 'none',
-                            border: 'none',
-                            marginBottom: '16px',
-                            cursor: 'pointer'
-                        }}
-                    >
-                        <i className="fa-solid fa-chevron-left"></i>
-                        <span>Tareas</span>
-                    </button>
-                    
-                    <div style={{
-                        background: '#1a1a1a',
-                        border: '1px solid #262626',
-                        borderRadius: '16px',
-                        padding: '16px',
-                        marginBottom: '16px'
-                    }}>
+                    <button onClick={() => { setScreen('tasks'); setActiveTab('tasks'); }} style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#9ca3af', fontSize: '14px', background: 'none', border: 'none', marginBottom: '16px', cursor: 'pointer' }}><i className="fa-solid fa-chevron-left"></i><span>Tareas</span></button>
+                    <div style={{ background: '#1a1a1a', border: '1px solid #262626', borderRadius: '16px', padding: '16px', marginBottom: '16px' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                            <span style={{
-                                fontSize: '10px',
-                                color: typeColors[task.type],
-                                background: `${typeColors[task.type]}15`,
-                                padding: '3px 8px',
-                                borderRadius: '20px',
-                                fontWeight: 600
-                            }}>
-                                {task.type}
-                            </span>
-                            <span style={{ fontSize: '24px', fontWeight: 800, color: '#deff9a' }}>
-                                ${task.payout.toFixed(2)}
-                            </span>
+                            <span style={{ fontSize: '10px', color: typeColors[task.type], background: `${typeColors[task.type]}15`, padding: '3px 8px', borderRadius: '20px', fontWeight: 600 }}>{task.type}</span>
+                            <span style={{ fontSize: '24px', fontWeight: 800, color: '#deff9a' }}>${Number(task.payout).toFixed(2)}</span>
                         </div>
-                        
                         <h1 style={{ fontSize: '20px', fontWeight: 700, marginBottom: '16px' }}>{task.title}</h1>
-                        
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                            <div style={{ display: 'flex', alignItems: 'start', gap: '10px', fontSize: '13px' }}>
-                                <i className="fa-solid fa-location-dot" style={{ color: '#deff9a', marginTop: '3px' }}></i>
-                                <div>
-                                    <div style={{ color: '#6b7280', fontSize: '11px' }}>Ubicación</div>
-                                    <div>{task.location}</div>
-                                    <div style={{ fontSize: '12px', color: '#6b7280' }}>{task.address}</div>
-                                </div>
-                            </div>
-                            
-                            <div style={{ display: 'flex', alignItems: 'start', gap: '10px', fontSize: '13px' }}>
-                                <i className="fa-solid fa-clock" style={{ color: '#deff9a', marginTop: '3px' }}></i>
-                                <div>
-                                    <div style={{ color: '#6b7280', fontSize: '11px' }}>Tiempo estimado</div>
-                                    <div>{task.estimatedTime}</div>
-                                </div>
-                            </div>
-                            
-                            <div style={{ display: 'flex', alignItems: 'start', gap: '10px', fontSize: '13px' }}>
-                                <i className="fa-solid fa-person-walking" style={{ color: '#deff9a', marginTop: '3px' }}></i>
-                                <div>
-                                    <div style={{ color: '#6b7280', fontSize: '11px' }}>Distancia</div>
-                                    <div>{task.distance}m (~{Math.ceil(task.distance / 80)} min caminando)</div>
-                                </div>
-                            </div>
-                        </div>
+                        <div style={{ display: 'flex', alignItems: 'start', gap: '10px', fontSize: '13px' }}><i className="fa-solid fa-location-dot" style={{ color: '#deff9a', marginTop: '3px' }}></i><div><div style={{ color: '#6b7280', fontSize: '11px' }}>Ubicación</div><div>{task.location}</div><div style={{ fontSize: '12px', color: '#6b7280' }}>{task.address}</div></div></div>
                     </div>
-                    
-                    {/* Instructions */}
-                    <div style={{
-                        background: '#111',
-                        borderRadius: '12px',
-                        padding: '14px',
-                        marginBottom: '20px'
-                    }}>
+                    <div style={{ background: '#111', borderRadius: '12px', padding: '14px', marginBottom: '20px' }}>
                         <div style={{ fontWeight: 600, marginBottom: '10px', fontSize: '14px' }}>📋 Instrucciones</div>
-                        {task.instructions.map((instruction, index) => (
-                            <div key={index} style={{
-                                fontSize: '13px',
-                                color: '#d1d5db',
-                                padding: '6px 0',
-                                display: 'flex',
-                                gap: '8px'
-                            }}>
-                                <span style={{ color: '#deff9a', fontWeight: 600 }}>{index + 1}.</span>
-                                {instruction}
-                            </div>
-                        ))}
+                        {(task.instructions || []).map((instruction, index) => <div key={index} style={{ fontSize: '13px', color: '#d1d5db', padding: '6px 0', display: 'flex', gap: '8px' }}><span style={{ color: '#deff9a', fontWeight: 600 }}>{index + 1}.</span>{instruction}</div>)}
                     </div>
-                    
-                    {/* Action Buttons */}
-                    <button
-                        onClick={openMaps}
-                        style={{
-                            width: '100%',
-                            padding: '14px',
-                            background: '#262626',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '12px',
-                            fontSize: '14px',
-                            fontWeight: 600,
-                            marginBottom: '10px',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '8px'
-                        }}
-                        className="btn-press"
-                    >
-                        <i className="fa-solid fa-route"></i>
-                        Abrir en Google Maps
-                    </button>
-                    
-                    <button
-                        onClick={() => setScreen('camera')}
-                        style={{
-                            width: '100%',
-                            padding: '16px',
-                            background: '#deff9a',
-                            color: '#050505',
-                            border: 'none',
-                            borderRadius: '12px',
-                            fontSize: '15px',
-                            fontWeight: 700,
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '8px'
-                        }}
-                        className="btn-press"
-                    >
-                        <i className="fa-solid fa-camera"></i>
-                        Tomar Foto
-                    </button>
+                    <button onClick={openMaps} className="btn-press" style={{ width: '100%', padding: '14px', background: '#262626', color: 'white', border: 'none', borderRadius: '12px', fontSize: '14px', fontWeight: 600, marginBottom: '10px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}><i className="fa-solid fa-route"></i>Abrir en Google Maps</button>
+                    <button onClick={() => setScreen('camera')} className="btn-press" style={{ width: '100%', padding: '16px', background: '#deff9a', color: '#050505', border: 'none', borderRadius: '12px', fontSize: '15px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}><i className="fa-solid fa-camera"></i>Tomar Foto</button>
                 </div>
             );
         }
         
-        // Camera Screen - Uses native camera for iOS compatibility
+        // Camera Screen
         function CameraScreen({ task, setScreen, setCapturedImage, setGpsData }) {
             const fileInputRef = useRef(null);
             const canvasRef = useRef(null);
@@ -631,67 +268,36 @@
             const [isProcessing, setIsProcessing] = useState(false);
             
             useEffect(() => {
-                // Get GPS location
                 if (navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition(
-                        (position) => {
-                            setLocation({
-                                lat: position.coords.latitude.toFixed(4),
-                                lng: position.coords.longitude.toFixed(4)
-                            });
-                        },
-                        (error) => {
-                            console.log('GPS error:', error);
-                            // Use task location as fallback
-                            setLocation({ lat: task.lat.toFixed(4), lng: task.lng.toFixed(4) });
-                        },
+                        (position) => setLocation({ lat: position.coords.latitude.toFixed(4), lng: position.coords.longitude.toFixed(4) }),
+                        () => setLocation({ lat: Number(task.lat).toFixed(4), lng: Number(task.lng).toFixed(4) }),
                         { enableHighAccuracy: true }
                     );
                 }
             }, []);
             
-            const handleFileSelect = async (event) => {
+            const handleFileSelect = (event) => {
                 const file = event.target.files[0];
                 if (!file) return;
-                
                 setIsProcessing(true);
-                
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     const img = new Image();
                     img.onload = () => {
                         const canvas = canvasRef.current;
-                        const maxWidth = 1920;
-                        const maxHeight = 1080;
                         let { width, height } = img;
-                        
-                        // Scale down if needed
-                        if (width > maxWidth || height > maxHeight) {
-                            const ratio = Math.min(maxWidth / width, maxHeight / height);
-                            width *= ratio;
-                            height *= ratio;
-                        }
-                        
-                        canvas.width = width;
-                        canvas.height = height;
+                        if (width > 1920 || height > 1080) { const ratio = Math.min(1920 / width, 1080 / height); width *= ratio; height *= ratio; }
+                        canvas.width = width; canvas.height = height;
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, width, height);
-                        
-                        // Add GPS/timestamp overlay
                         const timestamp = new Date().toISOString().slice(0, 19).replace('T', ' ');
-                        const lat = location?.lat || task.lat.toFixed(4);
-                        const lng = location?.lng || task.lng.toFixed(4);
-                        
-                        ctx.fillStyle = 'rgba(0,0,0,0.7)';
-                        ctx.fillRect(10, height - 80, 320, 70);
-                        ctx.fillStyle = '#deff9a';
-                        ctx.font = 'bold 16px monospace';
-                        ctx.fillText(`📍 ${lat}°, ${lng}°`, 20, height - 50);
-                        ctx.fillStyle = 'white';
-                        ctx.fillText(`🕐 ${timestamp}`, 20, height - 25);
-                        
-                        const imageData = canvas.toDataURL('image/jpeg', 0.8);
-                        setCapturedImage(imageData);
+                        const lat = location?.lat || Number(task.lat).toFixed(4);
+                        const lng = location?.lng || Number(task.lng).toFixed(4);
+                        ctx.fillStyle = 'rgba(0,0,0,0.7)'; ctx.fillRect(10, height - 80, 320, 70);
+                        ctx.fillStyle = '#deff9a'; ctx.font = 'bold 16px monospace'; ctx.fillText(`📍 ${lat}°, ${lng}°`, 20, height - 50);
+                        ctx.fillStyle = 'white'; ctx.fillText(`🕐 ${timestamp}`, 20, height - 25);
+                        setCapturedImage(canvas.toDataURL('image/jpeg', 0.8));
                         setGpsData({ lat, lng, timestamp });
                         setIsProcessing(false);
                         setScreen('review');
@@ -701,275 +307,58 @@
                 reader.readAsDataURL(file);
             };
             
-            const openCamera = () => {
-                fileInputRef.current?.click();
-            };
-            
             return (
-                <div style={{ 
-                    display: 'flex', 
-                    flexDirection: 'column', 
-                    height: '100vh',
-                    padding: '20px',
-                    paddingTop: 'max(20px, env(safe-area-inset-top))'
-                }}>
-                    <button
-                        onClick={() => setScreen('taskDetail')}
-                        style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '8px',
-                            color: '#9ca3af',
-                            fontSize: '14px',
-                            background: 'none',
-                            border: 'none',
-                            marginBottom: '16px',
-                            cursor: 'pointer'
-                        }}
-                    >
-                        <i className="fa-solid fa-chevron-left"></i>
-                        <span>Cancelar</span>
-                    </button>
-                    
-                    {/* Hidden file input for native camera */}
-                    <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept="image/*"
-                        capture="environment"
-                        onChange={handleFileSelect}
-                        style={{ display: 'none' }}
-                    />
-                    
+                <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', padding: '20px', paddingTop: 'max(20px, env(safe-area-inset-top))' }}>
+                    <button onClick={() => setScreen('taskDetail')} style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#9ca3af', fontSize: '14px', background: 'none', border: 'none', marginBottom: '16px', cursor: 'pointer' }}><i className="fa-solid fa-chevron-left"></i><span>Cancelar</span></button>
+                    <input ref={fileInputRef} type="file" accept="image/*" capture="environment" onChange={handleFileSelect} style={{ display: 'none' }} />
                     <canvas ref={canvasRef} style={{ display: 'none' }} />
-                    
-                    <div style={{ 
-                        flex: 1, 
-                        display: 'flex', 
-                        flexDirection: 'column',
-                        alignItems: 'center', 
-                        justifyContent: 'center',
-                        background: '#111',
-                        borderRadius: '16px',
-                        marginBottom: '16px',
-                        padding: '40px 20px',
-                        textAlign: 'center'
-                    }}>
-                        {isProcessing ? (
-                            <>
-                                <div className="spinner" style={{ marginBottom: '16px' }}></div>
-                                <div style={{ color: '#9ca3af' }}>Procesando foto...</div>
-                            </>
-                        ) : (
-                            <>
-                                <div style={{
-                                    width: '100px',
-                                    height: '100px',
-                                    background: 'rgba(222, 255, 154, 0.1)',
-                                    borderRadius: '50%',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    marginBottom: '24px'
-                                }}>
-                                    <i className="fa-solid fa-camera" style={{ fontSize: '40px', color: '#deff9a' }}></i>
-                                </div>
-                                
-                                <h3 style={{ fontSize: '18px', fontWeight: 600, marginBottom: '8px' }}>
-                                    Tomar Foto
-                                </h3>
-                                <p style={{ color: '#6b7280', fontSize: '14px', marginBottom: '8px' }}>
-                                    {task.instructions[2]}
-                                </p>
-                                
-                                <div style={{ 
-                                    display: 'flex', 
-                                    alignItems: 'center', 
-                                    gap: '6px',
-                                    color: '#deff9a',
-                                    fontSize: '12px',
-                                    marginTop: '16px'
-                                }}>
-                                    <i className="fa-solid fa-location-dot"></i>
-                                    <span>GPS: {location ? `${location.lat}°, ${location.lng}°` : 'Obteniendo...'}</span>
-                                </div>
-                            </>
-                        )}
+                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#111', borderRadius: '16px', marginBottom: '16px', padding: '40px 20px', textAlign: 'center' }}>
+                        {isProcessing ? <><div className="spinner" style={{ marginBottom: '16px' }}></div><div style={{ color: '#9ca3af' }}>Procesando foto...</div></> : <>
+                            <div style={{ width: '100px', height: '100px', background: 'rgba(222, 255, 154, 0.1)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '24px' }}><i className="fa-solid fa-camera" style={{ fontSize: '40px', color: '#deff9a' }}></i></div>
+                            <h3 style={{ fontSize: '18px', fontWeight: 600, marginBottom: '8px' }}>Tomar Foto</h3>
+                            <p style={{ color: '#6b7280', fontSize: '14px' }}>{task.instructions?.[2] || 'Toma una foto clara'}</p>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#deff9a', fontSize: '12px', marginTop: '16px' }}><i className="fa-solid fa-location-dot"></i><span>GPS: {location ? `${location.lat}°, ${location.lng}°` : 'Obteniendo...'}</span></div>
+                        </>}
                     </div>
-                    
-                    <button
-                        onClick={openCamera}
-                        disabled={isProcessing}
-                        className="btn-press"
-                        style={{
-                            width: '100%',
-                            padding: '18px',
-                            background: isProcessing ? '#333' : '#deff9a',
-                            color: '#050505',
-                            border: 'none',
-                            borderRadius: '12px',
-                            fontSize: '16px',
-                            fontWeight: 700,
-                            cursor: isProcessing ? 'wait' : 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '10px',
-                            marginBottom: '20px'
-                        }}
-                    >
-                        <i className="fa-solid fa-camera"></i>
-                        Abrir Cámara
-                    </button>
+                    <button onClick={() => fileInputRef.current?.click()} disabled={isProcessing} className="btn-press" style={{ width: '100%', padding: '18px', background: isProcessing ? '#333' : '#deff9a', color: '#050505', border: 'none', borderRadius: '12px', fontSize: '16px', fontWeight: 700, cursor: isProcessing ? 'wait' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginBottom: '20px' }}><i className="fa-solid fa-camera"></i>Abrir Cámara</button>
                 </div>
             );
         }
         
         // Review Screen
-        function ReviewScreen({ task, capturedImage, gpsData, setScreen, setState, state }) {
+        function ReviewScreen({ task, capturedImage, gpsData, setScreen, agent, setAgent, refreshTasks }) {
             const [isSubmitting, setIsSubmitting] = useState(false);
             
-            const handleSubmit = () => {
+            const handleSubmit = async () => {
                 setIsSubmitting(true);
-                
-                // Simulate submission delay
-                setTimeout(() => {
-                    // Update state with new balance and transaction
-                    setState(prev => ({
-                        ...prev,
-                        user: {
-                            ...prev.user,
-                            balance: prev.user.balance + task.payout,
-                            completedTasks: prev.user.completedTasks + 1
-                        },
-                        transactions: [
-                            {
-                                id: Date.now(),
-                                type: 'earning',
-                                title: task.title,
-                                location: task.location,
-                                amount: task.payout,
-                                time: 'Justo ahora'
-                            },
-                            ...prev.transactions
-                        ],
-                        tasks: prev.tasks.filter(t => t.id !== task.id)
-                    }));
-                    
+                try {
+                    await supabase.from('submissions').insert([{ task_id: task.id, agent_id: agent.id, gps_lat: parseFloat(gpsData.lat), gps_lng: parseFloat(gpsData.lng), status: 'approved', payout: task.payout }]);
+                    await supabase.from('tasks').update({ status: 'completed', assigned_to: agent.id }).eq('id', task.id);
+                    const newBalance = Number(agent.balance || 0) + Number(task.payout);
+                    const { data: updatedAgent } = await supabase.from('agents').update({ balance: newBalance, completed_tasks: (agent.completed_tasks || 0) + 1 }).eq('id', agent.id).select().single();
+                    if (updatedAgent) { setAgent(updatedAgent); localStorage.setItem('lucas_agent', JSON.stringify(updatedAgent)); }
+                    await supabase.from('transactions').insert([{ agent_id: agent.id, type: 'earning', amount: task.payout, description: task.title, task_id: task.id }]);
+                    await refreshTasks();
                     setScreen('success');
-                }, 1500);
+                } catch (err) { console.error('Submit error:', err); alert('Error al enviar. Intenta de nuevo.'); }
+                setIsSubmitting(false);
             };
             
             return (
                 <div className="fade-in" style={{ padding: '20px', paddingBottom: '40px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                        <h2 style={{ fontSize: '20px', fontWeight: 700 }}>Revisar Envío</h2>
+                    <h2 style={{ fontSize: '20px', fontWeight: 700, marginBottom: '20px' }}>Revisar Envío</h2>
+                    <div style={{ width: '100%', height: '200px', borderRadius: '12px', overflow: 'hidden', marginBottom: '16px', position: 'relative' }}>
+                        <img src={capturedImage} alt="Captured" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        <div style={{ position: 'absolute', top: '10px', right: '10px', background: '#deff9a', color: '#050505', fontSize: '11px', fontWeight: 600, padding: '4px 10px', borderRadius: '6px' }}><i className="fa-solid fa-check"></i> Foto capturada</div>
                     </div>
-                    
-                    {/* Image Preview */}
-                    <div style={{
-                        width: '100%',
-                        height: '200px',
-                        borderRadius: '12px',
-                        overflow: 'hidden',
-                        marginBottom: '16px',
-                        position: 'relative'
-                    }}>
-                        <img
-                            src={capturedImage}
-                            alt="Captured"
-                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                        />
-                        <div style={{
-                            position: 'absolute',
-                            top: '10px',
-                            right: '10px',
-                            background: '#deff9a',
-                            color: '#050505',
-                            fontSize: '11px',
-                            fontWeight: 600,
-                            padding: '4px 10px',
-                            borderRadius: '6px'
-                        }}>
-                            <i className="fa-solid fa-check"></i> Foto capturada
-                        </div>
-                    </div>
-                    
-                    {/* Verification Checklist */}
                     <div style={{ marginBottom: '20px' }}>
-                        {[
-                            { icon: 'fa-circle-check', label: 'GPS verificado', value: `${gpsData.lat}°, ${gpsData.lng}°` },
-                            { icon: 'fa-circle-check', label: 'Timestamp', value: gpsData.timestamp + ' UTC' },
-                            { icon: 'fa-circle-check', label: 'Foto de alta calidad', value: 'Resolución: 1920x1080' },
-                            { icon: 'fa-hourglass-half', label: 'Verificación AI', value: 'Se verificará al enviar', pending: true }
-                        ].map((item, index) => (
-                            <div key={index} style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '10px',
-                                padding: '12px 0',
-                                borderBottom: '1px solid #262626'
-                            }}>
-                                <i className={`fa-solid ${item.icon}`} style={{ color: item.pending ? '#f59e0b' : '#deff9a' }}></i>
-                                <div>
-                                    <div style={{ fontSize: '14px' }}>{item.label}</div>
-                                    <div style={{ fontSize: '11px', color: '#6b7280' }}>{item.value}</div>
-                                </div>
-                            </div>
+                        {[{ label: 'GPS verificado', value: `${gpsData.lat}°, ${gpsData.lng}°` }, { label: 'Timestamp', value: gpsData.timestamp + ' UTC' }, { label: 'Foto de alta calidad', value: 'Lista para enviar' }].map((item, i) => (
+                            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '12px 0', borderBottom: '1px solid #262626' }}><i className="fa-solid fa-circle-check" style={{ color: '#deff9a' }}></i><div><div style={{ fontSize: '14px' }}>{item.label}</div><div style={{ fontSize: '11px', color: '#6b7280' }}>{item.value}</div></div></div>
                         ))}
                     </div>
-                    
-                    {/* Action Buttons */}
-                    <button
-                        onClick={() => setScreen('camera')}
-                        style={{
-                            width: '100%',
-                            padding: '14px',
-                            background: '#262626',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '12px',
-                            fontSize: '14px',
-                            fontWeight: 600,
-                            marginBottom: '10px',
-                            cursor: 'pointer'
-                        }}
-                        className="btn-press"
-                    >
-                        <i className="fa-solid fa-camera"></i> Tomar otra foto
-                    </button>
-                    
-                    <button
-                        onClick={handleSubmit}
-                        disabled={isSubmitting}
-                        style={{
-                            width: '100%',
-                            padding: '16px',
-                            background: isSubmitting ? '#a3c261' : '#deff9a',
-                            color: '#050505',
-                            border: 'none',
-                            borderRadius: '12px',
-                            fontSize: '15px',
-                            fontWeight: 700,
-                            cursor: isSubmitting ? 'wait' : 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '8px'
-                        }}
-                        className="btn-press"
-                    >
-                        {isSubmitting ? (
-                            <>
-                                <div className="spinner" style={{ width: '20px', height: '20px', borderWidth: '2px' }}></div>
-                                Enviando...
-                            </>
-                        ) : (
-                            <>
-                                <i className="fa-solid fa-paper-plane"></i>
-                                Enviar Verificación
-                            </>
-                        )}
+                    <button onClick={() => setScreen('camera')} className="btn-press" style={{ width: '100%', padding: '14px', background: '#262626', color: 'white', border: 'none', borderRadius: '12px', fontSize: '14px', fontWeight: 600, marginBottom: '10px', cursor: 'pointer' }}><i className="fa-solid fa-camera"></i> Tomar otra foto</button>
+                    <button onClick={handleSubmit} disabled={isSubmitting} className="btn-press" style={{ width: '100%', padding: '16px', background: isSubmitting ? '#a3c261' : '#deff9a', color: '#050505', border: 'none', borderRadius: '12px', fontSize: '15px', fontWeight: 700, cursor: isSubmitting ? 'wait' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                        {isSubmitting ? <><div className="spinner" style={{ width: '20px', height: '20px', borderWidth: '2px' }}></div>Enviando...</> : <><i className="fa-solid fa-paper-plane"></i>Enviar Verificación</>}
                     </button>
                 </div>
             );
@@ -978,203 +367,41 @@
         // Success Screen
         function SuccessScreen({ task, setScreen, setActiveTab, setSelectedTask }) {
             return (
-                <div style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    minHeight: '100vh',
-                    padding: '40px 20px',
-                    textAlign: 'center'
-                }}>
-                    <div className="success-pop" style={{
-                        width: '100px',
-                        height: '100px',
-                        background: 'rgba(222, 255, 154, 0.15)',
-                        borderRadius: '50%',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        marginBottom: '24px'
-                    }}>
-                        <i className="fa-solid fa-check" style={{ fontSize: '48px', color: '#deff9a' }}></i>
-                    </div>
-                    
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', padding: '40px 20px', textAlign: 'center' }}>
+                    <div className="success-pop" style={{ width: '100px', height: '100px', background: 'rgba(222, 255, 154, 0.15)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '24px' }}><i className="fa-solid fa-check" style={{ fontSize: '48px', color: '#deff9a' }}></i></div>
                     <h1 style={{ fontSize: '24px', fontWeight: 700, marginBottom: '8px' }}>¡Verificación Completa!</h1>
                     <p style={{ color: '#9ca3af', fontSize: '15px', marginBottom: '32px' }}>Tu pago está en camino</p>
-                    
-                    <div style={{ fontSize: '48px', fontWeight: 800, color: '#deff9a', marginBottom: '4px' }}>
-                        +${task.payout.toFixed(2)} USDT
-                    </div>
-                    <div style={{ color: '#6b7280', fontSize: '13px', marginBottom: '40px' }}>
-                        Agregado a tu wallet
-                    </div>
-                    
-                    <button
-                        onClick={() => {
-                            setSelectedTask(null);
-                            setActiveTab('tasks');
-                            setScreen('tasks');
-                        }}
-                        style={{
-                            width: '100%',
-                            maxWidth: '300px',
-                            padding: '16px',
-                            background: '#deff9a',
-                            color: '#050505',
-                            border: 'none',
-                            borderRadius: '12px',
-                            fontSize: '15px',
-                            fontWeight: 700,
-                            cursor: 'pointer',
-                            marginBottom: '12px'
-                        }}
-                        className="btn-press"
-                    >
-                        Ver Más Tareas
-                    </button>
-                    
-                    <button
-                        onClick={() => {
-                            setSelectedTask(null);
-                            setActiveTab('wallet');
-                            setScreen('wallet');
-                        }}
-                        style={{
-                            width: '100%',
-                            maxWidth: '300px',
-                            padding: '14px',
-                            background: '#262626',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '12px',
-                            fontSize: '14px',
-                            fontWeight: 600,
-                            cursor: 'pointer'
-                        }}
-                        className="btn-press"
-                    >
-                        Ir a Wallet
-                    </button>
+                    <div style={{ fontSize: '48px', fontWeight: 800, color: '#deff9a', marginBottom: '4px' }}>+${Number(task.payout).toFixed(2)} USDT</div>
+                    <div style={{ color: '#6b7280', fontSize: '13px', marginBottom: '40px' }}>Agregado a tu wallet</div>
+                    <button onClick={() => { setSelectedTask(null); setActiveTab('tasks'); setScreen('tasks'); }} className="btn-press" style={{ width: '100%', maxWidth: '300px', padding: '16px', background: '#deff9a', color: '#050505', border: 'none', borderRadius: '12px', fontSize: '15px', fontWeight: 700, cursor: 'pointer', marginBottom: '12px' }}>Ver Más Tareas</button>
+                    <button onClick={() => { setSelectedTask(null); setActiveTab('wallet'); setScreen('wallet'); }} className="btn-press" style={{ width: '100%', maxWidth: '300px', padding: '14px', background: '#262626', color: 'white', border: 'none', borderRadius: '12px', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}>Ir a Wallet</button>
                 </div>
             );
         }
         
         // Wallet Screen
-        function WalletScreen({ state }) {
+        function WalletScreen({ agent, transactions }) {
             return (
                 <div className="fade-in" style={{ padding: '20px', paddingBottom: '90px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                        <h2 style={{ fontSize: '22px', fontWeight: 700 }}>Wallet</h2>
-                        <div style={{
-                            width: '40px',
-                            height: '40px',
-                            background: '#262626',
-                            borderRadius: '50%',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            color: '#deff9a'
-                        }}>
-                            <i className="fa-solid fa-user"></i>
-                        </div>
+                    <h2 style={{ fontSize: '22px', fontWeight: 700, marginBottom: '20px' }}>Wallet</h2>
+                    <div style={{ background: 'linear-gradient(135deg, #1a2f1a 0%, #111 100%)', border: '1px solid #2d4a2d', borderRadius: '20px', padding: '24px', textAlign: 'center', marginBottom: '20px' }}>
+                        <div style={{ fontSize: '11px', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '1px' }}>Balance Total</div>
+                        <div style={{ fontSize: '40px', fontWeight: 800, margin: '8px 0' }}>${Number(agent.balance || 0).toFixed(2)} <span style={{ color: '#deff9a', fontSize: '18px' }}>USDT</span></div>
+                        <div style={{ fontSize: '13px', color: '#6b7280' }}>≈ ${(Number(agent.balance || 0) * 17).toFixed(0)} MXN</div>
                     </div>
-                    
-                    {/* Balance Card */}
-                    <div style={{
-                        background: 'linear-gradient(135deg, #1a2f1a 0%, #111 100%)',
-                        border: '1px solid #2d4a2d',
-                        borderRadius: '20px',
-                        padding: '24px',
-                        textAlign: 'center',
-                        marginBottom: '20px'
-                    }}>
-                        <div style={{ fontSize: '11px', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                            Balance Total
-                        </div>
-                        <div style={{ fontSize: '40px', fontWeight: 800, margin: '8px 0' }}>
-                            ${state.user.balance.toFixed(2)} <span style={{ color: '#deff9a', fontSize: '18px' }}>USDT</span>
-                        </div>
-                        <div style={{ fontSize: '13px', color: '#6b7280' }}>
-                            ≈ ${(state.user.balance * 17).toFixed(0)} MXN
-                        </div>
-                    </div>
-                    
-                    {/* Action Buttons */}
                     <div style={{ display: 'flex', gap: '10px', marginBottom: '24px' }}>
-                        <button
-                            className="btn-press"
-                            style={{
-                                flex: 1,
-                                padding: '14px',
-                                background: '#deff9a',
-                                color: '#050505',
-                                border: 'none',
-                                borderRadius: '12px',
-                                fontSize: '14px',
-                                fontWeight: 600,
-                                cursor: 'pointer'
-                            }}
-                        >
-                            <i className="fa-solid fa-arrow-up"></i> Cash Out
-                        </button>
-                        <button
-                            className="btn-press"
-                            style={{
-                                flex: 1,
-                                padding: '14px',
-                                background: '#262626',
-                                color: 'white',
-                                border: 'none',
-                                borderRadius: '12px',
-                                fontSize: '14px',
-                                fontWeight: 600,
-                                cursor: 'pointer'
-                            }}
-                        >
-                            <i className="fa-solid fa-clock-rotate-left"></i> Historial
-                        </button>
+                        <button className="btn-press" onClick={() => alert('Cash out disponible próximamente')} style={{ flex: 1, padding: '14px', background: '#deff9a', color: '#050505', border: 'none', borderRadius: '12px', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}><i className="fa-solid fa-arrow-up"></i> Cash Out</button>
+                        <button className="btn-press" style={{ flex: 1, padding: '14px', background: '#262626', color: 'white', border: 'none', borderRadius: '12px', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}><i className="fa-solid fa-clock-rotate-left"></i> Historial</button>
                     </div>
-                    
-                    {/* Transactions */}
-                    <div style={{ fontSize: '14px', fontWeight: 600, color: '#9ca3af', marginBottom: '12px' }}>
-                        Actividad Reciente
-                    </div>
-                    
-                    {state.transactions.map(tx => (
-                        <div key={tx.id} style={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                            padding: '14px 0',
-                            borderBottom: '1px solid #1a1a1a'
-                        }}>
+                    <div style={{ fontSize: '14px', fontWeight: 600, color: '#9ca3af', marginBottom: '12px' }}>Actividad Reciente</div>
+                    {transactions.length === 0 ? <div style={{ textAlign: 'center', padding: '40px', color: '#6b7280' }}><i className="fa-solid fa-receipt" style={{ fontSize: '32px', marginBottom: '12px', opacity: 0.5 }}></i><div>Sin transacciones aún</div></div> : 
+                    transactions.map(tx => (
+                        <div key={tx.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 0', borderBottom: '1px solid #1a1a1a' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                <div style={{
-                                    width: '40px',
-                                    height: '40px',
-                                    background: tx.type === 'earning' ? 'rgba(222, 255, 154, 0.1)' : 'rgba(239, 68, 68, 0.1)',
-                                    borderRadius: '10px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    color: tx.type === 'earning' ? '#deff9a' : '#ef4444'
-                                }}>
-                                    <i className={`fa-solid ${tx.type === 'earning' ? 'fa-check' : 'fa-arrow-up'}`}></i>
-                                </div>
-                                <div>
-                                    <div style={{ fontWeight: 600, fontSize: '14px' }}>{tx.title}</div>
-                                    <div style={{ fontSize: '11px', color: '#6b7280' }}>
-                                        {tx.time}{tx.location ? ` • ${tx.location}` : ''}
-                                    </div>
-                                </div>
+                                <div style={{ width: '40px', height: '40px', background: tx.type === 'earning' ? 'rgba(222, 255, 154, 0.1)' : 'rgba(239, 68, 68, 0.1)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: tx.type === 'earning' ? '#deff9a' : '#ef4444' }}><i className={`fa-solid ${tx.type === 'earning' ? 'fa-check' : 'fa-arrow-up'}`}></i></div>
+                                <div><div style={{ fontWeight: 600, fontSize: '14px' }}>{tx.description}</div><div style={{ fontSize: '11px', color: '#6b7280' }}>{new Date(tx.created_at).toLocaleDateString('es-MX', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</div></div>
                             </div>
-                            <div style={{
-                                fontWeight: 700,
-                                color: tx.type === 'earning' ? '#deff9a' : '#ef4444'
-                            }}>
-                                {tx.type === 'earning' ? '+' : ''}${Math.abs(tx.amount).toFixed(2)}
-                            </div>
+                            <div style={{ fontWeight: 700, color: tx.type === 'earning' ? '#deff9a' : '#ef4444' }}>{tx.type === 'earning' ? '+' : '-'}${Math.abs(Number(tx.amount)).toFixed(2)}</div>
                         </div>
                     ))}
                 </div>
@@ -1182,196 +409,87 @@
         }
         
         // Profile Screen
-        function ProfileScreen({ state }) {
+        function ProfileScreen({ agent, setAgent, setScreen }) {
+            const handleLogout = () => { localStorage.removeItem('lucas_agent'); setAgent(null); setScreen('welcome'); };
             return (
                 <div className="fade-in" style={{ padding: '20px', paddingBottom: '90px' }}>
                     <h2 style={{ fontSize: '22px', fontWeight: 700, marginBottom: '24px' }}>Perfil</h2>
-                    
-                    {/* Avatar & Name */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px' }}>
-                        <div style={{
-                            width: '70px',
-                            height: '70px',
-                            background: 'linear-gradient(135deg, #deff9a 0%, #a3c261 100%)',
-                            borderRadius: '50%',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontSize: '28px',
-                            color: '#050505',
-                            fontWeight: 700
-                        }}>
-                            {state.user.name.charAt(0)}
-                        </div>
-                        <div>
-                            <div style={{ fontSize: '20px', fontWeight: 700 }}>{state.user.name}</div>
-                            <div style={{ color: '#6b7280', fontSize: '14px' }}>{state.user.phone}</div>
-                        </div>
+                        <div style={{ width: '70px', height: '70px', background: 'linear-gradient(135deg, #deff9a 0%, #a3c261 100%)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '28px', color: '#050505', fontWeight: 700 }}>{agent.name.charAt(0).toUpperCase()}</div>
+                        <div><div style={{ fontSize: '20px', fontWeight: 700 }}>{agent.name}</div><div style={{ color: '#6b7280', fontSize: '14px' }}>{agent.phone}</div></div>
                     </div>
-                    
-                    {/* Stats */}
-                    <div style={{
-                        display: 'grid',
-                        gridTemplateColumns: '1fr 1fr',
-                        gap: '12px',
-                        marginBottom: '24px'
-                    }}>
-                        <div style={{
-                            background: '#1a1a1a',
-                            borderRadius: '12px',
-                            padding: '16px',
-                            textAlign: 'center'
-                        }}>
-                            <div style={{ fontSize: '28px', fontWeight: 800, color: '#deff9a' }}>
-                                {state.user.completedTasks}
-                            </div>
-                            <div style={{ fontSize: '12px', color: '#6b7280' }}>Tareas completadas</div>
-                        </div>
-                        <div style={{
-                            background: '#1a1a1a',
-                            borderRadius: '12px',
-                            padding: '16px',
-                            textAlign: 'center'
-                        }}>
-                            <div style={{ fontSize: '28px', fontWeight: 800 }}>
-                                ${state.user.balance.toFixed(0)}
-                            </div>
-                            <div style={{ fontSize: '12px', color: '#6b7280' }}>USDT ganados</div>
-                        </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '24px' }}>
+                        <div style={{ background: '#1a1a1a', borderRadius: '12px', padding: '16px', textAlign: 'center' }}><div style={{ fontSize: '28px', fontWeight: 800, color: '#deff9a' }}>{agent.completed_tasks || 0}</div><div style={{ fontSize: '12px', color: '#6b7280' }}>Tareas completadas</div></div>
+                        <div style={{ background: '#1a1a1a', borderRadius: '12px', padding: '16px', textAlign: 'center' }}><div style={{ fontSize: '28px', fontWeight: 800 }}>${Number(agent.balance || 0).toFixed(0)}</div><div style={{ fontSize: '12px', color: '#6b7280' }}>USDT ganados</div></div>
                     </div>
-                    
-                    {/* Menu Items */}
-                    {[
-                        { icon: 'fa-wallet', label: 'Wallet conectado', value: '0x7a3...4f2c' },
-                        { icon: 'fa-bell', label: 'Notificaciones', value: 'Activadas' },
-                        { icon: 'fa-language', label: 'Idioma', value: 'Español' },
-                        { icon: 'fa-circle-question', label: 'Ayuda', value: '' },
-                        { icon: 'fa-file-contract', label: 'Términos y condiciones', value: '' }
-                    ].map((item, index) => (
-                        <div key={index} style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                            padding: '14px 0',
-                            borderBottom: '1px solid #1a1a1a',
-                            cursor: 'pointer'
-                        }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                <i className={`fa-solid ${item.icon}`} style={{ color: '#deff9a', width: '20px' }}></i>
-                                <span>{item.label}</span>
-                            </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#6b7280' }}>
-                                <span style={{ fontSize: '13px' }}>{item.value}</span>
-                                <i className="fa-solid fa-chevron-right" style={{ fontSize: '12px' }}></i>
-                            </div>
+                    {[{ icon: 'fa-map-marker-alt', label: 'Colonia', value: agent.colonia || 'No especificada' }, { icon: 'fa-language', label: 'Idioma', value: 'Español' }].map((item, i) => (
+                        <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 0', borderBottom: '1px solid #1a1a1a' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}><i className={`fa-solid ${item.icon}`} style={{ color: '#deff9a', width: '20px' }}></i><span>{item.label}</span></div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#6b7280' }}><span style={{ fontSize: '13px' }}>{item.value}</span><i className="fa-solid fa-chevron-right" style={{ fontSize: '12px' }}></i></div>
                         </div>
                     ))}
-                    
-                    {/* Logout */}
-                    <button style={{
-                        width: '100%',
-                        padding: '14px',
-                        background: 'transparent',
-                        color: '#ef4444',
-                        border: '1px solid #ef444433',
-                        borderRadius: '12px',
-                        fontSize: '14px',
-                        fontWeight: 600,
-                        marginTop: '24px',
-                        cursor: 'pointer'
-                    }}>
-                        <i className="fa-solid fa-right-from-bracket"></i> Cerrar Sesión
-                    </button>
-                    
-                    {/* App Version */}
-                    <div style={{ textAlign: 'center', marginTop: '24px', color: '#4b5563', fontSize: '12px' }}>
-                        LUCAS Agent v1.0.0 (Pilot)
-                    </div>
+                    <button onClick={handleLogout} style={{ width: '100%', padding: '14px', background: 'transparent', color: '#ef4444', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '12px', fontSize: '14px', fontWeight: 600, marginTop: '24px', cursor: 'pointer' }}><i className="fa-solid fa-right-from-bracket"></i> Cerrar Sesión</button>
+                    <div style={{ textAlign: 'center', marginTop: '24px', color: '#4b5563', fontSize: '12px' }}>LUCAS Agent v1.0.0 (Pilot)</div>
                 </div>
             );
         }
         
-        // ============================================
-        // MAIN APP
-        // ============================================
+        // Loading Screen
+        function LoadingScreen() {
+            return <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}><div className="spinner" style={{ marginBottom: '16px' }}></div><div style={{ color: '#6b7280' }}>Cargando...</div></div>;
+        }
         
+        // Main App
         function App() {
-            const [state, setState] = useState(initialState);
-            const [screen, setScreen] = useState('tasks');
+            const [isLoading, setIsLoading] = useState(true);
+            const [agent, setAgent] = useState(null);
+            const [tasks, setTasks] = useState([]);
+            const [transactions, setTransactions] = useState([]);
+            const [screen, setScreen] = useState('welcome');
             const [activeTab, setActiveTab] = useState('tasks');
             const [selectedTask, setSelectedTask] = useState(null);
             const [capturedImage, setCapturedImage] = useState(null);
             const [gpsData, setGpsData] = useState(null);
             
-            const showBottomNav = ['tasks', 'wallet', 'profile'].includes(screen);
+            useEffect(() => {
+                const checkSession = async () => {
+                    const saved = localStorage.getItem('lucas_agent');
+                    if (saved) {
+                        const agentData = JSON.parse(saved);
+                        const { data } = await supabase.from('agents').select('*').eq('id', agentData.id).single();
+                        if (data) { setAgent(data); localStorage.setItem('lucas_agent', JSON.stringify(data)); setScreen('tasks'); }
+                    }
+                    setIsLoading(false);
+                };
+                checkSession();
+            }, []);
+            
+            const fetchTasks = async () => { const { data } = await supabase.from('tasks').select('*').eq('status', 'available').order('created_at', { ascending: false }); if (data) setTasks(data); };
+            const fetchTransactions = async () => { if (!agent) return; const { data } = await supabase.from('transactions').select('*').eq('agent_id', agent.id).order('created_at', { ascending: false }).limit(20); if (data) setTransactions(data); };
+            
+            useEffect(() => { if (agent) { fetchTasks(); fetchTransactions(); } }, [agent]);
+            
+            if (isLoading) return <LoadingScreen />;
+            
+            const showBottomNav = agent && ['tasks', 'wallet', 'profile'].includes(screen);
             
             return (
                 <div className="safe-top" style={{ minHeight: '100vh', background: '#050505' }}>
-                    {screen === 'tasks' && (
-                        <TasksScreen
-                            state={state}
-                            setScreen={setScreen}
-                            setSelectedTask={setSelectedTask}
-                        />
-                    )}
-                    
-                    {screen === 'taskDetail' && selectedTask && (
-                        <TaskDetailScreen
-                            task={selectedTask}
-                            setScreen={setScreen}
-                            setActiveTab={setActiveTab}
-                        />
-                    )}
-                    
-                    {screen === 'camera' && selectedTask && (
-                        <CameraScreen
-                            task={selectedTask}
-                            setScreen={setScreen}
-                            setCapturedImage={setCapturedImage}
-                            setGpsData={setGpsData}
-                        />
-                    )}
-                    
-                    {screen === 'review' && selectedTask && capturedImage && (
-                        <ReviewScreen
-                            task={selectedTask}
-                            capturedImage={capturedImage}
-                            gpsData={gpsData}
-                            setScreen={setScreen}
-                            setState={setState}
-                            state={state}
-                        />
-                    )}
-                    
-                    {screen === 'success' && selectedTask && (
-                        <SuccessScreen
-                            task={selectedTask}
-                            setScreen={setScreen}
-                            setActiveTab={setActiveTab}
-                            setSelectedTask={setSelectedTask}
-                        />
-                    )}
-                    
-                    {screen === 'wallet' && (
-                        <WalletScreen state={state} />
-                    )}
-                    
-                    {screen === 'profile' && (
-                        <ProfileScreen state={state} />
-                    )}
-                    
-                    {showBottomNav && (
-                        <BottomNav
-                            activeTab={activeTab}
-                            setActiveTab={setActiveTab}
-                            setScreen={setScreen}
-                        />
-                    )}
+                    {screen === 'welcome' && !agent && <WelcomeScreen setScreen={setScreen} />}
+                    {screen === 'signup' && <SignupScreen setScreen={setScreen} setAgent={setAgent} />}
+                    {screen === 'login' && <LoginScreen setScreen={setScreen} setAgent={setAgent} />}
+                    {screen === 'tasks' && agent && <TasksScreen agent={agent} tasks={tasks} setScreen={setScreen} setSelectedTask={setSelectedTask} />}
+                    {screen === 'taskDetail' && selectedTask && <TaskDetailScreen task={selectedTask} setScreen={setScreen} setActiveTab={setActiveTab} />}
+                    {screen === 'camera' && selectedTask && <CameraScreen task={selectedTask} setScreen={setScreen} setCapturedImage={setCapturedImage} setGpsData={setGpsData} />}
+                    {screen === 'review' && selectedTask && capturedImage && <ReviewScreen task={selectedTask} capturedImage={capturedImage} gpsData={gpsData} setScreen={setScreen} agent={agent} setAgent={setAgent} refreshTasks={fetchTasks} />}
+                    {screen === 'success' && selectedTask && <SuccessScreen task={selectedTask} setScreen={setScreen} setActiveTab={setActiveTab} setSelectedTask={setSelectedTask} />}
+                    {screen === 'wallet' && agent && <WalletScreen agent={agent} transactions={transactions} />}
+                    {screen === 'profile' && agent && <ProfileScreen agent={agent} setAgent={setAgent} setScreen={setScreen} />}
+                    {showBottomNav && <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} setScreen={setScreen} />}
                 </div>
             );
         }
         
-        // Render the app
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(<App />);
     </script>
