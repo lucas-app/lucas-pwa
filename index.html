@@ -13,6 +13,7 @@
     
     <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-512.png">
     
     <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -65,6 +66,18 @@
         const SUPABASE_URL = 'https://irztntmenxchzicfegid.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlyenRudG1lbnhjaHppY2ZlZ2lkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQxMTA4ODQsImV4cCI6MjA3OTY4Njg4NH0.EjaO-HXjzElo_eHqEWzagsqGg-gEVqUxY1ri-MhofPw';
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        // WhatsApp Support Button
+        function WhatsAppButton() {
+            const openWhatsApp = () => {
+                window.open('https://wa.me/971585072588?text=Hola!%20Necesito%20ayuda%20con%20LUCAS', '_blank');
+            };
+            return (
+                <button onClick={openWhatsApp} style={{ position: 'fixed', bottom: '90px', right: '20px', width: '56px', height: '56px', borderRadius: '50%', background: '#25D366', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.3)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 99 }}>
+                    <i className="fa-brands fa-whatsapp" style={{ fontSize: '28px', color: 'white' }}></i>
+                </button>
+            );
+        }
         
         // Welcome Screen
         function WelcomeScreen({ setScreen }) {
@@ -556,6 +569,7 @@
                     {screen === 'success' && selectedTask && <SuccessScreen task={selectedTask} setScreen={setScreen} setActiveTab={setActiveTab} setSelectedTask={setSelectedTask} />}
                     {screen === 'wallet' && agent && <WalletScreen agent={agent} transactions={transactions} />}
                     {screen === 'profile' && agent && <ProfileScreen agent={agent} setAgent={setAgent} setScreen={setScreen} />}
+                    {showBottomNav && <WhatsAppButton />}
                     {showBottomNav && <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} setScreen={setScreen} />}
                 </div>
             );
