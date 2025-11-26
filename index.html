@@ -623,15 +623,12 @@
             );
         }
         
-        // Camera Screen
+        // Camera Screen - Uses native camera for iOS compatibility
         function CameraScreen({ task, setScreen, setCapturedImage, setGpsData }) {
-            const videoRef = useRef(null);
+            const fileInputRef = useRef(null);
             const canvasRef = useRef(null);
-            const [stream, setStream] = useState(null);
             const [location, setLocation] = useState(null);
-            const [timestamp, setTimestamp] = useState('');
-            const [cameraError, setCameraError] = useState(null);
-            const [isLoading, setIsLoading] = useState(true);
+            const [isProcessing, setIsProcessing] = useState(false);
             
             useEffect(() => {
                 // Get GPS location
@@ -647,81 +644,65 @@
                             console.log('GPS error:', error);
                             // Use task location as fallback
                             setLocation({ lat: task.lat.toFixed(4), lng: task.lng.toFixed(4) });
-                        }
+                        },
+                        { enableHighAccuracy: true }
                     );
                 }
-                
-                // Update timestamp every second
-                const updateTimestamp = () => {
-                    const now = new Date();
-                    setTimestamp(now.toISOString().slice(0, 19).replace('T', ' '));
-                };
-                updateTimestamp();
-                const interval = setInterval(updateTimestamp, 1000);
-                
-                // Start camera
-                const startCamera = async () => {
-                    try {
-                        const mediaStream = await navigator.mediaDevices.getUserMedia({
-                            video: { facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1080 } },
-                            audio: false
-                        });
-                        setStream(mediaStream);
-                        if (videoRef.current) {
-                            videoRef.current.srcObject = mediaStream;
-                        }
-                        setIsLoading(false);
-                    } catch (error) {
-                        console.error('Camera error:', error);
-                        setCameraError('No se pudo acceder a la cámara');
-                        setIsLoading(false);
-                    }
-                };
-                
-                startCamera();
-                
-                return () => {
-                    clearInterval(interval);
-                    if (stream) {
-                        stream.getTracks().forEach(track => track.stop());
-                    }
-                };
             }, []);
             
-            const capturePhoto = () => {
-                if (!videoRef.current || !canvasRef.current) return;
+            const handleFileSelect = async (event) => {
+                const file = event.target.files[0];
+                if (!file) return;
                 
-                const video = videoRef.current;
-                const canvas = canvasRef.current;
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
+                setIsProcessing(true);
                 
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(video, 0, 0);
-                
-                // Add overlay text
-                ctx.fillStyle = 'rgba(0,0,0,0.6)';
-                ctx.fillRect(10, canvas.height - 70, 300, 60);
-                ctx.fillStyle = '#deff9a';
-                ctx.font = '14px monospace';
-                ctx.fillText(`📍 ${location?.lat || task.lat}°, ${location?.lng || task.lng}°`, 20, canvas.height - 45);
-                ctx.fillStyle = 'white';
-                ctx.fillText(`🕐 ${timestamp}`, 20, canvas.height - 20);
-                
-                const imageData = canvas.toDataURL('image/jpeg', 0.8);
-                setCapturedImage(imageData);
-                setGpsData({
-                    lat: location?.lat || task.lat,
-                    lng: location?.lng || task.lng,
-                    timestamp: timestamp
-                });
-                
-                // Stop camera
-                if (stream) {
-                    stream.getTracks().forEach(track => track.stop());
-                }
-                
-                setScreen('review');
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = canvasRef.current;
+                        const maxWidth = 1920;
+                        const maxHeight = 1080;
+                        let { width, height } = img;
+                        
+                        // Scale down if needed
+                        if (width > maxWidth || height > maxHeight) {
+                            const ratio = Math.min(maxWidth / width, maxHeight / height);
+                            width *= ratio;
+                            height *= ratio;
+                        }
+                        
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        
+                        // Add GPS/timestamp overlay
+                        const timestamp = new Date().toISOString().slice(0, 19).replace('T', ' ');
+                        const lat = location?.lat || task.lat.toFixed(4);
+                        const lng = location?.lng || task.lng.toFixed(4);
+                        
+                        ctx.fillStyle = 'rgba(0,0,0,0.7)';
+                        ctx.fillRect(10, height - 80, 320, 70);
+                        ctx.fillStyle = '#deff9a';
+                        ctx.font = 'bold 16px monospace';
+                        ctx.fillText(`📍 ${lat}°, ${lng}°`, 20, height - 50);
+                        ctx.fillStyle = 'white';
+                        ctx.fillText(`🕐 ${timestamp}`, 20, height - 25);
+                        
+                        const imageData = canvas.toDataURL('image/jpeg', 0.8);
+                        setCapturedImage(imageData);
+                        setGpsData({ lat, lng, timestamp });
+                        setIsProcessing(false);
+                        setScreen('review');
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            };
+            
+            const openCamera = () => {
+                fileInputRef.current?.click();
             };
             
             return (
@@ -733,12 +714,7 @@
                     paddingTop: 'max(20px, env(safe-area-inset-top))'
                 }}>
                     <button
-                        onClick={() => {
-                            if (stream) {
-                                stream.getTracks().forEach(track => track.stop());
-                            }
-                            setScreen('taskDetail');
-                        }}
+                        onClick={() => setScreen('taskDetail')}
                         style={{
                             display: 'flex',
                             alignItems: 'center',
@@ -755,63 +731,96 @@
                         <span>Cancelar</span>
                     </button>
                     
-                    <div className="camera-container" style={{ flex: 1, marginBottom: '16px' }}>
-                        {isLoading ? (
-                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-                                <div className="spinner"></div>
-                            </div>
-                        ) : cameraError ? (
-                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#6b7280', textAlign: 'center', padding: '20px' }}>
-                                <i className="fa-solid fa-camera-slash" style={{ fontSize: '48px', marginBottom: '16px' }}></i>
-                                <div>{cameraError}</div>
-                                <div style={{ fontSize: '12px', marginTop: '8px' }}>Permite el acceso a la cámara en tu navegador</div>
-                            </div>
+                    {/* Hidden file input for native camera */}
+                    <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        capture="environment"
+                        onChange={handleFileSelect}
+                        style={{ display: 'none' }}
+                    />
+                    
+                    <canvas ref={canvasRef} style={{ display: 'none' }} />
+                    
+                    <div style={{ 
+                        flex: 1, 
+                        display: 'flex', 
+                        flexDirection: 'column',
+                        alignItems: 'center', 
+                        justifyContent: 'center',
+                        background: '#111',
+                        borderRadius: '16px',
+                        marginBottom: '16px',
+                        padding: '40px 20px',
+                        textAlign: 'center'
+                    }}>
+                        {isProcessing ? (
+                            <>
+                                <div className="spinner" style={{ marginBottom: '16px' }}></div>
+                                <div style={{ color: '#9ca3af' }}>Procesando foto...</div>
+                            </>
                         ) : (
                             <>
-                                <video
-                                    ref={videoRef}
-                                    autoPlay
-                                    playsInline
-                                    muted
-                                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                />
-                                <div className="camera-overlay">
-                                    <div className="camera-badge" style={{ color: '#deff9a' }}>
-                                        <i className="fa-solid fa-location-dot"></i> {location?.lat || '...'}, {location?.lng || '...'}
-                                    </div>
-                                    <div className="camera-badge">
-                                        {timestamp}
-                                    </div>
+                                <div style={{
+                                    width: '100px',
+                                    height: '100px',
+                                    background: 'rgba(222, 255, 154, 0.1)',
+                                    borderRadius: '50%',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    marginBottom: '24px'
+                                }}>
+                                    <i className="fa-solid fa-camera" style={{ fontSize: '40px', color: '#deff9a' }}></i>
+                                </div>
+                                
+                                <h3 style={{ fontSize: '18px', fontWeight: 600, marginBottom: '8px' }}>
+                                    Tomar Foto
+                                </h3>
+                                <p style={{ color: '#6b7280', fontSize: '14px', marginBottom: '8px' }}>
+                                    {task.instructions[2]}
+                                </p>
+                                
+                                <div style={{ 
+                                    display: 'flex', 
+                                    alignItems: 'center', 
+                                    gap: '6px',
+                                    color: '#deff9a',
+                                    fontSize: '12px',
+                                    marginTop: '16px'
+                                }}>
+                                    <i className="fa-solid fa-location-dot"></i>
+                                    <span>GPS: {location ? `${location.lat}°, ${location.lng}°` : 'Obteniendo...'}</span>
                                 </div>
                             </>
                         )}
                     </div>
                     
-                    <canvas ref={canvasRef} style={{ display: 'none' }} />
-                    
                     <button
-                        onClick={capturePhoto}
-                        disabled={isLoading || cameraError}
+                        onClick={openCamera}
+                        disabled={isProcessing}
                         className="btn-press"
                         style={{
-                            width: '80px',
-                            height: '80px',
-                            background: isLoading || cameraError ? '#333' : '#deff9a',
-                            borderRadius: '50%',
-                            margin: '0 auto',
+                            width: '100%',
+                            padding: '18px',
+                            background: isProcessing ? '#333' : '#deff9a',
+                            color: '#050505',
+                            border: 'none',
+                            borderRadius: '12px',
+                            fontSize: '16px',
+                            fontWeight: 700,
+                            cursor: isProcessing ? 'wait' : 'pointer',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            border: '4px solid #262626',
-                            cursor: isLoading || cameraError ? 'not-allowed' : 'pointer'
+                            gap: '10px',
+                            marginBottom: '20px'
                         }}
                     >
-                        <i className="fa-solid fa-camera" style={{ fontSize: '28px', color: '#050505' }}></i>
+                        <i className="fa-solid fa-camera"></i>
+                        Abrir Cámara
                     </button>
-                    
-                    <div style={{ textAlign: 'center', fontSize: '13px', color: '#6b7280', marginTop: '12px', marginBottom: '20px' }}>
-                        {task.instructions[2]}
-                    </div>
                 </div>
             );
         }
