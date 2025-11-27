@@ -219,6 +219,7 @@
             background: #1a1a1a;
             border-radius: 16px;
             overflow: hidden;
+            min-height: 400px;
             height: 70vh;
         }
         
@@ -286,12 +287,16 @@
             }
             
             .doc-actions {
-                width: 100%;
+                display: none;
             }
             
             .btn-secondary {
                 flex: 1;
                 justify-content: center;
+            }
+            
+            .container {
+                padding: 16px;
             }
         }
     </style>
@@ -325,7 +330,7 @@
         
         <div class="footer">
             <p>This document is confidential.</p>
-            <p style="margin-top: 8px;">Questions? <a href="mailto:diego@lucas.app">diego@lucas.app</a></p>
+            <p style="margin-top: 8px;">Questions? <a href="/cdn-cgi/l/email-protection#22464b47454d624e574143510c435252"><span class="__cf_email__" data-cfemail="d0b4b9b5b7bf90bca5b3b1a3feb1a0a0">[email&#160;protected]</span></a></p>
         </div>
     </div>
     
@@ -368,7 +373,7 @@
         </div>
     </div>
 
-    <script>
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
         // ============================================
         // CONFIGURATION
         // ============================================
@@ -456,14 +461,39 @@
             }
         }
         
+        // Detect mobile
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        
         // Show document screen
         function showDocument() {
             gateScreen.style.display = 'none';
             docScreen.style.display = 'block';
             userEmailSpan.textContent = currentUserEmail;
             
-            // Embed PDF
-            pdfContainer.innerHTML = '<iframe src="' + PDF_URL + '#toolbar=0&navpanes=0" title="LUCAS Business Plan"></iframe>';
+            if (isMobile) {
+                // Mobile: Show download prompt instead of embed
+                pdfContainer.innerHTML = `
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 40px; text-align: center;">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#deff9a" stroke-width="1.5" style="margin-bottom: 24px;">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                            <line x1="16" y1="13" x2="8" y2="13"/>
+                            <line x1="16" y1="17" x2="8" y2="17"/>
+                        </svg>
+                        <h3 style="color: white; font-size: 20px; margin-bottom: 8px;">LUCAS Business Plan</h3>
+                        <p style="color: #888; font-size: 14px; margin-bottom: 24px;">Tap below to view the full document</p>
+                        <a href="${PDF_URL}" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; padding: 16px 32px; background: #deff9a; color: #050505; border-radius: 12px; font-weight: 700; text-decoration: none; font-size: 16px;">
+                            📄 Open PDF
+                        </a>
+                        <button onclick="downloadPDF()" style="margin-top: 12px; padding: 12px 24px; background: transparent; border: 1px solid #333; color: #888; border-radius: 10px; font-size: 14px; cursor: pointer;">
+                            Download to device
+                        </button>
+                    </div>
+                `;
+            } else {
+                // Desktop: Embed PDF
+                pdfContainer.innerHTML = '<iframe src="' + PDF_URL + '#toolbar=0&navpanes=0" title="LUCAS Business Plan"></iframe>';
+            }
         }
         
         // Download PDF
@@ -486,13 +516,4 @@
                     .insert([{
                         email: currentUserEmail,
                         document: 'business_plan',
-                        action: 'download',
-                        accessed_at: new Date().toISOString()
-                    }]);
-            } catch (err) {
-                console.warn('Log download error:', err);
-            }
-        }
-    </script>
-</body>
-</html>
+                        action: 'dow
