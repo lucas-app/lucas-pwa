@@ -290,13 +290,14 @@
                 display: none;
             }
             
-            .btn-secondary {
-                flex: 1;
-                justify-content: center;
-            }
-            
             .container {
                 padding: 16px;
+            }
+            
+            .access-info {
+                flex-direction: column;
+                gap: 12px;
+                text-align: center;
             }
         }
     </style>
@@ -330,7 +331,7 @@
         
         <div class="footer">
             <p>This document is confidential.</p>
-            <p style="margin-top: 8px;">Questions? <a href="/cdn-cgi/l/email-protection#22464b47454d624e574143510c435252"><span class="__cf_email__" data-cfemail="d0b4b9b5b7bf90bca5b3b1a3feb1a0a0">[email&#160;protected]</span></a></p>
+            <p style="margin-top: 8px;">Questions? <a href="mailto:diego@lucas.app">diego@lucas.app</a></p>
         </div>
     </div>
     
@@ -373,18 +374,21 @@
         </div>
     </div>
 
-    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    <script>
         // ============================================
         // CONFIGURATION
         // ============================================
-        const ACCESS_PASSWORD = 'lucas2025';
-        const PDF_URL = 'LUCAS_Business_Plan.pdf';
+        var ACCESS_PASSWORD = 'lucas2025';
+        var PDF_URL = 'LUCAS_Business_Plan.pdf';
         
         // Supabase config
-        const SUPABASE_URL = 'https://irztntmenxchzicfegid.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlyenRudG1lbnhjaHppY2ZlZ2lkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQxMTA4ODQsImV4cCI6MjA3OTY4Njg4NH0.EjaO-HXjzElo_eHqEWzagsqGg-gEVqUxY1ri-MhofPw';
+        var SUPABASE_URL = 'https://irztntmenxchzicfegid.supabase.co';
+        var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlyenRudG1lbnhjaHppY2ZlZ2lkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQxMTA4ODQsImV4cCI6MjA3OTY4Njg4NH0.EjaO-HXjzElo_eHqEWzagsqGg-gEVqUxY1ri-MhofPw';
         
-        let supabaseClient = null;
+        // Detect mobile FIRST
+        var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        
+        var supabaseClient = null;
         try {
             supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         } catch (e) {
@@ -394,29 +398,100 @@
         // ============================================
         // APP LOGIC
         // ============================================
-        const gateScreen = document.getElementById('gateScreen');
-        const docScreen = document.getElementById('docScreen');
-        const accessForm = document.getElementById('accessForm');
-        const errorMsg = document.getElementById('errorMsg');
-        const submitBtn = document.getElementById('submitBtn');
-        const userEmailSpan = document.getElementById('userEmail');
-        const pdfContainer = document.getElementById('pdfContainer');
+        var gateScreen = document.getElementById('gateScreen');
+        var docScreen = document.getElementById('docScreen');
+        var accessForm = document.getElementById('accessForm');
+        var errorMsg = document.getElementById('errorMsg');
+        var submitBtn = document.getElementById('submitBtn');
+        var userEmailSpan = document.getElementById('userEmail');
+        var pdfContainer = document.getElementById('pdfContainer');
         
-        let currentUserEmail = '';
+        var currentUserEmail = '';
+        
+        // Show document screen
+        function showDocument() {
+            gateScreen.style.display = 'none';
+            docScreen.style.display = 'block';
+            userEmailSpan.textContent = currentUserEmail;
+            
+            if (isMobile) {
+                // Mobile: Show download prompt instead of embed
+                pdfContainer.innerHTML = '<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 40px; text-align: center;">' +
+                    '<svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#deff9a" stroke-width="1.5" style="margin-bottom: 24px;">' +
+                    '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>' +
+                    '<polyline points="14 2 14 8 20 8"/>' +
+                    '<line x1="16" y1="13" x2="8" y2="13"/>' +
+                    '<line x1="16" y1="17" x2="8" y2="17"/>' +
+                    '</svg>' +
+                    '<h3 style="color: white; font-size: 20px; margin-bottom: 8px;">LUCAS Business Plan</h3>' +
+                    '<p style="color: #888; font-size: 14px; margin-bottom: 24px;">Tap below to view the full document</p>' +
+                    '<a href="' + PDF_URL + '" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; padding: 16px 32px; background: #deff9a; color: #050505; border-radius: 12px; font-weight: 700; text-decoration: none; font-size: 16px;">📄 Open PDF</a>' +
+                    '<button onclick="downloadPDF()" style="margin-top: 12px; padding: 12px 24px; background: transparent; border: 1px solid #333; color: #888; border-radius: 10px; font-size: 14px; cursor: pointer;">Download to device</button>' +
+                    '</div>';
+            } else {
+                // Desktop: Embed PDF
+                pdfContainer.innerHTML = '<iframe src="' + PDF_URL + '#toolbar=0&navpanes=0" title="LUCAS Business Plan"></iframe>';
+            }
+        }
+        
+        // Download PDF
+        function downloadPDF() {
+            logDownload();
+            var link = document.createElement('a');
+            link.href = PDF_URL;
+            link.download = 'LUCAS_Business_Plan.pdf';
+            link.click();
+        }
+        
+        // Log access to Supabase
+        function logAccess(email) {
+            if (!supabaseClient) return;
+            try {
+                supabaseClient
+                    .from('document_access')
+                    .insert([{
+                        email: email,
+                        document: 'business_plan',
+                        action: 'view',
+                        accessed_at: new Date().toISOString(),
+                        user_agent: navigator.userAgent,
+                        referrer: document.referrer || null
+                    }]);
+            } catch (err) {
+                console.warn('Log access error:', err);
+            }
+        }
+        
+        // Log download
+        function logDownload() {
+            if (!supabaseClient) return;
+            try {
+                supabaseClient
+                    .from('document_access')
+                    .insert([{
+                        email: currentUserEmail,
+                        document: 'business_plan',
+                        action: 'download',
+                        accessed_at: new Date().toISOString()
+                    }]);
+            } catch (err) {
+                console.warn('Log download error:', err);
+            }
+        }
         
         // Check if already authenticated
-        const savedEmail = sessionStorage.getItem('lucas_doc_email');
+        var savedEmail = sessionStorage.getItem('lucas_doc_email');
         if (savedEmail) {
             currentUserEmail = savedEmail;
             showDocument();
         }
         
         // Form submission
-        accessForm.addEventListener('submit', async function(e) {
+        accessForm.addEventListener('submit', function(e) {
             e.preventDefault();
             
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value;
+            var email = document.getElementById('email').value.trim();
+            var password = document.getElementById('password').value;
             
             // Reset error
             errorMsg.classList.remove('show');
@@ -432,7 +507,7 @@
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<span class="spinner"></span> Verifying...';
             
-            // Log access (don't wait for it)
+            // Log access
             logAccess(email);
             
             // Save to session and show document
@@ -440,80 +515,6 @@
             currentUserEmail = email;
             showDocument();
         });
-        
-        // Log access to Supabase
-        async function logAccess(email) {
-            if (!supabaseClient) return;
-            
-            try {
-                await supabaseClient
-                    .from('document_access')
-                    .insert([{
-                        email: email,
-                        document: 'business_plan',
-                        action: 'view',
-                        accessed_at: new Date().toISOString(),
-                        user_agent: navigator.userAgent,
-                        referrer: document.referrer || null
-                    }]);
-            } catch (err) {
-                console.warn('Log access error:', err);
-            }
-        }
-        
-        // Detect mobile
-        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-        
-        // Show document screen
-        function showDocument() {
-            gateScreen.style.display = 'none';
-            docScreen.style.display = 'block';
-            userEmailSpan.textContent = currentUserEmail;
-            
-            if (isMobile) {
-                // Mobile: Show download prompt instead of embed
-                pdfContainer.innerHTML = `
-                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 40px; text-align: center;">
-                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#deff9a" stroke-width="1.5" style="margin-bottom: 24px;">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                            <polyline points="14 2 14 8 20 8"/>
-                            <line x1="16" y1="13" x2="8" y2="13"/>
-                            <line x1="16" y1="17" x2="8" y2="17"/>
-                        </svg>
-                        <h3 style="color: white; font-size: 20px; margin-bottom: 8px;">LUCAS Business Plan</h3>
-                        <p style="color: #888; font-size: 14px; margin-bottom: 24px;">Tap below to view the full document</p>
-                        <a href="${PDF_URL}" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; padding: 16px 32px; background: #deff9a; color: #050505; border-radius: 12px; font-weight: 700; text-decoration: none; font-size: 16px;">
-                            📄 Open PDF
-                        </a>
-                        <button onclick="downloadPDF()" style="margin-top: 12px; padding: 12px 24px; background: transparent; border: 1px solid #333; color: #888; border-radius: 10px; font-size: 14px; cursor: pointer;">
-                            Download to device
-                        </button>
-                    </div>
-                `;
-            } else {
-                // Desktop: Embed PDF
-                pdfContainer.innerHTML = '<iframe src="' + PDF_URL + '#toolbar=0&navpanes=0" title="LUCAS Business Plan"></iframe>';
-            }
-        }
-        
-        // Download PDF
-        function downloadPDF() {
-            logDownload();
-            
-            const link = document.createElement('a');
-            link.href = PDF_URL;
-            link.download = 'LUCAS_Business_Plan.pdf';
-            link.click();
-        }
-        
-        // Log download
-        async function logDownload() {
-            if (!supabaseClient) return;
-            
-            try {
-                await supabaseClient
-                    .from('document_access')
-                    .insert([{
-                        email: currentUserEmail,
-                        document: 'business_plan',
-                        action: 'dow
+    </script>
+</body>
+</html>
