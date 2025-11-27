@@ -29,7 +29,6 @@
             padding: 24px;
         }
         
-        /* Gate Screen */
         .gate-screen {
             text-align: center;
         }
@@ -43,11 +42,13 @@
             align-items: center;
             justify-content: center;
             margin: 0 auto 24px;
+            overflow: hidden;
         }
         
-        .logo svg {
-            width: 48px;
-            height: 48px;
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
         
         h1 {
@@ -151,7 +152,6 @@
             text-decoration: none;
         }
         
-        /* Document Screen */
         .doc-screen {
             display: none;
             width: 100%;
@@ -178,11 +178,6 @@
             height: 48px;
             border-radius: 12px;
             margin: 0;
-        }
-        
-        .doc-title .logo svg {
-            width: 28px;
-            height: 28px;
         }
         
         .doc-title h2 {
@@ -224,31 +219,13 @@
             background: #1a1a1a;
             border-radius: 16px;
             overflow: hidden;
-            aspect-ratio: 8.5/11;
-            max-height: 80vh;
+            height: 70vh;
         }
         
         .pdf-container iframe {
             width: 100%;
             height: 100%;
             border: none;
-        }
-        
-        .pdf-placeholder {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: #6b7280;
-            gap: 16px;
-        }
-        
-        .pdf-placeholder svg {
-            width: 64px;
-            height: 64px;
-            opacity: 0.5;
         }
         
         .access-info {
@@ -273,7 +250,6 @@
             color: #deff9a;
         }
         
-        /* Confidential Badge */
         .confidential {
             display: inline-flex;
             align-items: center;
@@ -288,7 +264,6 @@
             letter-spacing: 0.5px;
         }
         
-        /* Loading spinner */
         .spinner {
             width: 20px;
             height: 20px;
@@ -303,7 +278,6 @@
             to { transform: rotate(360deg); }
         }
         
-        /* Responsive */
         @media (max-width: 640px) {
             .doc-header {
                 flex-direction: column;
@@ -325,7 +299,7 @@
 <body>
     <div class="container gate-screen" id="gateScreen">
         <div class="logo">
-            <img src="../icon-192.png" alt="LUCAS" style="width: 100%; height: 100%; border-radius: 20px;">
+            <img src="../icon-192.png" alt="LUCAS">
         </div>
         
         <h1>Business Plan</h1>
@@ -351,7 +325,7 @@
         
         <div class="footer">
             <p>This document is confidential.</p>
-            <p style="margin-top: 8px;">Questions? <a href="/cdn-cgi/l/email-protection#197d707c7e7659756c7a786a37786969"><span class="__cf_email__" data-cfemail="583c313d3f3718342d3b392b76392828">[email&#160;protected]</span></a></p>
+            <p style="margin-top: 8px;">Questions? <a href="mailto:diego@lucas.app">diego@lucas.app</a></p>
         </div>
     </div>
     
@@ -359,7 +333,7 @@
         <div class="doc-header">
             <div class="doc-title">
                 <div class="logo">
-                    <img src="../icon-192.png" alt="LUCAS" style="width: 100%; height: 100%; border-radius: 12px;">
+                    <img src="../icon-192.png" alt="LUCAS">
                 </div>
                 <div>
                     <h2>LUCAS Business Plan</h2>
@@ -380,16 +354,7 @@
         </div>
         
         <div class="pdf-container" id="pdfContainer">
-            <div class="pdf-placeholder">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                    <polyline points="14 2 14 8 20 8"/>
-                    <line x1="16" y1="13" x2="8" y2="13"/>
-                    <line x1="16" y1="17" x2="8" y2="17"/>
-                    <polyline points="10 9 9 9 8 9"/>
-                </svg>
-                <p>Loading document...</p>
-            </div>
+            <p style="padding: 40px; text-align: center; color: #666;">Loading document...</p>
         </div>
         
         <div class="access-info">
@@ -398,33 +363,28 @@
                 <span class="user-email" id="userEmail"></span>
             </div>
             <div class="confidential">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                </svg>
-                Confidential
+                🔒 Confidential
             </div>
         </div>
     </div>
 
-    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    <script>
         // ============================================
-        // CONFIGURATION - EDIT THESE VALUES
+        // CONFIGURATION
         // ============================================
-        const ACCESS_PASSWORD = 'lucas2025';  // Change this to your password
-        const PDF_URL = 'LUCAS_Business_Plan.pdf';  // Your PDF file path
-        const NOTIFY_EMAIL = 'diego@lucas.app';  // Where to send notifications
+        const ACCESS_PASSWORD = 'lucas2025';
+        const PDF_URL = 'LUCAS_Business_Plan.pdf';
         
-        // Email notification webhook (use Resend, Make.com, or Zapier)
-        // Set to null to disable notifications
-        const EMAIL_WEBHOOK_URL = null;  // e.g., 'https://api.resend.com/emails' or your Make.com webhook
-        const RESEND_API_KEY = null;  // Your Resend API key (if using Resend)
-        
-        // Supabase config (using your existing setup)
+        // Supabase config
         const SUPABASE_URL = 'https://irztntmenxchzicfegid.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlyenRudG1lbnhjaHppY2ZlZ2lkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQxMTA4ODQsImV4cCI6MjA3OTY4Njg4NH0.EjaO-HXjzElo_eHqEWzagsqGg-gEVqUxY1ri-MhofPw';
         
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        let supabaseClient = null;
+        try {
+            supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        } catch (e) {
+            console.warn('Supabase init failed:', e);
+        }
         
         // ============================================
         // APP LOGIC
@@ -439,7 +399,7 @@
         
         let currentUserEmail = '';
         
-        // Check if already authenticated (session storage)
+        // Check if already authenticated
         const savedEmail = sessionStorage.getItem('lucas_doc_email');
         if (savedEmail) {
             currentUserEmail = savedEmail;
@@ -447,7 +407,7 @@
         }
         
         // Form submission
-        accessForm.addEventListener('submit', async (e) => {
+        accessForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const email = document.getElementById('email').value.trim();
@@ -467,100 +427,32 @@
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<span class="spinner"></span> Verifying...';
             
-            try {
-                // Log access to Supabase
-                await logAccess(email);
-                
-                // Save to session
-                sessionStorage.setItem('lucas_doc_email', email);
-                currentUserEmail = email;
-                
-                // Show document
-                showDocument();
-                
-            } catch (err) {
-                console.error('Error logging access:', err);
-                // Still show document even if logging fails
-                sessionStorage.setItem('lucas_doc_email', email);
-                currentUserEmail = email;
-                showDocument();
-            }
+            // Log access (don't wait for it)
+            logAccess(email);
+            
+            // Save to session and show document
+            sessionStorage.setItem('lucas_doc_email', email);
+            currentUserEmail = email;
+            showDocument();
         });
         
         // Log access to Supabase
         async function logAccess(email) {
-            const { error } = await supabase
-                .from('document_access')
-                .insert([{
-                    email: email,
-                    document: 'business_plan',
-                    accessed_at: new Date().toISOString(),
-                    user_agent: navigator.userAgent,
-                    referrer: document.referrer || null
-                }]);
-            
-            if (error) {
-                console.error('Supabase error:', error);
-            }
-            
-            // Send email notification
-            await sendNotification(email, 'view');
-        }
-        
-        // Send email notification
-        async function sendNotification(visitorEmail, action) {
-            if (!EMAIL_WEBHOOK_URL) return;
-            
-            const timestamp = new Date().toLocaleString('en-US', { 
-                timeZone: 'America/Mexico_City',
-                dateStyle: 'medium',
-                timeStyle: 'short'
-            });
+            if (!supabaseClient) return;
             
             try {
-                // If using Resend directly
-                if (RESEND_API_KEY) {
-                    await fetch('https://api.resend.com/emails', {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${RESEND_API_KEY}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            from: 'LUCAS <notifications@lucas.app>',
-                            to: NOTIFY_EMAIL,
-                            subject: `📄 Business Plan ${action === 'download' ? 'Downloaded' : 'Viewed'}: ${visitorEmail}`,
-                            html: `
-                                <div style="font-family: sans-serif; max-width: 500px;">
-                                    <h2 style="color: #111;">Document ${action === 'download' ? 'Downloaded' : 'Accessed'}</h2>
-                                    <p><strong>Email:</strong> ${visitorEmail}</p>
-                                    <p><strong>Action:</strong> ${action === 'download' ? 'Downloaded PDF' : 'Viewed document'}</p>
-                                    <p><strong>Time:</strong> ${timestamp}</p>
-                                    <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
-                                    <p style="color: #666; font-size: 12px;">
-                                        <a href="https://supabase.com/dashboard/project/irztntmenxchzicfegid/editor/document_access">View all access logs →</a>
-                                    </p>
-                                </div>
-                            `
-                        })
-                    });
-                } 
-                // If using Make.com/Zapier webhook
-                else {
-                    await fetch(EMAIL_WEBHOOK_URL, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            visitor_email: visitorEmail,
-                            action: action,
-                            document: 'business_plan',
-                            timestamp: timestamp,
-                            notify_email: NOTIFY_EMAIL
-                        })
-                    });
-                }
+                await supabaseClient
+                    .from('document_access')
+                    .insert([{
+                        email: email,
+                        document: 'business_plan',
+                        action: 'view',
+                        accessed_at: new Date().toISOString(),
+                        user_agent: navigator.userAgent,
+                        referrer: document.referrer || null
+                    }]);
             } catch (err) {
-                console.error('Notification error:', err);
+                console.warn('Log access error:', err);
             }
         }
         
@@ -571,36 +463,36 @@
             userEmailSpan.textContent = currentUserEmail;
             
             // Embed PDF
-            pdfContainer.innerHTML = `
-                <iframe 
-                    src="${PDF_URL}#toolbar=0&navpanes=0" 
-                    title="LUCAS Business Plan"
-                    loading="lazy"
-                ></iframe>
-            `;
+            pdfContainer.innerHTML = '<iframe src="' + PDF_URL + '#toolbar=0&navpanes=0" title="LUCAS Business Plan"></iframe>';
         }
         
         // Download PDF
         function downloadPDF() {
-            // Log download
             logDownload();
             
-            // Trigger download
             const link = document.createElement('a');
             link.href = PDF_URL;
             link.download = 'LUCAS_Business_Plan.pdf';
             link.click();
         }
         
-        // Log download event
+        // Log download
         async function logDownload() {
+            if (!supabaseClient) return;
+            
             try {
-                await supabase
+                await supabaseClient
                     .from('document_access')
                     .insert([{
                         email: currentUserEmail,
                         document: 'business_plan',
-                        action: 'download',                        accessed_at: new Date().toISOString()
+                        action: 'download',
+                        accessed_at: new Date().toISOString()
                     }]);
-                
-                // Send do
+            } catch (err) {
+                console.warn('Log download error:', err);
+            }
+        }
+    </script>
+</body>
+</html>
