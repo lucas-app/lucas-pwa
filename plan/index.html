@@ -376,9 +376,9 @@
 
     <script>
         // ============================================
-        // CONFIGURATION
+        // CONFIGURATION - CHANGE PASSWORD HERE
         // ============================================
-        var ACCESS_PASSWORD = 'lucas2025';
+        var ACCESS_PASSWORD = 'LucasInvestor2025!';  // CHANGED - old one was exposed
         var PDF_URL = 'LUCAS_Business_Plan.pdf';
         
         // Supabase config
@@ -391,6 +391,7 @@
         var supabaseClient = null;
         try {
             supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            console.log('Supabase initialized successfully');
         } catch (e) {
             console.warn('Supabase init failed:', e);
         }
@@ -443,11 +444,14 @@
             link.click();
         }
         
-        // Log access to Supabase
-        function logAccess(email) {
-            if (!supabaseClient) return;
+        // Log access to Supabase - FIXED with async/await
+        async function logAccess(email) {
+            if (!supabaseClient) {
+                console.warn('Supabase client not available');
+                return;
+            }
             try {
-                supabaseClient
+                const { data, error } = await supabaseClient
                     .from('document_access')
                     .insert([{
                         email: email,
@@ -457,25 +461,42 @@
                         user_agent: navigator.userAgent,
                         referrer: document.referrer || null
                     }]);
+                
+                if (error) {
+                    console.warn('Log access error:', error);
+                } else {
+                    console.log('Access logged successfully for:', email);
+                }
             } catch (err) {
-                console.warn('Log access error:', err);
+                console.warn('Log access exception:', err);
             }
         }
         
-        // Log download
-        function logDownload() {
-            if (!supabaseClient) return;
+        // Log download - FIXED with async/await
+        async function logDownload() {
+            if (!supabaseClient) {
+                console.warn('Supabase client not available');
+                return;
+            }
             try {
-                supabaseClient
+                const { data, error } = await supabaseClient
                     .from('document_access')
                     .insert([{
                         email: currentUserEmail,
                         document: 'business_plan',
                         action: 'download',
-                        accessed_at: new Date().toISOString()
+                        accessed_at: new Date().toISOString(),
+                        user_agent: navigator.userAgent,
+                        referrer: document.referrer || null
                     }]);
+                
+                if (error) {
+                    console.warn('Log download error:', error);
+                } else {
+                    console.log('Download logged successfully for:', currentUserEmail);
+                }
             } catch (err) {
-                console.warn('Log download error:', err);
+                console.warn('Log download exception:', err);
             }
         }
         
@@ -487,7 +508,7 @@
         }
         
         // Form submission
-        accessForm.addEventListener('submit', function(e) {
+        accessForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             
             var email = document.getElementById('email').value.trim();
@@ -507,8 +528,8 @@
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<span class="spinner"></span> Verifying...';
             
-            // Log access
-            logAccess(email);
+            // Log access and wait for it
+            await logAccess(email);
             
             // Save to session and show document
             sessionStorage.setItem('lucas_doc_email', email);
