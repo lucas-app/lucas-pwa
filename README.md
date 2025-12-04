@@ -1,76 +1,81 @@
-# LUCAS Agent PWA
+# LUCAS Inspector PWA 🏠
 
-A minimal Progressive Web App for LUCAS agents to complete verification tasks and earn USDT.
-
-## Files
-
-- `index.html` - Main app (React-based, single file)
-- `manifest.json` - PWA configuration
-- `sw.js` - Service worker for offline support
-
-## Quick Deploy
-
-### Option 1: Vercel (Recommended - Free)
-1. Create account at vercel.com
-2. Drag & drop this folder
-3. Done! You get a URL like `lucas-pwa.vercel.app`
-
-### Option 2: Netlify (Free)
-1. Create account at netlify.com
-2. Drag & drop this folder
-3. Done! You get a URL like `lucas-pwa.netlify.app`
-
-### Option 3: GitHub Pages (Free)
-1. Create a GitHub repo
-2. Upload these files
-3. Go to Settings → Pages → Enable
-4. Access at `username.github.io/repo-name`
-
-## Missing Assets
-
-You'll need to add these icon files for the PWA to be installable:
-- `icon-192.png` (192x192px) - App icon
-- `icon-512.png` (512x512px) - App icon
-
-Use your LUCAS logo on a dark background (#050505).
+Property verification app for LUCAS inspectors in the Dubai pilot.
 
 ## Features
 
-✅ Task list with distance sorting  
-✅ Task detail with instructions  
-✅ Camera capture with GPS overlay  
-✅ Photo review before submit  
-✅ Success confirmation  
-✅ Wallet balance & transactions  
-✅ Profile screen  
-✅ PWA installable  
-✅ Works on iOS & Android  
-✅ Spanish UI  
-
-## For Pilot Testing
-
-1. Deploy to Vercel/Netlify
-2. Open on phone browser
-3. "Add to Home Screen" to install as app
-4. Share link with test agents via WhatsApp
-
-## Next Steps (Post-Pilot)
-
-- [ ] Real backend (Supabase recommended)
-- [ ] Phone number auth (SMS OTP)
-- [ ] Real task assignment
-- [ ] USDT wallet integration
-- [ ] Push notifications
-- [ ] Admin dashboard
+- ✅ Inspector login (ID + PIN)
+- ✅ Job queue with pending/scheduled inspections
+- ✅ 4-step inspection flow:
+  1. **Verify** - GPS-locked checklist
+  2. **Photos** - Capture required photos
+  3. **Score** - Condition assessment (0-100)
+  4. **Submit** - Signature + proof hash
+- ✅ Issue reporting with severity levels
+- ✅ Real-time sync with Supabase
+- ✅ PWA installable on iOS & Android
+- ✅ Offline-capable (service worker)
 
 ## Tech Stack
 
-- React 18 (via CDN)
-- Vanilla CSS (no Tailwind needed)
+- Vanilla JS (no framework)
+- Supabase (database + auth)
+- PWA (manifest + service worker)
 - Geolocation API
-- Camera API (MediaDevices)
-- Service Worker
+- Camera API
+
+## Files
+
+```
+├── index.html      # Main app
+├── manifest.json   # PWA configuration
+├── sw.js          # Service worker
+├── icon-192.png   # App icon (192x192)
+└── icon-512.png   # App icon (512x512)
+```
+
+## Database
+
+Uses Supabase with tables:
+- `inspectors` - Inspector profiles
+- `properties` - Property details
+- `inspections` - Inspection records
+- `inspection_photos` - Photo metadata
+- `inspection_issues` - Reported issues
+
+## Test Credentials
+
+| Inspector ID | PIN  | Name              |
+|--------------|------|-------------------|
+| INS-7721     | 1234 | Fazza Al Maktoum  |
+| INS-8832     | 5678 | Ahmed Hassan      |
+| INS-9943     | 0000 | Sara Khan         |
+
+## Deployment
+
+### Vercel (Recommended)
+1. Push to GitHub
+2. Connect repo to Vercel
+3. Deploy automatically
+
+### GitHub Pages
+1. Go to Settings → Pages
+2. Enable from main branch
+3. Access at `username.github.io/lucas-pwa`
+
+## Local Development
+
+Just open `index.html` in a browser. For full PWA features, serve via:
+
+```bash
+npx serve .
+```
+
+## Supabase Setup
+
+Run the SQL schema in your Supabase SQL Editor:
+- Project: https://supabase.com/dashboard/project/irztntmenxchzicfegid
 
 ---
 
-Built for LUCAS Pilot in CDMX 🇲🇽
+Built for LUCAS Dubai Pilot 🇦🇪
