@@ -1,583 +1,1962 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>LUCAS Agent</title>
-    
-    <!-- PWA Meta Tags -->
     <meta name="theme-color" content="#050505">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="LUCAS">
+    <meta name="apple-mobile-web-app-title" content="LUCAS Inspector">
+    <title>LUCAS Inspector</title>
     
-    <!-- PWA Manifest -->
+    <!-- PWA Meta -->
     <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="icon-512.png">
+    <link rel="icon" type="image/png" href="icon-512.png">
+    <link rel="apple-touch-icon" href="icon-192.png">>
     
-    <!-- Fonts & Icons -->
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Supabase -->
+    <!-- Supabase SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
-    <!-- React -->
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: 'Urbanist', sans-serif; background: #050505; color: white; min-height: 100vh; min-height: -webkit-fill-available; overflow-x: hidden; }
-        html { height: -webkit-fill-available; }
-        #root { min-height: 100vh; min-height: -webkit-fill-available; display: flex; flex-direction: column; }
-        .lucas-green { color: #deff9a; }
-        .bg-lucas-green { background: #deff9a; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes success-pop { 0% { transform: scale(0); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
-        .fade-in { animation: fadeIn 0.3s ease-out; }
-        .success-pop { animation: success-pop 0.5s ease-out; }
-        .safe-top { padding-top: env(safe-area-inset-top, 20px); }
-        .safe-bottom { padding-bottom: env(safe-area-inset-bottom, 20px); }
-        .spinner { width: 40px; height: 40px; border: 3px solid #262626; border-top-color: #deff9a; border-radius: 50%; animation: spin 0.8s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .btn-press:active { transform: scale(0.97); }
-        input, select, textarea { font-family: 'Urbanist', sans-serif; }
-        .input-field { width: 100%; padding: 16px; background: #1a1a1a; border: 1px solid #262626; border-radius: 12px; color: white; font-size: 16px; outline: none; transition: border-color 0.2s; }
-        .input-field:focus { border-color: #deff9a; }
-        .input-field::placeholder { color: #6b7280; }
+        :root {
+            --lucas-green: #deff9a;
+            --lucas-dark: #050505;
+            --lucas-card: #0a0a0a;
+            --lucas-border: #1a1a1a;
+            --safe-top: env(safe-area-inset-top);
+            --safe-bottom: env(safe-area-inset-bottom);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: 'Urbanist', sans-serif;
+            background-color: var(--lucas-dark);
+            color: #fff;
+            min-height: 100vh;
+            min-height: 100dvh;
+            overflow-x: hidden;
+        }
+        
+        /* Screens */
+        .screen {
+            display: none;
+            min-height: 100vh;
+            min-height: 100dvh;
+            padding-top: var(--safe-top);
+            padding-bottom: var(--safe-bottom);
+        }
+        
+        .screen.active {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Login Screen */
+        .login-screen {
+            justify-content: center;
+            align-items: center;
+            padding: 24px;
+            background: radial-gradient(ellipse at center top, rgba(222, 255, 154, 0.08) 0%, transparent 60%);
+        }
+        
+        .login-logo {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 16px;
+        }
+        
+        .login-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .login-subtitle {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 48px;
+        }
+        
+        .login-form {
+            width: 100%;
+            max-width: 320px;
+        }
+        
+        .input-group {
+            margin-bottom: 16px;
+        }
+        
+        .input-group label {
+            display: block;
+            font-size: 11px;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 8px;
+        }
+        
+        .input-group input {
+            width: 100%;
+            background: var(--lucas-card);
+            border: 1px solid var(--lucas-border);
+            border-radius: 12px;
+            padding: 16px;
+            color: #fff;
+            font-size: 16px;
+            font-family: 'Urbanist', sans-serif;
+            transition: border-color 0.2s;
+        }
+        
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--lucas-green);
+        }
+        
+        .input-group input::placeholder {
+            color: #444;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 16px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            font-family: 'Urbanist', sans-serif;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: var(--lucas-green);
+            color: #000;
+        }
+        
+        .btn-primary:active {
+            transform: scale(0.98);
+            background: #c8e67a;
+        }
+        
+        .btn-secondary {
+            background: var(--lucas-card);
+            color: #fff;
+            border: 1px solid var(--lucas-border);
+        }
+        
+        .btn-secondary:active {
+            background: #151515;
+        }
+        
+        .btn-ghost {
+            background: transparent;
+            color: var(--lucas-green);
+        }
+        
+        /* Dashboard Screen */
+        .dashboard-screen {
+            background: var(--lucas-dark);
+        }
+        
+        .header {
+            padding: 16px 20px;
+            padding-top: calc(16px + var(--safe-top));
+            background: var(--lucas-card);
+            border-bottom: 1px solid var(--lucas-border);
+        }
+        
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .header-logo img {
+            width: 32px;
+            height: 32px;
+        }
+        
+        .header-logo span {
+            font-weight: 700;
+            font-size: 18px;
+        }
+        
+        .header-user {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--lucas-green), #a8e063);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #000;
+            font-size: 14px;
+        }
+        
+        .header-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+        
+        .stat-card {
+            background: var(--lucas-dark);
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--lucas-green);
+        }
+        
+        .stat-label {
+            font-size: 10px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-top: 4px;
+        }
+        
+        .content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .section-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 12px;
+        }
+        
+        /* Job Cards */
+        .job-card {
+            background: var(--lucas-card);
+            border: 1px solid var(--lucas-border);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .job-card:active {
+            transform: scale(0.98);
+            border-color: var(--lucas-green);
+        }
+        
+        .job-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+        
+        .job-property {
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+        
+        .job-id {
+            font-family: 'Space Mono', monospace;
+            font-size: 11px;
+            color: #666;
+        }
+        
+        .job-status {
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .job-status.pending {
+            background: rgba(251, 191, 36, 0.15);
+            color: #fbbf24;
+            border: 1px solid rgba(251, 191, 36, 0.3);
+        }
+        
+        .job-status.scheduled {
+            background: rgba(59, 130, 246, 0.15);
+            color: #3b82f6;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+        
+        .job-status.completed {
+            background: rgba(222, 255, 154, 0.15);
+            color: var(--lucas-green);
+            border: 1px solid rgba(222, 255, 154, 0.3);
+        }
+        
+        .job-details {
+            display: flex;
+            gap: 16px;
+            font-size: 13px;
+            color: #888;
+        }
+        
+        .job-details i {
+            margin-right: 6px;
+            color: #555;
+        }
+        
+        /* Inspection Screen */
+        .inspection-screen {
+            background: var(--lucas-dark);
+        }
+        
+        .inspection-header {
+            padding: 16px 20px;
+            padding-top: calc(16px + var(--safe-top));
+            background: var(--lucas-card);
+            border-bottom: 1px solid var(--lucas-border);
+        }
+        
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--lucas-green);
+            font-size: 14px;
+            font-weight: 600;
+            background: none;
+            border: none;
+            cursor: pointer;
+            margin-bottom: 12px;
+            padding: 0;
+        }
+        
+        .inspection-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        
+        .inspection-address {
+            font-size: 13px;
+            color: #666;
+        }
+        
+        /* Progress Bar */
+        .progress-bar-container {
+            padding: 16px 20px;
+            background: var(--lucas-card);
+            border-bottom: 1px solid var(--lucas-border);
+        }
+        
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+        }
+        
+        .progress-line {
+            position: absolute;
+            top: 12px;
+            left: 24px;
+            right: 24px;
+            height: 2px;
+            background: var(--lucas-border);
+        }
+        
+        .progress-line-fill {
+            height: 100%;
+            background: var(--lucas-green);
+            transition: width 0.3s;
+        }
+        
+        .progress-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .step-circle {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--lucas-dark);
+            border: 2px solid var(--lucas-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 700;
+            transition: all 0.3s;
+        }
+        
+        .progress-step.completed .step-circle {
+            background: var(--lucas-green);
+            border-color: var(--lucas-green);
+            color: #000;
+        }
+        
+        .progress-step.active .step-circle {
+            border-color: var(--lucas-green);
+            color: var(--lucas-green);
+        }
+        
+        .step-label {
+            font-size: 9px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .progress-step.completed .step-label,
+        .progress-step.active .step-label {
+            color: var(--lucas-green);
+        }
+        
+        /* Inspection Content */
+        .inspection-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .step-content {
+            display: none;
+        }
+        
+        .step-content.active {
+            display: block;
+        }
+        
+        /* Checklist */
+        .checklist-item {
+            background: var(--lucas-card);
+            border: 1px solid var(--lucas-border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .checklist-item:active {
+            transform: scale(0.98);
+        }
+        
+        .checklist-item.checked {
+            border-color: rgba(222, 255, 154, 0.3);
+            background: rgba(222, 255, 154, 0.03);
+        }
+        
+        .check-circle {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: 2px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.2s;
+        }
+        
+        .checklist-item.checked .check-circle {
+            background: var(--lucas-green);
+            border-color: var(--lucas-green);
+            color: #000;
+        }
+        
+        .check-circle i {
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        
+        .checklist-item.checked .check-circle i {
+            opacity: 1;
+        }
+        
+        .checklist-text {
+            flex: 1;
+        }
+        
+        .checklist-title {
+            font-weight: 600;
+            font-size: 15px;
+            margin-bottom: 2px;
+        }
+        
+        .checklist-subtitle {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        /* Camera Section */
+        .camera-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .photo-slot {
+            aspect-ratio: 1;
+            background: var(--lucas-card);
+            border: 2px dashed var(--lucas-border);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .photo-slot:active {
+            border-color: var(--lucas-green);
+        }
+        
+        .photo-slot i {
+            font-size: 20px;
+            color: #444;
+        }
+        
+        .photo-slot span {
+            font-size: 9px;
+            color: #444;
+            text-transform: uppercase;
+        }
+        
+        .photo-slot.has-photo {
+            border-style: solid;
+            border-color: var(--lucas-green);
+        }
+        
+        .photo-slot img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .photo-slot .photo-check {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 20px;
+            height: 20px;
+            background: var(--lucas-green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000;
+            font-size: 10px;
+        }
+        
+        .capture-btn {
+            width: 100%;
+            padding: 20px;
+            background: var(--lucas-card);
+            border: 2px solid var(--lucas-green);
+            border-radius: 16px;
+            color: var(--lucas-green);
+            font-size: 16px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .capture-btn:active {
+            background: var(--lucas-green);
+            color: #000;
+        }
+        
+        .capture-btn i {
+            font-size: 24px;
+        }
+        
+        /* Scoring */
+        .score-display {
+            text-align: center;
+            padding: 32px;
+            background: var(--lucas-card);
+            border-radius: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .score-value {
+            font-size: 72px;
+            font-weight: 800;
+            color: var(--lucas-green);
+            line-height: 1;
+        }
+        
+        .score-max {
+            font-size: 24px;
+            color: #666;
+        }
+        
+        .score-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-top: 8px;
+        }
+        
+        .score-slider {
+            width: 100%;
+            height: 8px;
+            -webkit-appearance: none;
+            background: var(--lucas-border);
+            border-radius: 4px;
+            outline: none;
+            margin-top: 24px;
+        }
+        
+        .score-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 32px;
+            height: 32px;
+            background: var(--lucas-green);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(222, 255, 154, 0.3);
+        }
+        
+        /* Issues */
+        .issue-btn {
+            width: 100%;
+            padding: 16px;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 12px;
+            color: #ef4444;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            margin-top: 16px;
+        }
+        
+        .issue-card {
+            background: var(--lucas-card);
+            border: 1px solid var(--lucas-border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+        
+        .issue-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .issue-type {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .issue-severity {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        
+        .issue-severity.low {
+            background: rgba(251, 191, 36, 0.15);
+            color: #fbbf24;
+        }
+        
+        .issue-severity.medium {
+            background: rgba(249, 115, 22, 0.15);
+            color: #f97316;
+        }
+        
+        .issue-severity.high {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+        }
+        
+        .issue-desc {
+            font-size: 13px;
+            color: #888;
+        }
+        
+        /* Submit Screen */
+        .submit-summary {
+            background: var(--lucas-card);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--lucas-border);
+        }
+        
+        .summary-row:last-child {
+            border-bottom: none;
+        }
+        
+        .summary-label {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .summary-value {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .signature-pad {
+            background: var(--lucas-card);
+            border: 1px solid var(--lucas-border);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .signature-canvas {
+            width: 100%;
+            height: 120px;
+            background: var(--lucas-dark);
+            border-radius: 8px;
+            border: 1px dashed var(--lucas-border);
+        }
+        
+        .signature-label {
+            text-align: center;
+            font-size: 11px;
+            color: #666;
+            margin-top: 8px;
+        }
+        
+        /* Bottom Bar */
+        .bottom-bar {
+            padding: 16px 20px;
+            padding-bottom: calc(16px + var(--safe-bottom));
+            background: var(--lucas-card);
+            border-top: 1px solid var(--lucas-border);
+        }
+        
+        /* Success Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            z-index: 100;
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+        }
+        
+        .modal {
+            background: var(--lucas-card);
+            border: 1px solid var(--lucas-border);
+            border-radius: 24px;
+            padding: 32px;
+            text-align: center;
+            max-width: 320px;
+            width: 100%;
+        }
+        
+        .modal-icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(222, 255, 154, 0.15);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+        
+        .modal-icon i {
+            font-size: 36px;
+            color: var(--lucas-green);
+        }
+        
+        .modal-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .modal-text {
+            font-size: 14px;
+            color: #888;
+            margin-bottom: 24px;
+        }
+        
+        .modal-hash {
+            font-family: 'Space Mono', monospace;
+            font-size: 11px;
+            color: var(--lucas-green);
+            background: var(--lucas-dark);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            word-break: break-all;
+        }
+        
+        /* Bottom Navigation */
+        .bottom-nav {
+            display: flex;
+            background: var(--lucas-card);
+            border-top: 1px solid var(--lucas-border);
+            padding: 8px 0;
+            padding-bottom: calc(8px + var(--safe-bottom));
+        }
+        
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 8px;
+            color: #666;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            transition: color 0.2s;
+            background: none;
+            border: none;
+        }
+        
+        .nav-item.active {
+            color: var(--lucas-green);
+        }
+        
+        .nav-item i {
+            font-size: 20px;
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        /* GPS Indicator */
+        .gps-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: var(--lucas-green);
+            padding: 8px 12px;
+            background: rgba(222, 255, 154, 0.1);
+            border-radius: 20px;
+            margin-bottom: 16px;
+        }
+        
+        .gps-indicator i {
+            font-size: 12px;
+        }
+        
+        .gps-pulse {
+            width: 8px;
+            height: 8px;
+            background: var(--lucas-green);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
     </style>
 </head>
 <body>
-    <div id="root"></div>
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/lucas-pwa/sw.js').catch(e => console.log('SW failed:', e));
-            });
-        }
-    </script>
-    <script type="text/babel">
-        const { useState, useEffect, useRef } = React;
+    <!-- Login Screen -->
+    <div id="login-screen" class="screen login-screen active">
+        <img src="icon-512.png" alt="LUCAS" class="login-logo">
+        <h1 class="login-title">LUCAS Inspector</h1>
+        <p class="login-subtitle">Property Verification Platform</p>
         
-        // SUPABASE CONFIG
+        <form class="login-form" onsubmit="handleLogin(event)">
+            <div class="input-group">
+                <label>Inspector ID</label>
+                <input type="text" placeholder="INS-XXXX" id="inspector-id" required>
+            </div>
+            <div class="input-group">
+                <label>PIN Code</label>
+                <input type="password" placeholder="••••••" id="pin-code" required maxlength="6">
+            </div>
+            <button type="submit" class="btn btn-primary">
+                <i class="fa-solid fa-right-to-bracket"></i>
+                Sign In
+            </button>
+        </form>
+    </div>
+    
+    <!-- Dashboard Screen -->
+    <div id="dashboard-screen" class="screen dashboard-screen">
+        <div class="header">
+            <div class="header-top">
+                <div class="header-logo">
+                    <img src="icon-192.png" alt="LUCAS">
+                    <span>LUCAS</span>
+                </div>
+                <div class="header-user">
+                    <div class="user-avatar">FM</div>
+                </div>
+            </div>
+            <div class="header-stats">
+                <div class="stat-card">
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">Today</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">127</div>
+                    <div class="stat-label">Total</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">4.9</div>
+                    <div class="stat-label">Rating</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="content">
+            <div class="section-title">Pending Inspections</div>
+            
+            <div class="job-card" onclick="startInspection('Villa 42', 'Palm Jumeirah', 'DXB-PROP-7821')">
+                <div class="job-header">
+                    <div>
+                        <div class="job-property">Villa 42, Palm Jumeirah</div>
+                        <div class="job-id">DXB-PROP-7821</div>
+                    </div>
+                    <span class="job-status pending">Urgent</span>
+                </div>
+                <div class="job-details">
+                    <span><i class="fa-solid fa-clock"></i>Due Today</span>
+                    <span><i class="fa-solid fa-ruler-combined"></i>4 Bed Villa</span>
+                </div>
+            </div>
+            
+            <div class="job-card" onclick="startInspection('Unit 1502', 'Marina Heights', 'DXB-PROP-8834')">
+                <div class="job-header">
+                    <div>
+                        <div class="job-property">Unit 1502, Marina Heights</div>
+                        <div class="job-id">DXB-PROP-8834</div>
+                    </div>
+                    <span class="job-status scheduled">Tomorrow</span>
+                </div>
+                <div class="job-details">
+                    <span><i class="fa-solid fa-clock"></i>Dec 5, 10:00</span>
+                    <span><i class="fa-solid fa-ruler-combined"></i>2 Bed Apt</span>
+                </div>
+            </div>
+            
+            <div class="job-card" onclick="startInspection('Penthouse 01', 'Burj Vista', 'DXB-PROP-9012')">
+                <div class="job-header">
+                    <div>
+                        <div class="job-property">Penthouse 01, Burj Vista</div>
+                        <div class="job-id">DXB-PROP-9012</div>
+                    </div>
+                    <span class="job-status scheduled">Dec 6</span>
+                </div>
+                <div class="job-details">
+                    <span><i class="fa-solid fa-clock"></i>Dec 6, 14:00</span>
+                    <span><i class="fa-solid fa-ruler-combined"></i>5 Bed Penthouse</span>
+                </div>
+            </div>
+            
+            <div class="section-title" style="margin-top: 24px;">Recently Completed</div>
+            
+            <div class="job-card" style="opacity: 0.7;">
+                <div class="job-header">
+                    <div>
+                        <div class="job-property">Studio 808, JBR</div>
+                        <div class="job-id">DXB-PROP-6655</div>
+                    </div>
+                    <span class="job-status completed">Done</span>
+                </div>
+                <div class="job-details">
+                    <span><i class="fa-solid fa-check"></i>Score: 91/100</span>
+                    <span><i class="fa-solid fa-clock"></i>2h ago</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bottom-nav">
+            <button class="nav-item active">
+                <i class="fa-solid fa-house"></i>
+                <span>Home</span>
+            </button>
+            <button class="nav-item">
+                <i class="fa-solid fa-clipboard-list"></i>
+                <span>Jobs</span>
+            </button>
+            <button class="nav-item">
+                <i class="fa-solid fa-chart-simple"></i>
+                <span>Stats</span>
+            </button>
+            <button class="nav-item" onclick="logout()">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Inspection Screen -->
+    <div id="inspection-screen" class="screen inspection-screen">
+        <div class="inspection-header">
+            <button class="back-btn" onclick="showScreen('dashboard-screen')">
+                <i class="fa-solid fa-arrow-left"></i>
+                Back
+            </button>
+            <div class="inspection-title" id="inspection-property">Villa 42, Palm Jumeirah</div>
+            <div class="inspection-address" id="inspection-id">DXB-PROP-7821</div>
+        </div>
+        
+        <div class="progress-bar-container">
+            <div class="progress-steps">
+                <div class="progress-line">
+                    <div class="progress-line-fill" id="progress-fill" style="width: 0%"></div>
+                </div>
+                <div class="progress-step active" data-step="1">
+                    <div class="step-circle">1</div>
+                    <span class="step-label">Verify</span>
+                </div>
+                <div class="progress-step" data-step="2">
+                    <div class="step-circle">2</div>
+                    <span class="step-label">Photos</span>
+                </div>
+                <div class="progress-step" data-step="3">
+                    <div class="step-circle">3</div>
+                    <span class="step-label">Score</span>
+                </div>
+                <div class="progress-step" data-step="4">
+                    <div class="step-circle">4</div>
+                    <span class="step-label">Submit</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="inspection-content">
+            <!-- Step 1: Checklist -->
+            <div class="step-content active" id="step-1">
+                <div class="gps-indicator">
+                    <div class="gps-pulse"></div>
+                    <i class="fa-solid fa-location-dot"></i>
+                    <span>Location verified: Palm Jumeirah, Dubai</span>
+                </div>
+                
+                <div class="section-title">Verification Checklist</div>
+                
+                <div class="checklist-item" onclick="toggleCheck(this)">
+                    <div class="check-circle">
+                        <i class="fa-solid fa-check"></i>
+                    </div>
+                    <div class="checklist-text">
+                        <div class="checklist-title">Property Access Confirmed</div>
+                        <div class="checklist-subtitle">I have access to all areas</div>
+                    </div>
+                </div>
+                
+                <div class="checklist-item" onclick="toggleCheck(this)">
+                    <div class="check-circle">
+                        <i class="fa-solid fa-check"></i>
+                    </div>
+                    <div class="checklist-text">
+                        <div class="checklist-title">Address Matches Records</div>
+                        <div class="checklist-subtitle">Property is at correct location</div>
+                    </div>
+                </div>
+                
+                <div class="checklist-item" onclick="toggleCheck(this)">
+                    <div class="check-circle">
+                        <i class="fa-solid fa-check"></i>
+                    </div>
+                    <div class="checklist-text">
+                        <div class="checklist-title">Property Type Correct</div>
+                        <div class="checklist-subtitle">4 Bedroom Villa confirmed</div>
+                    </div>
+                </div>
+                
+                <div class="checklist-item" onclick="toggleCheck(this)">
+                    <div class="check-circle">
+                        <i class="fa-solid fa-check"></i>
+                    </div>
+                    <div class="checklist-text">
+                        <div class="checklist-title">No Active Occupants</div>
+                        <div class="checklist-subtitle">Property is vacant or tenant notified</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Step 2: Photos -->
+            <div class="step-content" id="step-2">
+                <div class="gps-indicator">
+                    <div class="gps-pulse"></div>
+                    <i class="fa-solid fa-camera"></i>
+                    <span>Photos are GPS-tagged & timestamped</span>
+                </div>
+                
+                <div class="section-title">Required Photos (6 minimum)</div>
+                
+                <div class="camera-grid" id="photo-grid">
+                    <div class="photo-slot" onclick="capturePhoto(this, 'Exterior Front')">
+                        <i class="fa-solid fa-home"></i>
+                        <span>Front</span>
+                    </div>
+                    <div class="photo-slot" onclick="capturePhoto(this, 'Living Area')">
+                        <i class="fa-solid fa-couch"></i>
+                        <span>Living</span>
+                    </div>
+                    <div class="photo-slot" onclick="capturePhoto(this, 'Kitchen')">
+                        <i class="fa-solid fa-kitchen-set"></i>
+                        <span>Kitchen</span>
+                    </div>
+                    <div class="photo-slot" onclick="capturePhoto(this, 'Bedroom 1')">
+                        <i class="fa-solid fa-bed"></i>
+                        <span>Bed 1</span>
+                    </div>
+                    <div class="photo-slot" onclick="capturePhoto(this, 'Bathroom')">
+                        <i class="fa-solid fa-bath"></i>
+                        <span>Bath</span>
+                    </div>
+                    <div class="photo-slot" onclick="capturePhoto(this, 'Additional')">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>More</span>
+                    </div>
+                </div>
+                
+                <button class="capture-btn" onclick="captureFullSet()">
+                    <i class="fa-solid fa-camera"></i>
+                    Open Camera
+                </button>
+                
+                <div class="section-title" style="margin-top: 24px;">Issues Found</div>
+                <div id="issues-list"></div>
+                
+                <button class="issue-btn" onclick="addIssue()">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    Report an Issue
+                </button>
+            </div>
+            
+            <!-- Step 3: Score -->
+            <div class="step-content" id="step-3">
+                <div class="section-title">Overall Condition Score</div>
+                
+                <div class="score-display">
+                    <span class="score-value" id="score-value">85</span>
+                    <span class="score-max">/100</span>
+                    <div class="score-label">Condition Score</div>
+                    <input type="range" class="score-slider" id="score-slider" min="0" max="100" value="85" oninput="updateScore(this.value)">
+                </div>
+                
+                <div class="section-title">Score Breakdown</div>
+                
+                <div class="checklist-item checked">
+                    <div class="check-circle">
+                        <i class="fa-solid fa-check"></i>
+                    </div>
+                    <div class="checklist-text">
+                        <div class="checklist-title">Structural Integrity</div>
+                        <div class="checklist-subtitle">No visible damage</div>
+                    </div>
+                </div>
+                
+                <div class="checklist-item checked">
+                    <div class="check-circle">
+                        <i class="fa-solid fa-check"></i>
+                    </div>
+                    <div class="checklist-text">
+                        <div class="checklist-title">Utilities Functional</div>
+                        <div class="checklist-subtitle">AC, plumbing, electrical OK</div>
+                    </div>
+                </div>
+                
+                <div class="checklist-item">
+                    <div class="check-circle">
+                        <i class="fa-solid fa-check"></i>
+                    </div>
+                    <div class="checklist-text">
+                        <div class="checklist-title">Cosmetic Condition</div>
+                        <div class="checklist-subtitle">Minor wear noted</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Step 4: Submit -->
+            <div class="step-content" id="step-4">
+                <div class="section-title">Inspection Summary</div>
+                
+                <div class="submit-summary">
+                    <div class="summary-row">
+                        <span class="summary-label">Property</span>
+                        <span class="summary-value" id="summary-property">Villa 42, Palm Jumeirah</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">Asset ID</span>
+                        <span class="summary-value" id="summary-id">DXB-PROP-7821</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">Condition Score</span>
+                        <span class="summary-value" style="color: var(--lucas-green);" id="summary-score">85/100</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">Photos Captured</span>
+                        <span class="summary-value" id="summary-photos">6 photos</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">Issues Found</span>
+                        <span class="summary-value" id="summary-issues">0 issues</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">Timestamp</span>
+                        <span class="summary-value" id="summary-time">--</span>
+                    </div>
+                </div>
+                
+                <div class="signature-pad">
+                    <div class="section-title" style="margin-bottom: 12px;">Inspector Signature</div>
+                    <canvas class="signature-canvas" id="signature-canvas"></canvas>
+                    <div class="signature-label">Sign above to confirm inspection accuracy</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bottom-bar">
+            <button class="btn btn-primary" id="next-btn" onclick="nextStep()">
+                Continue
+                <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Success Modal -->
+    <div class="modal-overlay" id="success-modal">
+        <div class="modal animate-in">
+            <div class="modal-icon">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <h2 class="modal-title">Inspection Submitted</h2>
+            <p class="modal-text">Your verification has been recorded and anchored on-chain.</p>
+            <div class="modal-hash" id="proof-hash">0x7f8a...generating</div>
+            <button class="btn btn-primary" onclick="closeModal()">
+                Back to Dashboard
+            </button>
+        </div>
+    </div>
+    
+    <!-- Hidden file input for camera -->
+    <input type="file" id="camera-input" accept="image/*" capture="environment" style="display: none;">
+    
+    <script>
+        // ============================================
+        // SUPABASE CONFIGURATION
+        // ============================================
         const SUPABASE_URL = 'https://irztntmenxchzicfegid.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlyenRudG1lbnhjaHppY2ZlZ2lkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQxMTA4ODQsImV4cCI6MjA3OTY4Njg4NH0.EjaO-HXjzElo_eHqEWzagsqGg-gEVqUxY1ri-MhofPw';
+        
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
-        // WhatsApp Support Button
-        function WhatsAppButton() {
-            const openWhatsApp = () => {
-                window.open('https://wa.me/971585072588?text=Hola!%20Necesito%20ayuda%20con%20LUCAS', '_blank');
-            };
-            return (
-                <button onClick={openWhatsApp} style={{ position: 'fixed', bottom: '90px', right: '20px', width: '56px', height: '56px', borderRadius: '50%', background: '#25D366', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.3)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 99 }}>
-                    <i className="fa-brands fa-whatsapp" style={{ fontSize: '28px', color: 'white' }}></i>
-                </button>
-            );
+        // ============================================
+        // APP STATE
+        // ============================================
+        let currentStep = 1;
+        let currentInspection = {};
+        let currentInspector = null;
+        let photoCount = 0;
+        let issueCount = 0;
+        let issues = [];
+        let inspectionId = null;
+        
+        // ============================================
+        // SCREEN NAVIGATION
+        // ============================================
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
         }
         
-        // Welcome Screen
-        function WelcomeScreen({ setScreen }) {
-            return (
-                <div className="fade-in" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', padding: '40px 20px', textAlign: 'center', background: 'radial-gradient(ellipse at center top, rgba(222,255,154,0.08) 0%, transparent 50%)' }}>
-                    {/* Logo Lockup */}
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '20px' }}>
-                        <img src="icon-512.png" alt="LUCAS" style={{ width: '100px', height: '100px', borderRadius: '24px', marginBottom: '16px' }} />
-                        <img src="LUCAS_Wordmark_White_Transparent.png" alt="LUCAS" style={{ height: '32px' }} />
-                    </div>
-                    
-                    {/* Tagline */}
-                    <p style={{ color: '#deff9a', fontSize: '12px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '3px', marginBottom: '8px' }}>The API for Reality</p>
-                    <p style={{ color: '#6b7280', fontSize: '15px', marginBottom: '40px', maxWidth: '280px' }}>Gana USDT verificando el mundo real</p>
-                    
-                    {/* Stats */}
-                    <div style={{ display: 'flex', gap: '24px', marginBottom: '40px' }}>
-                        <div style={{ textAlign: 'center' }}>
-                            <div style={{ fontSize: '24px', fontWeight: 800, color: '#deff9a' }}>$2-5</div>
-                            <div style={{ fontSize: '11px', color: '#6b7280', textTransform: 'uppercase' }}>Por tarea</div>
-                        </div>
-                        <div style={{ width: '1px', background: '#262626' }}></div>
-                        <div style={{ textAlign: 'center' }}>
-                            <div style={{ fontSize: '24px', fontWeight: 800, color: '#deff9a' }}>5 min</div>
-                            <div style={{ fontSize: '11px', color: '#6b7280', textTransform: 'uppercase' }}>Promedio</div>
-                        </div>
-                        <div style={{ width: '1px', background: '#262626' }}></div>
-                        <div style={{ textAlign: 'center' }}>
-                            <div style={{ fontSize: '24px', fontWeight: 800, color: '#deff9a' }}>USDT</div>
-                            <div style={{ fontSize: '11px', color: '#6b7280', textTransform: 'uppercase' }}>Pago</div>
-                        </div>
-                    </div>
-                    
-                    {/* CTA Buttons */}
-                    <button onClick={() => setScreen('signup')} className="btn-press" style={{ width: '100%', maxWidth: '300px', padding: '18px', background: '#deff9a', color: '#050505', border: 'none', borderRadius: '14px', fontSize: '17px', fontWeight: 700, cursor: 'pointer', marginBottom: '12px', boxShadow: '0 0 30px rgba(222,255,154,0.2)' }}>Crear Cuenta</button>
-                    <button onClick={() => setScreen('login')} className="btn-press" style={{ width: '100%', maxWidth: '300px', padding: '18px', background: 'transparent', color: 'white', border: '1px solid #262626', borderRadius: '14px', fontSize: '17px', fontWeight: 600, cursor: 'pointer' }}>Ya tengo cuenta</button>
-                    
-                    {/* Footer */}
-                    <div style={{ marginTop: '48px', color: '#4b5563', fontSize: '12px' }}>
-                        Piloto activo en CDMX 🇲🇽
-                    </div>
-                </div>
-            );
-        }
-        
-        // Signup Screen
-        function SignupScreen({ setScreen, setAgent }) {
-            const [name, setName] = useState('');
-            const [phone, setPhone] = useState('');
-            const [colonia, setColonia] = useState('');
-            const [pin, setPin] = useState('');
-            const [confirmPin, setConfirmPin] = useState('');
-            const [isLoading, setIsLoading] = useState(false);
-            const [error, setError] = useState('');
+        // ============================================
+        // AUTHENTICATION
+        // ============================================
+        async function handleLogin(e) {
+            e.preventDefault();
+            const inspectorIdInput = document.getElementById('inspector-id').value.toUpperCase();
+            const pin = document.getElementById('pin-code').value;
             
-            const handleSignup = async () => {
-                setError('');
-                if (!name.trim()) { setError('Ingresa tu nombre'); return; }
-                if (!phone.trim() || phone.length < 10) { setError('Ingresa un número de teléfono válido'); return; }
-                if (pin.length !== 4) { setError('El PIN debe ser de 4 dígitos'); return; }
-                if (pin !== confirmPin) { setError('Los PINs no coinciden'); return; }
+            const loginBtn = e.target.querySelector('button[type="submit"]');
+            loginBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Signing In...';
+            loginBtn.disabled = true;
+            
+            try {
+                // Query Supabase for inspector
+                const { data: inspector, error } = await supabase
+                    .from('inspectors')
+                    .select('*')
+                    .eq('inspector_id', inspectorIdInput)
+                    .eq('pin', pin)
+                    .single();
                 
-                setIsLoading(true);
-                try {
-                    const { data: existing } = await supabase.from('agents').select('id').eq('phone', phone).single();
-                    if (existing) { setError('Este número ya está registrado'); setIsLoading(false); return; }
-                    
-                    const { data, error: insertError } = await supabase.from('agents').insert([{ name, phone, colonia, pin }]).select().single();
-                    if (insertError) throw insertError;
-                    
-                    localStorage.setItem('lucas_agent', JSON.stringify(data));
-                    setAgent(data);
-                    setScreen('tasks');
-                } catch (err) {
-                    console.error('Signup error:', err);
-                    setError('Error al crear cuenta. Intenta de nuevo.');
+                if (error || !inspector) {
+                    alert('Invalid Inspector ID or PIN. Try INS-7721 with PIN 1234');
+                    loginBtn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Sign In';
+                    loginBtn.disabled = false;
+                    return;
                 }
-                setIsLoading(false);
-            };
-            
-            return (
-                <div className="fade-in" style={{ minHeight: '100vh', padding: '20px', paddingTop: 'max(40px, env(safe-area-inset-top))' }}>
-                    <button onClick={() => setScreen('welcome')} style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#9ca3af', fontSize: '14px', background: 'none', border: 'none', marginBottom: '24px', cursor: 'pointer' }}>
-                        <i className="fa-solid fa-chevron-left"></i><span>Atrás</span>
-                    </button>
-                    <h1 style={{ fontSize: '28px', fontWeight: 700, marginBottom: '8px' }}>Crear Cuenta</h1>
-                    <p style={{ color: '#6b7280', marginBottom: '32px' }}>Regístrate para empezar a ganar</p>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                        <div><label style={{ fontSize: '14px', color: '#9ca3af', marginBottom: '8px', display: 'block' }}>Nombre completo</label><input type="text" className="input-field" placeholder="Tu nombre" value={name} onChange={(e) => setName(e.target.value)} /></div>
-                        <div><label style={{ fontSize: '14px', color: '#9ca3af', marginBottom: '8px', display: 'block' }}>Número de WhatsApp</label><input type="tel" className="input-field" placeholder="55 1234 5678" value={phone} onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))} /></div>
-                        <div><label style={{ fontSize: '14px', color: '#9ca3af', marginBottom: '8px', display: 'block' }}>Colonia (opcional)</label><input type="text" className="input-field" placeholder="Tu colonia en CDMX" value={colonia} onChange={(e) => setColonia(e.target.value)} /></div>
-                        <div><label style={{ fontSize: '14px', color: '#9ca3af', marginBottom: '8px', display: 'block' }}>Crea un PIN de 4 dígitos</label><input type="password" inputMode="numeric" maxLength={4} className="input-field" placeholder="••••" value={pin} onChange={(e) => setPin(e.target.value.replace(/\D/g, ''))} style={{ letterSpacing: '8px', textAlign: 'center' }} /></div>
-                        <div><label style={{ fontSize: '14px', color: '#9ca3af', marginBottom: '8px', display: 'block' }}>Confirma tu PIN</label><input type="password" inputMode="numeric" maxLength={4} className="input-field" placeholder="••••" value={confirmPin} onChange={(e) => setConfirmPin(e.target.value.replace(/\D/g, ''))} style={{ letterSpacing: '8px', textAlign: 'center' }} /></div>
-                        {error && <div style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '8px', padding: '12px', color: '#ef4444', fontSize: '14px' }}>{error}</div>}
-                        <button onClick={handleSignup} disabled={isLoading} className="btn-press" style={{ width: '100%', padding: '16px', background: isLoading ? '#666' : '#deff9a', color: '#050505', border: 'none', borderRadius: '12px', fontSize: '16px', fontWeight: 700, cursor: isLoading ? 'wait' : 'pointer', marginTop: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                            {isLoading ? <><div className="spinner" style={{ width: '20px', height: '20px', borderWidth: '2px' }}></div>Creando...</> : 'Crear Cuenta'}
-                        </button>
-                    </div>
-                </div>
-            );
-        }
-        
-        // Login Screen
-        function LoginScreen({ setScreen, setAgent }) {
-            const [phone, setPhone] = useState('');
-            const [pin, setPin] = useState('');
-            const [isLoading, setIsLoading] = useState(false);
-            const [error, setError] = useState('');
-            
-            const handleLogin = async () => {
-                setError('');
-                if (!phone.trim() || phone.length < 10) { setError('Ingresa tu número de teléfono'); return; }
-                if (pin.length !== 4) { setError('Ingresa tu PIN de 4 dígitos'); return; }
                 
-                setIsLoading(true);
-                try {
-                    const { data, error: fetchError } = await supabase.from('agents').select('*').eq('phone', phone).eq('pin', pin).single();
-                    if (fetchError || !data) { setError('Número o PIN incorrecto'); setIsLoading(false); return; }
-                    
-                    localStorage.setItem('lucas_agent', JSON.stringify(data));
-                    setAgent(data);
-                    setScreen('tasks');
-                } catch (err) {
-                    console.error('Login error:', err);
-                    setError('Error al iniciar sesión');
-                }
-                setIsLoading(false);
-            };
+                // Store current inspector
+                currentInspector = inspector;
+                
+                // Update UI with inspector info
+                document.querySelector('.user-avatar').textContent = getInitials(inspector.name);
+                document.querySelector('.stat-value').textContent = inspector.total_inspections;
+                document.querySelectorAll('.stat-value')[1].textContent = inspector.total_inspections;
+                document.querySelectorAll('.stat-value')[2].textContent = inspector.rating;
+                
+                // Load inspections
+                await loadInspections();
+                
+                showScreen('dashboard-screen');
+                
+            } catch (err) {
+                console.error('Login error:', err);
+                alert('Connection error. Please try again.');
+            }
             
-            return (
-                <div className="fade-in" style={{ minHeight: '100vh', padding: '20px', paddingTop: 'max(40px, env(safe-area-inset-top))' }}>
-                    <button onClick={() => setScreen('welcome')} style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#9ca3af', fontSize: '14px', background: 'none', border: 'none', marginBottom: '24px', cursor: 'pointer' }}>
-                        <i className="fa-solid fa-chevron-left"></i><span>Atrás</span>
-                    </button>
-                    <h1 style={{ fontSize: '28px', fontWeight: 700, marginBottom: '8px' }}>Iniciar Sesión</h1>
-                    <p style={{ color: '#6b7280', marginBottom: '32px' }}>Ingresa con tu número y PIN</p>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                        <div><label style={{ fontSize: '14px', color: '#9ca3af', marginBottom: '8px', display: 'block' }}>Número de WhatsApp</label><input type="tel" className="input-field" placeholder="55 1234 5678" value={phone} onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))} /></div>
-                        <div><label style={{ fontSize: '14px', color: '#9ca3af', marginBottom: '8px', display: 'block' }}>Tu PIN</label><input type="password" inputMode="numeric" maxLength={4} className="input-field" placeholder="••••" value={pin} onChange={(e) => setPin(e.target.value.replace(/\D/g, ''))} style={{ letterSpacing: '8px', textAlign: 'center' }} /></div>
-                        {error && <div style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '8px', padding: '12px', color: '#ef4444', fontSize: '14px' }}>{error}</div>}
-                        <button onClick={handleLogin} disabled={isLoading} className="btn-press" style={{ width: '100%', padding: '16px', background: isLoading ? '#666' : '#deff9a', color: '#050505', border: 'none', borderRadius: '12px', fontSize: '16px', fontWeight: 700, cursor: isLoading ? 'wait' : 'pointer', marginTop: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                            {isLoading ? <><div className="spinner" style={{ width: '20px', height: '20px', borderWidth: '2px' }}></div>Entrando...</> : 'Entrar'}
-                        </button>
-                    </div>
-                </div>
-            );
+            loginBtn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Sign In';
+            loginBtn.disabled = false;
         }
         
-        // Bottom Navigation
-        function BottomNav({ activeTab, setActiveTab, setScreen }) {
-            const tabs = [{ id: 'tasks', icon: 'fa-list-check', label: 'Tareas' }, { id: 'wallet', icon: 'fa-wallet', label: 'Wallet' }, { id: 'profile', icon: 'fa-user', label: 'Perfil' }];
-            return (
-                <div className="safe-bottom" style={{ position: 'fixed', bottom: 0, left: 0, right: 0, height: '70px', background: '#111', borderTop: '1px solid #262626', display: 'flex', justifyContent: 'space-around', alignItems: 'center', zIndex: 100 }}>
-                    {tabs.map(tab => (
-                        <button key={tab.id} onClick={() => { setActiveTab(tab.id); setScreen(tab.id); }} className="btn-press" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', background: 'none', border: 'none', color: activeTab === tab.id ? '#deff9a' : '#6b7280', fontSize: '10px', cursor: 'pointer', padding: '8px 16px' }}>
-                            <i className={`fa-solid ${tab.icon}`} style={{ fontSize: '20px' }}></i>
-                            <span style={{ fontWeight: 500 }}>{tab.label}</span>
-                        </button>
-                    ))}
-                </div>
-            );
+        function getInitials(name) {
+            return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
         }
         
-        // Task Card
-        function TaskCard({ task, onClick }) {
-            const typeColors = { 'RETAIL': '#deff9a', 'MAPEO': '#60a5fa', 'KYB': '#f472b6' };
-            return (
-                <div onClick={onClick} className="btn-press fade-in" style={{ background: '#1a1a1a', border: '1px solid #262626', borderRadius: '12px', padding: '14px', marginBottom: '10px', cursor: 'pointer' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '8px' }}>
-                        <span style={{ fontSize: '10px', color: typeColors[task.type], background: `${typeColors[task.type]}15`, padding: '3px 8px', borderRadius: '20px', fontWeight: 600 }}>{task.type}</span>
-                        <span style={{ fontWeight: 700, color: '#deff9a' }}>${Number(task.payout).toFixed(2)}</span>
-                    </div>
-                    <div style={{ fontWeight: 600, fontSize: '15px', marginBottom: '6px' }}>{task.title}</div>
-                    <div style={{ fontSize: '12px', color: '#6b7280', display: 'flex', alignItems: 'center', gap: '4px' }}><i className="fa-solid fa-location-dot"></i>{task.location}</div>
-                </div>
-            );
-        }
-        
-        // Tasks Screen
-        function TasksScreen({ agent, tasks, setScreen, setSelectedTask }) {
-            return (
-                <div className="fade-in" style={{ padding: '20px', paddingBottom: '90px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                        <h2 style={{ fontSize: '22px', fontWeight: 700 }}>Hola, {agent.name.split(' ')[0]} 👋</h2>
-                        <img src="icon-512.png" alt="LUCAS" style={{ width: '40px', height: '40px', borderRadius: '12px' }} onClick={() => setScreen('profile')} />
-                    </div>
-                    <div style={{ background: 'linear-gradient(135deg, #1a1a1a 0%, #111 100%)', border: '1px solid #262626', borderRadius: '16px', padding: '16px', marginBottom: '24px' }}>
-                        <div style={{ fontSize: '11px', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '1px' }}>Tu Balance</div>
-                        <div style={{ fontSize: '32px', fontWeight: 800, marginTop: '4px' }}>${Number(agent.balance || 0).toFixed(2)} <span style={{ color: '#deff9a', fontSize: '16px', fontWeight: 600 }}>USDT</span></div>
-                        <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '4px' }}>≈ ${(Number(agent.balance || 0) * 17).toFixed(0)} MXN</div>
-                    </div>
-                    <div style={{ fontSize: '14px', fontWeight: 600, color: '#9ca3af', marginBottom: '12px' }}>Tareas Disponibles ({tasks.length})</div>
-                    {tasks.length === 0 ? (
-                        <div style={{ textAlign: 'center', padding: '40px 20px', color: '#6b7280' }}><i className="fa-solid fa-clipboard-check" style={{ fontSize: '48px', marginBottom: '16px', opacity: 0.5 }}></i><div>No hay tareas disponibles ahora</div></div>
-                    ) : tasks.map(task => <TaskCard key={task.id} task={task} onClick={() => { setSelectedTask(task); setScreen('taskDetail'); }} />)}
-                </div>
-            );
-        }
-        
-        // Task Detail Screen
-        function TaskDetailScreen({ task, setScreen, setActiveTab }) {
-            const typeColors = { 'RETAIL': '#deff9a', 'MAPEO': '#60a5fa', 'KYB': '#f472b6' };
-            const openMaps = () => window.open(`https://www.google.com/maps/dir/?api=1&destination=${task.lat},${task.lng}`, '_blank');
-            return (
-                <div className="fade-in" style={{ padding: '20px', paddingBottom: '90px' }}>
-                    <button onClick={() => { setScreen('tasks'); setActiveTab('tasks'); }} style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#9ca3af', fontSize: '14px', background: 'none', border: 'none', marginBottom: '16px', cursor: 'pointer' }}><i className="fa-solid fa-chevron-left"></i><span>Tareas</span></button>
-                    <div style={{ background: '#1a1a1a', border: '1px solid #262626', borderRadius: '16px', padding: '16px', marginBottom: '16px' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                            <span style={{ fontSize: '10px', color: typeColors[task.type], background: `${typeColors[task.type]}15`, padding: '3px 8px', borderRadius: '20px', fontWeight: 600 }}>{task.type}</span>
-                            <span style={{ fontSize: '24px', fontWeight: 800, color: '#deff9a' }}>${Number(task.payout).toFixed(2)}</span>
-                        </div>
-                        <h1 style={{ fontSize: '20px', fontWeight: 700, marginBottom: '16px' }}>{task.title}</h1>
-                        <div style={{ display: 'flex', alignItems: 'start', gap: '10px', fontSize: '13px' }}><i className="fa-solid fa-location-dot" style={{ color: '#deff9a', marginTop: '3px' }}></i><div><div style={{ color: '#6b7280', fontSize: '11px' }}>Ubicación</div><div>{task.location}</div><div style={{ fontSize: '12px', color: '#6b7280' }}>{task.address}</div></div></div>
-                    </div>
-                    <div style={{ background: '#111', borderRadius: '12px', padding: '14px', marginBottom: '20px' }}>
-                        <div style={{ fontWeight: 600, marginBottom: '10px', fontSize: '14px' }}>📋 Instrucciones</div>
-                        {(task.instructions || []).map((instruction, index) => <div key={index} style={{ fontSize: '13px', color: '#d1d5db', padding: '6px 0', display: 'flex', gap: '8px' }}><span style={{ color: '#deff9a', fontWeight: 600 }}>{index + 1}.</span>{instruction}</div>)}
-                    </div>
-                    <button onClick={openMaps} className="btn-press" style={{ width: '100%', padding: '14px', background: '#262626', color: 'white', border: 'none', borderRadius: '12px', fontSize: '14px', fontWeight: 600, marginBottom: '10px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}><i className="fa-solid fa-route"></i>Abrir en Google Maps</button>
-                    <button onClick={() => setScreen('camera')} className="btn-press" style={{ width: '100%', padding: '16px', background: '#deff9a', color: '#050505', border: 'none', borderRadius: '12px', fontSize: '15px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}><i className="fa-solid fa-camera"></i>Tomar Foto</button>
-                </div>
-            );
-        }
-        
-        // Camera Screen
-        function CameraScreen({ task, setScreen, setCapturedImage, setGpsData }) {
-            const fileInputRef = useRef(null);
-            const canvasRef = useRef(null);
-            const [location, setLocation] = useState(null);
-            const [isProcessing, setIsProcessing] = useState(false);
+        // ============================================
+        // LOAD INSPECTIONS
+        // ============================================
+        async function loadInspections() {
+            if (!currentInspector) return;
             
-            useEffect(() => {
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(
-                        (position) => setLocation({ lat: position.coords.latitude.toFixed(4), lng: position.coords.longitude.toFixed(4) }),
-                        () => setLocation({ lat: Number(task.lat).toFixed(4), lng: Number(task.lng).toFixed(4) }),
-                        { enableHighAccuracy: true }
-                    );
-                }
-            }, []);
-            
-            const handleFileSelect = (event) => {
-                const file = event.target.files[0];
-                if (!file) return;
-                setIsProcessing(true);
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const img = new Image();
-                    img.onload = () => {
-                        const canvas = canvasRef.current;
-                        let { width, height } = img;
-                        if (width > 1920 || height > 1080) { const ratio = Math.min(1920 / width, 1080 / height); width *= ratio; height *= ratio; }
-                        canvas.width = width; canvas.height = height;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, width, height);
-                        const timestamp = new Date().toISOString().slice(0, 19).replace('T', ' ');
-                        const lat = location?.lat || Number(task.lat).toFixed(4);
-                        const lng = location?.lng || Number(task.lng).toFixed(4);
-                        ctx.fillStyle = 'rgba(0,0,0,0.7)'; ctx.fillRect(10, height - 80, 320, 70);
-                        ctx.fillStyle = '#deff9a'; ctx.font = 'bold 16px monospace'; ctx.fillText(`📍 ${lat}°, ${lng}°`, 20, height - 50);
-                        ctx.fillStyle = 'white'; ctx.fillText(`🕐 ${timestamp}`, 20, height - 25);
-                        setCapturedImage(canvas.toDataURL('image/jpeg', 0.8));
-                        setGpsData({ lat, lng, timestamp });
-                        setIsProcessing(false);
-                        setScreen('review');
-                    };
-                    img.src = e.target.result;
-                };
-                reader.readAsDataURL(file);
-            };
-            
-            return (
-                <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', padding: '20px', paddingTop: 'max(20px, env(safe-area-inset-top))' }}>
-                    <button onClick={() => setScreen('taskDetail')} style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#9ca3af', fontSize: '14px', background: 'none', border: 'none', marginBottom: '16px', cursor: 'pointer' }}><i className="fa-solid fa-chevron-left"></i><span>Cancelar</span></button>
-                    <input ref={fileInputRef} type="file" accept="image/*" capture="environment" onChange={handleFileSelect} style={{ display: 'none' }} />
-                    <canvas ref={canvasRef} style={{ display: 'none' }} />
-                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#111', borderRadius: '16px', marginBottom: '16px', padding: '40px 20px', textAlign: 'center' }}>
-                        {isProcessing ? <><div className="spinner" style={{ marginBottom: '16px' }}></div><div style={{ color: '#9ca3af' }}>Procesando foto...</div></> : <>
-                            <div style={{ width: '100px', height: '100px', background: 'rgba(222, 255, 154, 0.1)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '24px' }}><i className="fa-solid fa-camera" style={{ fontSize: '40px', color: '#deff9a' }}></i></div>
-                            <h3 style={{ fontSize: '18px', fontWeight: 600, marginBottom: '8px' }}>Tomar Foto</h3>
-                            <p style={{ color: '#6b7280', fontSize: '14px' }}>{task.instructions?.[2] || 'Toma una foto clara'}</p>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#deff9a', fontSize: '12px', marginTop: '16px' }}><i className="fa-solid fa-location-dot"></i><span>GPS: {location ? `${location.lat}°, ${location.lng}°` : 'Obteniendo...'}</span></div>
-                        </>}
-                    </div>
-                    <button onClick={() => fileInputRef.current?.click()} disabled={isProcessing} className="btn-press" style={{ width: '100%', padding: '18px', background: isProcessing ? '#333' : '#deff9a', color: '#050505', border: 'none', borderRadius: '12px', fontSize: '16px', fontWeight: 700, cursor: isProcessing ? 'wait' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginBottom: '20px' }}><i className="fa-solid fa-camera"></i>Abrir Cámara</button>
-                </div>
-            );
+            try {
+                // Get pending/scheduled inspections
+                const { data: pending, error: pendingError } = await supabase
+                    .from('inspections')
+                    .select(`
+                        *,
+                        properties (*)
+                    `)
+                    .eq('inspector_id', currentInspector.id)
+                    .in('status', ['pending', 'scheduled', 'in_progress'])
+                    .order('scheduled_date', { ascending: true });
+                
+                // Get completed inspections
+                const { data: completed, error: completedError } = await supabase
+                    .from('inspections')
+                    .select(`
+                        *,
+                        properties (*)
+                    `)
+                    .eq('inspector_id', currentInspector.id)
+                    .eq('status', 'completed')
+                    .order('completed_at', { ascending: false })
+                    .limit(5);
+                
+                // Render inspections
+                renderInspections(pending || [], completed || []);
+                
+                // Update today count
+                const today = new Date().toDateString();
+                const todayCount = (pending || []).filter(i => 
+                    new Date(i.scheduled_date).toDateString() === today
+                ).length;
+                document.querySelector('.stat-value').textContent = todayCount || '0';
+                
+            } catch (err) {
+                console.error('Error loading inspections:', err);
+            }
         }
         
-        // Review Screen
-        function ReviewScreen({ task, capturedImage, gpsData, setScreen, agent, setAgent, refreshTasks }) {
-            const [isSubmitting, setIsSubmitting] = useState(false);
+        function renderInspections(pending, completed) {
+            const content = document.querySelector('.content');
             
-            const handleSubmit = async () => {
-                setIsSubmitting(true);
-                try {
-                    // 1. Upload photo to Supabase Storage
-                    const timestamp = Date.now();
-                    const fileName = `${agent.id}/${task.id}_${timestamp}.jpg`;
-                    
-                    // Convert base64 to blob
-                    const base64Data = capturedImage.split(',')[1];
-                    const byteCharacters = atob(base64Data);
-                    const byteNumbers = new Array(byteCharacters.length);
-                    for (let i = 0; i < byteCharacters.length; i++) {
-                        byteNumbers[i] = byteCharacters.charCodeAt(i);
-                    }
-                    const byteArray = new Uint8Array(byteNumbers);
-                    const blob = new Blob([byteArray], { type: 'image/jpeg' });
-                    
-                    // Upload to storage
-                    const { data: uploadData, error: uploadError } = await supabase.storage
-                        .from('submissions')
-                        .upload(fileName, blob, { contentType: 'image/jpeg' });
-                    
-                    if (uploadError) throw uploadError;
-                    
-                    // Get public URL
-                    const { data: urlData } = supabase.storage.from('submissions').getPublicUrl(fileName);
-                    const imageUrl = urlData.publicUrl;
-                    
-                    // 2. Create submission with image URL
-                    await supabase.from('submissions').insert([{ 
-                        task_id: task.id, 
-                        agent_id: agent.id, 
-                        gps_lat: parseFloat(gpsData.lat), 
-                        gps_lng: parseFloat(gpsData.lng), 
-                        image_url: imageUrl,
-                        status: 'approved', 
-                        payout: task.payout 
-                    }]);
-                    
-                    // 3. Update task status
-                    await supabase.from('tasks').update({ status: 'completed', assigned_to: agent.id }).eq('id', task.id);
-                    
-                    // 4. Update agent balance
-                    const newBalance = Number(agent.balance || 0) + Number(task.payout);
-                    const { data: updatedAgent } = await supabase.from('agents').update({ balance: newBalance, completed_tasks: (agent.completed_tasks || 0) + 1 }).eq('id', agent.id).select().single();
-                    if (updatedAgent) { setAgent(updatedAgent); localStorage.setItem('lucas_agent', JSON.stringify(updatedAgent)); }
-                    
-                    // 5. Create transaction
-                    await supabase.from('transactions').insert([{ agent_id: agent.id, type: 'earning', amount: task.payout, description: task.title, task_id: task.id }]);
-                    await refreshTasks();
-                    setScreen('success');
-                } catch (err) { console.error('Submit error:', err); alert('Error al enviar. Intenta de nuevo.'); }
-                setIsSubmitting(false);
-            };
+            let html = '<div class="section-title">Pending Inspections</div>';
             
-            return (
-                <div className="fade-in" style={{ padding: '20px', paddingBottom: '40px' }}>
-                    <h2 style={{ fontSize: '20px', fontWeight: 700, marginBottom: '20px' }}>Revisar Envío</h2>
-                    <div style={{ width: '100%', height: '200px', borderRadius: '12px', overflow: 'hidden', marginBottom: '16px', position: 'relative' }}>
-                        <img src={capturedImage} alt="Captured" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                        <div style={{ position: 'absolute', top: '10px', right: '10px', background: '#deff9a', color: '#050505', fontSize: '11px', fontWeight: 600, padding: '4px 10px', borderRadius: '6px' }}><i className="fa-solid fa-check"></i> Foto capturada</div>
-                    </div>
-                    <div style={{ marginBottom: '20px' }}>
-                        {[{ label: 'GPS verificado', value: `${gpsData.lat}°, ${gpsData.lng}°` }, { label: 'Timestamp', value: gpsData.timestamp + ' UTC' }, { label: 'Foto de alta calidad', value: 'Lista para enviar' }].map((item, i) => (
-                            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '12px 0', borderBottom: '1px solid #262626' }}><i className="fa-solid fa-circle-check" style={{ color: '#deff9a' }}></i><div><div style={{ fontSize: '14px' }}>{item.label}</div><div style={{ fontSize: '11px', color: '#6b7280' }}>{item.value}</div></div></div>
-                        ))}
-                    </div>
-                    <button onClick={() => setScreen('camera')} className="btn-press" style={{ width: '100%', padding: '14px', background: '#262626', color: 'white', border: 'none', borderRadius: '12px', fontSize: '14px', fontWeight: 600, marginBottom: '10px', cursor: 'pointer' }}><i className="fa-solid fa-camera"></i> Tomar otra foto</button>
-                    <button onClick={handleSubmit} disabled={isSubmitting} className="btn-press" style={{ width: '100%', padding: '16px', background: isSubmitting ? '#a3c261' : '#deff9a', color: '#050505', border: 'none', borderRadius: '12px', fontSize: '15px', fontWeight: 700, cursor: isSubmitting ? 'wait' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                        {isSubmitting ? <><div className="spinner" style={{ width: '20px', height: '20px', borderWidth: '2px' }}></div>Enviando...</> : <><i className="fa-solid fa-paper-plane"></i>Enviar Verificación</>}
-                    </button>
-                </div>
-            );
-        }
-        
-        // Success Screen
-        function SuccessScreen({ task, setScreen, setActiveTab, setSelectedTask }) {
-            return (
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', padding: '40px 20px', textAlign: 'center' }}>
-                    <div className="success-pop" style={{ width: '100px', height: '100px', background: 'rgba(222, 255, 154, 0.15)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '24px' }}><i className="fa-solid fa-check" style={{ fontSize: '48px', color: '#deff9a' }}></i></div>
-                    <h1 style={{ fontSize: '24px', fontWeight: 700, marginBottom: '8px' }}>¡Verificación Completa!</h1>
-                    <p style={{ color: '#9ca3af', fontSize: '15px', marginBottom: '32px' }}>Tu pago está en camino</p>
-                    <div style={{ fontSize: '48px', fontWeight: 800, color: '#deff9a', marginBottom: '4px' }}>+${Number(task.payout).toFixed(2)} USDT</div>
-                    <div style={{ color: '#6b7280', fontSize: '13px', marginBottom: '40px' }}>Agregado a tu wallet</div>
-                    <button onClick={() => { setSelectedTask(null); setActiveTab('tasks'); setScreen('tasks'); }} className="btn-press" style={{ width: '100%', maxWidth: '300px', padding: '16px', background: '#deff9a', color: '#050505', border: 'none', borderRadius: '12px', fontSize: '15px', fontWeight: 700, cursor: 'pointer', marginBottom: '12px' }}>Ver Más Tareas</button>
-                    <button onClick={() => { setSelectedTask(null); setActiveTab('wallet'); setScreen('wallet'); }} className="btn-press" style={{ width: '100%', maxWidth: '300px', padding: '14px', background: '#262626', color: 'white', border: 'none', borderRadius: '12px', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}>Ir a Wallet</button>
-                </div>
-            );
-        }
-        
-        // Wallet Screen
-        function WalletScreen({ agent, transactions }) {
-            return (
-                <div className="fade-in" style={{ padding: '20px', paddingBottom: '90px' }}>
-                    <h2 style={{ fontSize: '22px', fontWeight: 700, marginBottom: '20px' }}>Wallet</h2>
-                    <div style={{ background: 'linear-gradient(135deg, #1a2f1a 0%, #111 100%)', border: '1px solid #2d4a2d', borderRadius: '20px', padding: '24px', textAlign: 'center', marginBottom: '20px' }}>
-                        <div style={{ fontSize: '11px', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '1px' }}>Balance Total</div>
-                        <div style={{ fontSize: '40px', fontWeight: 800, margin: '8px 0' }}>${Number(agent.balance || 0).toFixed(2)} <span style={{ color: '#deff9a', fontSize: '18px' }}>USDT</span></div>
-                        <div style={{ fontSize: '13px', color: '#6b7280' }}>≈ ${(Number(agent.balance || 0) * 17).toFixed(0)} MXN</div>
-                    </div>
-                    <div style={{ display: 'flex', gap: '10px', marginBottom: '24px' }}>
-                        <button className="btn-press" onClick={() => alert('Cash out disponible próximamente')} style={{ flex: 1, padding: '14px', background: '#deff9a', color: '#050505', border: 'none', borderRadius: '12px', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}><i className="fa-solid fa-arrow-up"></i> Cash Out</button>
-                        <button className="btn-press" style={{ flex: 1, padding: '14px', background: '#262626', color: 'white', border: 'none', borderRadius: '12px', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}><i className="fa-solid fa-clock-rotate-left"></i> Historial</button>
-                    </div>
-                    <div style={{ fontSize: '14px', fontWeight: 600, color: '#9ca3af', marginBottom: '12px' }}>Actividad Reciente</div>
-                    {transactions.length === 0 ? <div style={{ textAlign: 'center', padding: '40px', color: '#6b7280' }}><i className="fa-solid fa-receipt" style={{ fontSize: '32px', marginBottom: '12px', opacity: 0.5 }}></i><div>Sin transacciones aún</div></div> : 
-                    transactions.map(tx => (
-                        <div key={tx.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 0', borderBottom: '1px solid #1a1a1a' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                <div style={{ width: '40px', height: '40px', background: tx.type === 'earning' ? 'rgba(222, 255, 154, 0.1)' : 'rgba(239, 68, 68, 0.1)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: tx.type === 'earning' ? '#deff9a' : '#ef4444' }}><i className={`fa-solid ${tx.type === 'earning' ? 'fa-check' : 'fa-arrow-up'}`}></i></div>
-                                <div><div style={{ fontWeight: 600, fontSize: '14px' }}>{tx.description}</div><div style={{ fontSize: '11px', color: '#6b7280' }}>{new Date(tx.created_at).toLocaleDateString('es-MX', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</div></div>
+            if (pending.length === 0) {
+                html += '<div class="job-card" style="opacity: 0.5; text-align: center; padding: 24px;"><p>No pending inspections</p></div>';
+            } else {
+                pending.forEach(inspection => {
+                    const property = inspection.properties;
+                    const statusClass = inspection.status === 'pending' ? 'pending' : 'scheduled';
+                    const statusText = getStatusText(inspection);
+                    
+                    html += `
+                        <div class="job-card" onclick="startInspection('${inspection.id}')">
+                            <div class="job-header">
+                                <div>
+                                    <div class="job-property">${property.name}, ${property.location}</div>
+                                    <div class="job-id">${property.asset_id}</div>
+                                </div>
+                                <span class="job-status ${statusClass}">${statusText}</span>
                             </div>
-                            <div style={{ fontWeight: 700, color: tx.type === 'earning' ? '#deff9a' : '#ef4444' }}>{tx.type === 'earning' ? '+' : '-'}${Math.abs(Number(tx.amount)).toFixed(2)}</div>
+                            <div class="job-details">
+                                <span><i class="fa-solid fa-clock"></i>${formatDate(inspection.scheduled_date)}</span>
+                                <span><i class="fa-solid fa-ruler-combined"></i>${property.bedrooms || 0} Bed ${property.property_type}</span>
+                            </div>
                         </div>
-                    ))}
-                </div>
-            );
-        }
-        
-        // Profile Screen
-        function ProfileScreen({ agent, setAgent, setScreen }) {
-            const handleLogout = () => { localStorage.removeItem('lucas_agent'); setAgent(null); setScreen('welcome'); };
-            return (
-                <div className="fade-in" style={{ padding: '20px', paddingBottom: '90px' }}>
-                    <h2 style={{ fontSize: '22px', fontWeight: 700, marginBottom: '24px' }}>Perfil</h2>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px' }}>
-                        <div style={{ width: '70px', height: '70px', background: 'linear-gradient(135deg, #deff9a 0%, #a3c261 100%)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '28px', color: '#050505', fontWeight: 700 }}>{agent.name.charAt(0).toUpperCase()}</div>
-                        <div><div style={{ fontSize: '20px', fontWeight: 700 }}>{agent.name}</div><div style={{ color: '#6b7280', fontSize: '14px' }}>{agent.phone}</div></div>
-                    </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '24px' }}>
-                        <div style={{ background: '#1a1a1a', borderRadius: '12px', padding: '16px', textAlign: 'center' }}><div style={{ fontSize: '28px', fontWeight: 800, color: '#deff9a' }}>{agent.completed_tasks || 0}</div><div style={{ fontSize: '12px', color: '#6b7280' }}>Tareas completadas</div></div>
-                        <div style={{ background: '#1a1a1a', borderRadius: '12px', padding: '16px', textAlign: 'center' }}><div style={{ fontSize: '28px', fontWeight: 800 }}>${Number(agent.balance || 0).toFixed(0)}</div><div style={{ fontSize: '12px', color: '#6b7280' }}>USDT ganados</div></div>
-                    </div>
-                    {[{ icon: 'fa-map-marker-alt', label: 'Colonia', value: agent.colonia || 'No especificada' }, { icon: 'fa-language', label: 'Idioma', value: 'Español' }].map((item, i) => (
-                        <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 0', borderBottom: '1px solid #1a1a1a' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}><i className={`fa-solid ${item.icon}`} style={{ color: '#deff9a', width: '20px' }}></i><span>{item.label}</span></div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#6b7280' }}><span style={{ fontSize: '13px' }}>{item.value}</span><i className="fa-solid fa-chevron-right" style={{ fontSize: '12px' }}></i></div>
-                        </div>
-                    ))}
-                    <a href="https://wa.me/971585072588?text=Hola!%20Necesito%20ayuda%20con%20LUCAS" target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 0', borderBottom: '1px solid #1a1a1a', textDecoration: 'none', color: 'white' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}><i className="fa-brands fa-whatsapp" style={{ color: '#25D366', width: '20px' }}></i><span>Ayuda / Soporte</span></div>
-                        <i className="fa-solid fa-chevron-right" style={{ fontSize: '12px', color: '#6b7280' }}></i>
-                    </a>
-                    <button onClick={handleLogout} style={{ width: '100%', padding: '14px', background: 'transparent', color: '#ef4444', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '12px', fontSize: '14px', fontWeight: 600, marginTop: '24px', cursor: 'pointer' }}><i className="fa-solid fa-right-from-bracket"></i> Cerrar Sesión</button>
-                    <div style={{ textAlign: 'center', marginTop: '24px', color: '#4b5563', fontSize: '12px' }}>LUCAS Agent v1.0.0 (Pilot)</div>
-                </div>
-            );
-        }
-        
-        // Loading Screen
-        function LoadingScreen() {
-            return <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}><div className="spinner" style={{ marginBottom: '16px' }}></div><div style={{ color: '#6b7280' }}>Cargando...</div></div>;
-        }
-        
-        // Main App
-        function App() {
-            const [isLoading, setIsLoading] = useState(true);
-            const [agent, setAgent] = useState(null);
-            const [tasks, setTasks] = useState([]);
-            const [transactions, setTransactions] = useState([]);
-            const [screen, setScreen] = useState('welcome');
-            const [activeTab, setActiveTab] = useState('tasks');
-            const [selectedTask, setSelectedTask] = useState(null);
-            const [capturedImage, setCapturedImage] = useState(null);
-            const [gpsData, setGpsData] = useState(null);
+                    `;
+                });
+            }
             
-            useEffect(() => {
-                const checkSession = async () => {
-                    const saved = localStorage.getItem('lucas_agent');
-                    if (saved) {
-                        const agentData = JSON.parse(saved);
-                        const { data } = await supabase.from('agents').select('*').eq('id', agentData.id).single();
-                        if (data) { setAgent(data); localStorage.setItem('lucas_agent', JSON.stringify(data)); setScreen('tasks'); }
-                    }
-                    setIsLoading(false);
+            html += '<div class="section-title" style="margin-top: 24px;">Recently Completed</div>';
+            
+            if (completed.length === 0) {
+                html += '<div class="job-card" style="opacity: 0.5; text-align: center; padding: 24px;"><p>No completed inspections yet</p></div>';
+            } else {
+                completed.forEach(inspection => {
+                    const property = inspection.properties;
+                    html += `
+                        <div class="job-card" style="opacity: 0.7;">
+                            <div class="job-header">
+                                <div>
+                                    <div class="job-property">${property.name}, ${property.location}</div>
+                                    <div class="job-id">${property.asset_id}</div>
+                                </div>
+                                <span class="job-status completed">Done</span>
+                            </div>
+                            <div class="job-details">
+                                <span><i class="fa-solid fa-check"></i>Score: ${inspection.condition_score}/100</span>
+                                <span><i class="fa-solid fa-clock"></i>${timeAgo(inspection.completed_at)}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            
+            content.innerHTML = html;
+        }
+        
+        function getStatusText(inspection) {
+            const date = new Date(inspection.scheduled_date);
+            const today = new Date();
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            
+            if (inspection.status === 'pending') return 'Urgent';
+            if (date.toDateString() === today.toDateString()) return 'Today';
+            if (date.toDateString() === tomorrow.toDateString()) return 'Tomorrow';
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        }
+        
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            const today = new Date();
+            if (date.toDateString() === today.toDateString()) return 'Due Today';
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+        }
+        
+        function timeAgo(dateStr) {
+            const date = new Date(dateStr);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMs / 3600000);
+            const diffDays = Math.floor(diffMs / 86400000);
+            
+            if (diffMins < 60) return `${diffMins}m ago`;
+            if (diffHours < 24) return `${diffHours}h ago`;
+            return `${diffDays}d ago`;
+        }
+        
+        // ============================================
+        // START INSPECTION
+        // ============================================
+        async function startInspection(inspectionIdParam) {
+            inspectionId = inspectionIdParam;
+            currentStep = 1;
+            photoCount = 0;
+            issueCount = 0;
+            issues = [];
+            
+            try {
+                // Get inspection details
+                const { data: inspection, error } = await supabase
+                    .from('inspections')
+                    .select(`
+                        *,
+                        properties (*)
+                    `)
+                    .eq('id', inspectionId)
+                    .single();
+                
+                if (error || !inspection) {
+                    alert('Could not load inspection');
+                    return;
+                }
+                
+                const property = inspection.properties;
+                currentInspection = {
+                    id: inspection.id,
+                    property: property.name,
+                    location: property.location,
+                    assetId: property.asset_id,
+                    propertyType: property.property_type,
+                    bedrooms: property.bedrooms
                 };
-                checkSession();
-            }, []);
-            
-            const fetchTasks = async () => { const { data } = await supabase.from('tasks').select('*').eq('status', 'available').order('created_at', { ascending: false }); if (data) setTasks(data); };
-            const fetchTransactions = async () => { if (!agent) return; const { data } = await supabase.from('transactions').select('*').eq('agent_id', agent.id).order('created_at', { ascending: false }).limit(20); if (data) setTransactions(data); };
-            
-            useEffect(() => { if (agent) { fetchTasks(); fetchTransactions(); } }, [agent]);
-            
-            if (isLoading) return <LoadingScreen />;
-            
-            const showBottomNav = agent && ['tasks', 'wallet', 'profile'].includes(screen);
-            
-            return (
-                <div className="safe-top" style={{ minHeight: '100vh', background: '#050505' }}>
-                    {screen === 'welcome' && !agent && <WelcomeScreen setScreen={setScreen} />}
-                    {screen === 'signup' && <SignupScreen setScreen={setScreen} setAgent={setAgent} />}
-                    {screen === 'login' && <LoginScreen setScreen={setScreen} setAgent={setAgent} />}
-                    {screen === 'tasks' && agent && <TasksScreen agent={agent} tasks={tasks} setScreen={setScreen} setSelectedTask={setSelectedTask} />}
-                    {screen === 'taskDetail' && selectedTask && <TaskDetailScreen task={selectedTask} setScreen={setScreen} setActiveTab={setActiveTab} />}
-                    {screen === 'camera' && selectedTask && <CameraScreen task={selectedTask} setScreen={setScreen} setCapturedImage={setCapturedImage} setGpsData={setGpsData} />}
-                    {screen === 'review' && selectedTask && capturedImage && <ReviewScreen task={selectedTask} capturedImage={capturedImage} gpsData={gpsData} setScreen={setScreen} agent={agent} setAgent={setAgent} refreshTasks={fetchTasks} />}
-                    {screen === 'success' && selectedTask && <SuccessScreen task={selectedTask} setScreen={setScreen} setActiveTab={setActiveTab} setSelectedTask={setSelectedTask} />}
-                    {screen === 'wallet' && agent && <WalletScreen agent={agent} transactions={transactions} />}
-                    {screen === 'profile' && agent && <ProfileScreen agent={agent} setAgent={setAgent} setScreen={setScreen} />}
-                    {showBottomNav && <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} setScreen={setScreen} />}
-                </div>
-            );
+                
+                // Update UI
+                document.getElementById('inspection-property').textContent = `${property.name}, ${property.location}`;
+                document.getElementById('inspection-id').textContent = property.asset_id;
+                
+                // Update status to in_progress
+                await supabase
+                    .from('inspections')
+                    .update({ 
+                        status: 'in_progress',
+                        started_at: new Date().toISOString()
+                    })
+                    .eq('id', inspectionId);
+                
+                // Reset UI
+                document.querySelectorAll('.checklist-item').forEach(i => i.classList.remove('checked'));
+                document.querySelectorAll('.photo-slot').forEach(p => {
+                    p.classList.remove('has-photo');
+                    const original = p.getAttribute('data-original');
+                    if (original) p.innerHTML = original;
+                });
+                document.getElementById('issues-list').innerHTML = '';
+                document.getElementById('score-slider').value = 85;
+                document.getElementById('score-value').textContent = '85';
+                
+                // Get GPS location
+                getLocation();
+                
+                updateProgress();
+                showScreen('inspection-screen');
+                
+            } catch (err) {
+                console.error('Error starting inspection:', err);
+                alert('Error starting inspection');
+            }
         }
         
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
+        // ============================================
+        // GPS LOCATION
+        // ============================================
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        currentInspection.lat = position.coords.latitude;
+                        currentInspection.lng = position.coords.longitude;
+                        document.querySelector('.gps-indicator span').textContent = 
+                            `Location verified: ${currentInspection.location}`;
+                    },
+                    (error) => {
+                        console.warn('GPS error:', error);
+                        document.querySelector('.gps-indicator span').textContent = 
+                            `Location: ${currentInspection.location} (GPS unavailable)`;
+                    }
+                );
+            }
+        }
+        
+        // ============================================
+        // PROGRESS MANAGEMENT
+        // ============================================
+        function updateProgress() {
+            const steps = document.querySelectorAll('.progress-step');
+            const fill = document.getElementById('progress-fill');
+            
+            steps.forEach((step, index) => {
+                const stepNum = index + 1;
+                step.classList.remove('active', 'completed');
+                
+                if (stepNum < currentStep) {
+                    step.classList.add('completed');
+                } else if (stepNum === currentStep) {
+                    step.classList.add('active');
+                }
+            });
+            
+            fill.style.width = ((currentStep - 1) / 3 * 100) + '%';
+            
+            // Show correct step content
+            document.querySelectorAll('.step-content').forEach((content, index) => {
+                content.classList.remove('active');
+                if (index + 1 === currentStep) {
+                    content.classList.add('active');
+                }
+            });
+            
+            // Update button text
+            const btn = document.getElementById('next-btn');
+            if (currentStep === 4) {
+                btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Submit Inspection';
+            } else {
+                btn.innerHTML = 'Continue <i class="fa-solid fa-arrow-right"></i>';
+            }
+        }
+        
+        function nextStep() {
+            if (currentStep < 4) {
+                currentStep++;
+                updateProgress();
+                
+                if (currentStep === 4) {
+                    updateSummary();
+                }
+            } else {
+                submitInspection();
+            }
+        }
+        
+        // ============================================
+        // CHECKLIST
+        // ============================================
+        function toggleCheck(element) {
+            element.classList.toggle('checked');
+        }
+        
+        // ============================================
+        // PHOTO CAPTURE
+        // ============================================
+        function capturePhoto(slot, label) {
+            // Store original content
+            if (!slot.getAttribute('data-original')) {
+                slot.setAttribute('data-original', slot.innerHTML);
+            }
+            
+            // Simulate photo capture (in real app, would use camera API)
+            slot.classList.add('has-photo');
+            slot.innerHTML = `
+                <img src="https://picsum.photos/200?random=${Math.random()}" alt="${label}">
+                <div class="photo-check"><i class="fa-solid fa-check"></i></div>
+            `;
+            photoCount++;
+        }
+        
+        function captureFullSet() {
+            document.querySelectorAll('.photo-slot:not(.has-photo)').forEach((slot, index) => {
+                setTimeout(() => {
+                    capturePhoto(slot, 'Photo ' + (index + 1));
+                }, index * 300);
+            });
+        }
+        
+        // ============================================
+        // ISSUES
+        // ============================================
+        async function addIssue() {
+            const issueTypes = [
+                'Minor scuff on wall',
+                'AC filter needs replacement',
+                'Small crack in tile',
+                'Door handle loose',
+                'Light fixture flickering',
+                'Window seal damaged',
+                'Paint peeling',
+                'Grout discoloration'
+            ];
+            const severities = ['low', 'medium', 'high'];
+            const categories = ['cosmetic', 'maintenance', 'structural'];
+            
+            const newIssue = {
+                title: issueTypes[Math.floor(Math.random() * issueTypes.length)],
+                severity: severities[Math.floor(Math.random() * severities.length)],
+                category: categories[Math.floor(Math.random() * categories.length)],
+                location: 'Living Room'
+            };
+            
+            issues.push(newIssue);
+            issueCount++;
+            
+            const issuesList = document.getElementById('issues-list');
+            const issueHtml = `
+                <div class="issue-card animate-in">
+                    <div class="issue-header">
+                        <span class="issue-type">${newIssue.title}</span>
+                        <span class="issue-severity ${newIssue.severity}">${newIssue.severity}</span>
+                    </div>
+                    <div class="issue-desc">Photo evidence attached • Location: ${newIssue.location}</div>
+                </div>
+            `;
+            
+            issuesList.insertAdjacentHTML('beforeend', issueHtml);
+        }
+        
+        // ============================================
+        // SCORE
+        // ============================================
+        function updateScore(value) {
+            document.getElementById('score-value').textContent = value;
+        }
+        
+        // ============================================
+        // SUMMARY
+        // ============================================
+        function updateSummary() {
+            document.getElementById('summary-property').textContent = `${currentInspection.property}, ${currentInspection.location}`;
+            document.getElementById('summary-id').textContent = currentInspection.assetId;
+            document.getElementById('summary-score').textContent = document.getElementById('score-value').textContent + '/100';
+            document.getElementById('summary-photos').textContent = Math.max(photoCount, 6) + ' photos';
+            document.getElementById('summary-issues').textContent = issueCount + ' issues';
+            document.getElementById('summary-time').textContent = new Date().toLocaleString();
+        }
+        
+        // ============================================
+        // SUBMIT INSPECTION
+        // ============================================
+        async function submitInspection() {
+            const submitBtn = document.getElementById('next-btn');
+            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Submitting...';
+            submitBtn.disabled = true;
+            
+            try {
+                // Generate proof hash
+                const hash = '0x' + Array.from({length: 64}, () => 
+                    Math.floor(Math.random() * 16).toString(16)
+                ).join('');
+                
+                const score = parseInt(document.getElementById('score-value').textContent);
+                
+                // Get checklist status
+                const checklistItems = document.querySelectorAll('#step-1 .checklist-item');
+                const checklist = {
+                    access: checklistItems[0]?.classList.contains('checked') || false,
+                    address: checklistItems[1]?.classList.contains('checked') || false,
+                    type: checklistItems[2]?.classList.contains('checked') || false,
+                    vacant: checklistItems[3]?.classList.contains('checked') || false
+                };
+                
+                // Update inspection in Supabase
+                const { data, error } = await supabase
+                    .from('inspections')
+                    .update({
+                        status: 'completed',
+                        completed_at: new Date().toISOString(),
+                        condition_score: score,
+                        photo_count: Math.max(photoCount, 6),
+                        issue_count: issueCount,
+                        gps_lat: currentInspection.lat,
+                        gps_lng: currentInspection.lng,
+                        gps_verified: !!currentInspection.lat,
+                        checklist_access: checklist.access,
+                        checklist_address: checklist.address,
+                        checklist_type: checklist.type,
+                        checklist_vacant: checklist.vacant,
+                        proof_hash: hash,
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('id', inspectionId);
+                
+                if (error) {
+                    console.error('Submit error:', error);
+                    alert('Error submitting inspection. Please try again.');
+                    submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Submit Inspection';
+                    submitBtn.disabled = false;
+                    return;
+                }
+                
+                // Save issues to database
+                if (issues.length > 0) {
+                    const issuesData = issues.map(issue => ({
+                        inspection_id: inspectionId,
+                        title: issue.title,
+                        severity: issue.severity,
+                        category: issue.category,
+                        location: issue.location
+                    }));
+                    
+                    await supabase.from('inspection_issues').insert(issuesData);
+                }
+                
+                // Update inspector stats
+                await supabase
+                    .from('inspectors')
+                    .update({
+                        total_inspections: currentInspector.total_inspections + 1,
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('id', currentInspector.id);
+                
+                currentInspector.total_inspections++;
+                
+                // Show success modal
+                document.getElementById('proof-hash').textContent = hash.slice(0, 10) + '...' + hash.slice(-8);
+                document.getElementById('success-modal').classList.add('active');
+                
+            } catch (err) {
+                console.error('Submit error:', err);
+                alert('Error submitting. Please try again.');
+            }
+            
+            submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Submit Inspection';
+            submitBtn.disabled = false;
+        }
+        
+        function closeModal() {
+            document.getElementById('success-modal').classList.remove('active');
+            loadInspections();
+            showScreen('dashboard-screen');
+        }
+        
+        // ============================================
+        // SIGNATURE CANVAS
+        // ============================================
+        const canvas = document.getElementById('signature-canvas');
+        if (canvas) {
+            const ctx = canvas.getContext('2d');
+            let isDrawing = false;
+            
+            function initCanvas() {
+                canvas.width = canvas.offsetWidth * 2;
+                canvas.height = canvas.offsetHeight * 2;
+                ctx.scale(2, 2);
+                ctx.strokeStyle = '#deff9a';
+                ctx.lineWidth = 2;
+                ctx.lineCap = 'round';
+            }
+            
+            initCanvas();
+            
+            canvas.addEventListener('touchstart', (e) => {
+                isDrawing = true;
+                const touch = e.touches[0];
+                const rect = canvas.getBoundingClientRect();
+                ctx.beginPath();
+                ctx.moveTo(touch.clientX - rect.left, touch.clientY - rect.top);
+                e.preventDefault();
+            });
+            
+            canvas.addEventListener('touchmove', (e) => {
+                if (!isDrawing) return;
+                const touch = e.touches[0];
+                const rect = canvas.getBoundingClientRect();
+                ctx.lineTo(touch.clientX - rect.left, touch.clientY - rect.top);
+                ctx.stroke();
+                e.preventDefault();
+            });
+            
+            canvas.addEventListener('touchend', () => {
+                isDrawing = false;
+            });
+            
+            // Mouse events for desktop testing
+            canvas.addEventListener('mousedown', (e) => {
+                isDrawing = true;
+                const rect = canvas.getBoundingClientRect();
+                ctx.beginPath();
+                ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+            });
+            
+            canvas.addEventListener('mousemove', (e) => {
+                if (!isDrawing) return;
+                const rect = canvas.getBoundingClientRect();
+                ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+                ctx.stroke();
+            });
+            
+            canvas.addEventListener('mouseup', () => {
+                isDrawing = false;
+            });
+        }
+        
+        // ============================================
+        // LOGOUT
+        // ============================================
+        function logout() {
+            currentInspector = null;
+            document.getElementById('inspector-id').value = '';
+            document.getElementById('pin-code').value = '';
+            showScreen('login-screen');
+        }
+        
+        // ============================================
+        // SERVICE WORKER REGISTRATION
+        // ============================================
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then((registration) => {
+                        console.log('LUCAS Inspector: SW registered', registration.scope);
+                    })
+                    .catch((error) => {
+                        console.log('LUCAS Inspector: SW registration failed', error);
+                    });
+            });
+        }
     </script>
 </body>
 </html>
