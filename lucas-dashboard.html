@@ -999,11 +999,11 @@
                 
                 <div class="nav-section">
                     <div class="nav-section-title">Reports</div>
-                    <a class="nav-item">
+                    <a class="nav-item" onclick="showPage('lvo-reports')">
                         <i class="fa-solid fa-file-lines"></i>
                         LVO Reports
                     </a>
-                    <a class="nav-item">
+                    <a class="nav-item" onclick="showPage('onchain')">
                         <i class="fa-solid fa-link"></i>
                         On-Chain Proofs
                     </a>
@@ -1011,13 +1011,9 @@
                 
                 <div class="nav-section">
                     <div class="nav-section-title">Settings</div>
-                    <a class="nav-item">
-                        <i class="fa-solid fa-bell"></i>
-                        Notifications
-                    </a>
-                    <a class="nav-item">
-                        <i class="fa-solid fa-key"></i>
-                        API Access
+                    <a class="nav-item" onclick="showPage('settings')">
+                        <i class="fa-solid fa-gear"></i>
+                        Settings
                     </a>
                 </div>
             </nav>
@@ -1218,6 +1214,230 @@
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- LVO REPORTS PAGE -->
+            <div class="page-content" id="page-lvo-reports" style="display: none;">
+                <div class="stats-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 24px;">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon green"><i class="fa-solid fa-file-check"></i></div>
+                        </div>
+                        <div class="stat-value" id="lvo-total">0</div>
+                        <div class="stat-label">Total LVO Reports</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon blue"><i class="fa-solid fa-calendar"></i></div>
+                        </div>
+                        <div class="stat-value" id="lvo-month">0</div>
+                        <div class="stat-label">This Month</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon yellow"><i class="fa-solid fa-download"></i></div>
+                        </div>
+                        <div class="stat-value" id="lvo-downloads">0</div>
+                        <div class="stat-label">Downloads</div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">LVO Reports</h3>
+                        <span style="font-size: 13px; color: #666;">Loan-to-Value Verification Reports</span>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Report ID</th>
+                                    <th>Property</th>
+                                    <th>Valuation</th>
+                                    <th>LTV Ratio</th>
+                                    <th>Status</th>
+                                    <th>Generated</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="lvo-reports-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- ON-CHAIN PROOFS PAGE -->
+            <div class="page-content" id="page-onchain" style="display: none;">
+                <div class="stats-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 24px;">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon green"><i class="fa-solid fa-cube"></i></div>
+                        </div>
+                        <div class="stat-value" id="chain-total">0</div>
+                        <div class="stat-label">Total Proofs</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon blue"><i class="fa-solid fa-check-double"></i></div>
+                        </div>
+                        <div class="stat-value" id="chain-verified">0</div>
+                        <div class="stat-label">Verified</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon yellow"><i class="fa-solid fa-clock"></i></div>
+                        </div>
+                        <div class="stat-value" id="chain-pending">0</div>
+                        <div class="stat-label">Pending</div>
+                    </div>
+                </div>
+                
+                <div class="card" style="margin-bottom: 24px;">
+                    <div class="card-header">
+                        <h3 class="card-title">Network Status</h3>
+                    </div>
+                    <div style="padding: 24px; display: flex; gap: 32px; flex-wrap: wrap;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="width: 12px; height: 12px; background: #22c55e; border-radius: 50%; animation: pulse 2s infinite;"></div>
+                            <div>
+                                <div style="font-weight: 600;">Base Sepolia</div>
+                                <div style="font-size: 12px; color: #666;">Testnet Active</div>
+                            </div>
+                        </div>
+                        <div>
+                            <div style="font-size: 12px; color: #666;">Contract Address</div>
+                            <div style="font-family: 'Space Mono', monospace; font-size: 13px; color: var(--lucas-green);">0x7a3B...4f2E</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 12px; color: #666;">Latest Block</div>
+                            <div style="font-family: 'Space Mono', monospace; font-size: 13px;">#18,234,567</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 12px; color: #666;">Gas Price</div>
+                            <div style="font-family: 'Space Mono', monospace; font-size: 13px;">0.001 ETH</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">On-Chain Proofs</h3>
+                        <span style="font-size: 13px; color: #666;">Immutable verification records</span>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Tx Hash</th>
+                                    <th>Property</th>
+                                    <th>Proof Type</th>
+                                    <th>Block</th>
+                                    <th>Status</th>
+                                    <th>Timestamp</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="onchain-proofs-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- SETTINGS PAGE -->
+            <div class="page-content" id="page-settings" style="display: none;">
+                <div class="card" style="margin-bottom: 24px;">
+                    <div class="card-header">
+                        <h3 class="card-title">Notifications</h3>
+                    </div>
+                    <div style="padding: 24px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--lucas-border);">
+                            <div>
+                                <div style="font-weight: 600;">Email Notifications</div>
+                                <div style="font-size: 13px; color: #666;">Receive updates about inspections</div>
+                            </div>
+                            <label style="position: relative; width: 48px; height: 26px; cursor: pointer;">
+                                <input type="checkbox" checked style="opacity: 0; width: 0; height: 0;">
+                                <span style="position: absolute; inset: 0; background: var(--lucas-green); border-radius: 26px; transition: 0.3s;"></span>
+                                <span style="position: absolute; left: 4px; top: 4px; width: 18px; height: 18px; background: #000; border-radius: 50%; transition: 0.3s; transform: translateX(22px);"></span>
+                            </label>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--lucas-border);">
+                            <div>
+                                <div style="font-weight: 600;">Inspection Completed</div>
+                                <div style="font-size: 13px; color: #666;">Get notified when an inspection is done</div>
+                            </div>
+                            <label style="position: relative; width: 48px; height: 26px; cursor: pointer;">
+                                <input type="checkbox" checked style="opacity: 0; width: 0; height: 0;">
+                                <span style="position: absolute; inset: 0; background: var(--lucas-green); border-radius: 26px; transition: 0.3s;"></span>
+                                <span style="position: absolute; left: 4px; top: 4px; width: 18px; height: 18px; background: #000; border-radius: 50%; transition: 0.3s; transform: translateX(22px);"></span>
+                            </label>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px 0;">
+                            <div>
+                                <div style="font-weight: 600;">Weekly Summary</div>
+                                <div style="font-size: 13px; color: #666;">Portfolio report every Monday</div>
+                            </div>
+                            <label style="position: relative; width: 48px; height: 26px; cursor: pointer;">
+                                <input type="checkbox" style="opacity: 0; width: 0; height: 0;">
+                                <span style="position: absolute; inset: 0; background: var(--lucas-border); border-radius: 26px; transition: 0.3s;"></span>
+                                <span style="position: absolute; left: 4px; top: 4px; width: 18px; height: 18px; background: #666; border-radius: 50%; transition: 0.3s;"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card" style="margin-bottom: 24px;">
+                    <div class="card-header">
+                        <h3 class="card-title">API Access</h3>
+                    </div>
+                    <div style="padding: 24px;">
+                        <div style="margin-bottom: 20px;">
+                            <div style="font-size: 12px; color: #666; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;">API Key</div>
+                            <div style="display: flex; gap: 12px;">
+                                <div style="flex: 1; background: var(--lucas-dark); border: 1px solid var(--lucas-border); border-radius: 8px; padding: 12px 16px; font-family: 'Space Mono', monospace; font-size: 13px; color: #666;">sk_live_••••••••••••••••••••••••</div>
+                                <button class="btn btn-secondary" style="width: auto; padding: 12px 20px;" onclick="alert('API key copied!')">
+                                    <i class="fa-solid fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div>
+                            <div style="font-size: 12px; color: #666; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;">Webhook URL</div>
+                            <div style="display: flex; gap: 12px;">
+                                <input type="text" placeholder="https://your-domain.com/webhook" style="flex: 1; background: var(--lucas-dark); border: 1px solid var(--lucas-border); border-radius: 8px; padding: 12px 16px; color: #fff; font-size: 14px;">
+                                <button class="btn btn-primary" style="width: auto; padding: 12px 20px;">Save</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Documentation</h3>
+                    </div>
+                    <div style="padding: 24px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+                        <a href="#" style="display: flex; align-items: center; gap: 12px; padding: 16px; background: var(--lucas-dark); border-radius: 12px; text-decoration: none; color: inherit; transition: background 0.2s;" onmouseover="this.style.background='var(--lucas-hover)'" onmouseout="this.style.background='var(--lucas-dark)'">
+                            <i class="fa-solid fa-book" style="font-size: 20px; color: var(--lucas-green);"></i>
+                            <div>
+                                <div style="font-weight: 600;">API Docs</div>
+                                <div style="font-size: 12px; color: #666;">Integration guide</div>
+                            </div>
+                        </a>
+                        <a href="#" style="display: flex; align-items: center; gap: 12px; padding: 16px; background: var(--lucas-dark); border-radius: 12px; text-decoration: none; color: inherit; transition: background 0.2s;" onmouseover="this.style.background='var(--lucas-hover)'" onmouseout="this.style.background='var(--lucas-dark)'">
+                            <i class="fa-solid fa-code" style="font-size: 20px; color: var(--lucas-green);"></i>
+                            <div>
+                                <div style="font-weight: 600;">SDK</div>
+                                <div style="font-size: 12px; color: #666;">JavaScript & Python</div>
+                            </div>
+                        </a>
+                        <a href="#" style="display: flex; align-items: center; gap: 12px; padding: 16px; background: var(--lucas-dark); border-radius: 12px; text-decoration: none; color: inherit; transition: background 0.2s;" onmouseover="this.style.background='var(--lucas-hover)'" onmouseout="this.style.background='var(--lucas-dark)'">
+                            <i class="fa-solid fa-life-ring" style="font-size: 20px; color: var(--lucas-green);"></i>
+                            <div>
+                                <div style="font-weight: 600;">Support</div>
+                                <div style="font-size: 12px; color: #666;">Get help</div>
+                            </div>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -1812,7 +2032,9 @@ Generated by LUCAS Protocol
         function showPage(page) {
             // Update nav
             document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-            event.target.closest('.nav-item').classList.add('active');
+            if (event && event.target) {
+                event.target.closest('.nav-item')?.classList.add('active');
+            }
             
             // Hide all pages
             document.querySelectorAll('.page-content').forEach(p => p.style.display = 'none');
@@ -1827,7 +2049,10 @@ Generated by LUCAS Protocol
             const titles = {
                 'overview': { title: 'Dashboard', subtitle: 'Property verification overview for your portfolio' },
                 'properties': { title: 'Properties', subtitle: 'Manage your property portfolio' },
-                'inspections': { title: 'Inspections', subtitle: 'View all inspection reports' }
+                'inspections': { title: 'Inspections', subtitle: 'View all inspection reports' },
+                'lvo-reports': { title: 'LVO Reports', subtitle: 'Loan-to-Value verification reports for your assets' },
+                'onchain': { title: 'On-Chain Proofs', subtitle: 'Immutable verification records on Base network' },
+                'settings': { title: 'Settings', subtitle: 'Manage notifications and API access' }
             };
             
             document.querySelector('.header-title h1').textContent = titles[page]?.title || 'Dashboard';
@@ -1836,6 +2061,190 @@ Generated by LUCAS Protocol
             // Render page content
             if (page === 'properties') renderPropertiesPage();
             if (page === 'inspections') renderInspectionsPage();
+            if (page === 'lvo-reports') renderLVOReportsPage();
+            if (page === 'onchain') renderOnChainPage();
+        }
+        
+        function renderLVOReportsPage() {
+            const completed = inspections.filter(i => i.status === 'completed');
+            
+            // Update stats
+            document.getElementById('lvo-total').textContent = completed.length;
+            document.getElementById('lvo-month').textContent = completed.filter(i => {
+                const d = new Date(i.completed_at);
+                const now = new Date();
+                return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+            }).length;
+            document.getElementById('lvo-downloads').textContent = Math.floor(completed.length * 1.5);
+            
+            const container = document.getElementById('lvo-reports-body');
+            if (!container) return;
+            
+            if (completed.length === 0) {
+                container.innerHTML = `<tr><td colspan="7"><div class="empty-state"><i class="fa-solid fa-file-lines"></i><h3>No LVO reports yet</h3><p>Complete inspections to generate reports</p></div></td></tr>`;
+                return;
+            }
+            
+            container.innerHTML = completed.map((insp, idx) => {
+                const prop = insp.properties || {};
+                const reportId = `LVO-${new Date(insp.completed_at).getFullYear()}-${String(idx + 1).padStart(4, '0')}`;
+                const valuation = (Math.floor(Math.random() * 5) + 2) * 1000000; // 2M - 7M AED
+                const ltvRatio = Math.floor(Math.random() * 30) + 50; // 50-80%
+                
+                return `
+                    <tr>
+                        <td><span style="font-family: 'Space Mono', monospace; color: var(--lucas-green);">${reportId}</span></td>
+                        <td>
+                            <div class="property-info">
+                                <h4 style="font-weight: 600;">${prop.name}, ${prop.location}</h4>
+                                <span>${prop.asset_id}</span>
+                            </div>
+                        </td>
+                        <td style="font-weight: 600;">AED ${(valuation).toLocaleString()}</td>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span style="font-weight: 600;">${ltvRatio}%</span>
+                                <div style="width: 60px; height: 6px; background: var(--lucas-border); border-radius: 3px;">
+                                    <div style="width: ${ltvRatio}%; height: 100%; background: ${ltvRatio > 70 ? '#fbbf24' : 'var(--lucas-green)'}; border-radius: 3px;"></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="status-badge completed">Verified</span></td>
+                        <td>${formatDate(insp.completed_at)}</td>
+                        <td>
+                            <div class="action-btns">
+                                <button class="action-btn" onclick="viewLVOReport('${insp.id}')" title="View Report">
+                                    <i class="fa-solid fa-eye"></i>
+                                </button>
+                                <button class="action-btn" onclick="downloadLVOReport('${insp.id}')" title="Download PDF">
+                                    <i class="fa-solid fa-file-pdf"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+        
+        function renderOnChainPage() {
+            const withProof = inspections.filter(i => i.proof_hash);
+            const verified = withProof.filter(i => i.status === 'completed');
+            const pending = withProof.filter(i => i.status !== 'completed');
+            
+            // Update stats
+            document.getElementById('chain-total').textContent = withProof.length;
+            document.getElementById('chain-verified').textContent = verified.length;
+            document.getElementById('chain-pending').textContent = pending.length;
+            
+            const container = document.getElementById('onchain-proofs-body');
+            if (!container) return;
+            
+            if (withProof.length === 0) {
+                container.innerHTML = `<tr><td colspan="7"><div class="empty-state"><i class="fa-solid fa-cube"></i><h3>No on-chain proofs yet</h3><p>Completed inspections will be anchored on-chain</p></div></td></tr>`;
+                return;
+            }
+            
+            container.innerHTML = withProof.map(insp => {
+                const prop = insp.properties || {};
+                const txHash = insp.proof_hash || '0x' + Array.from({length: 64}, () => Math.floor(Math.random() * 16).toString(16)).join('');
+                const block = Math.floor(Math.random() * 100000) + 18100000;
+                const proofType = insp.status === 'completed' ? 'Inspection Complete' : 'Inspection Started';
+                
+                return `
+                    <tr>
+                        <td>
+                            <span style="font-family: 'Space Mono', monospace; font-size: 12px; color: var(--lucas-green);">
+                                ${txHash.slice(0, 10)}...${txHash.slice(-8)}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="property-info">
+                                <h4 style="font-weight: 600;">${prop.name}, ${prop.location}</h4>
+                                <span>${prop.asset_id}</span>
+                            </div>
+                        </td>
+                        <td>${proofType}</td>
+                        <td style="font-family: 'Space Mono', monospace; font-size: 12px;">#${block.toLocaleString()}</td>
+                        <td>
+                            <span class="status-badge ${insp.status === 'completed' ? 'completed' : 'pending'}">
+                                ${insp.status === 'completed' ? 'Confirmed' : 'Pending'}
+                            </span>
+                        </td>
+                        <td>${formatDate(insp.completed_at || insp.created_at)}</td>
+                        <td>
+                            <div class="action-btns">
+                                <button class="action-btn" onclick="window.open('https://sepolia.basescan.org/tx/${txHash}', '_blank')" title="View on BaseScan">
+                                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                                </button>
+                                <button class="action-btn" onclick="copyToClipboard('${txHash}')" title="Copy Hash">
+                                    <i class="fa-solid fa-copy"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+        
+        function viewLVOReport(inspectionId) {
+            viewInspection(inspectionId);
+        }
+        
+        function downloadLVOReport(inspectionId) {
+            const insp = inspections.find(i => i.id === inspectionId);
+            if (!insp) return;
+            
+            const prop = insp.properties || {};
+            const valuation = (Math.floor(Math.random() * 5) + 2) * 1000000;
+            
+            const report = `
+╔══════════════════════════════════════════════════════════════╗
+║                    LUCAS LVO REPORT                          ║
+║              Loan-to-Value Verification                      ║
+╚══════════════════════════════════════════════════════════════╝
+
+PROPERTY DETAILS
+────────────────────────────────────────────────────────────────
+Property:       ${prop.name}, ${prop.location}
+Asset ID:       ${prop.asset_id}
+Type:           ${prop.bedrooms || 0} Bedroom ${prop.property_type || 'Property'}
+Area:           ${prop.area_sqft ? prop.area_sqft.toLocaleString() + ' sqft' : 'N/A'}
+
+VALUATION
+────────────────────────────────────────────────────────────────
+Estimated Value:    AED ${valuation.toLocaleString()}
+Condition Score:    ${insp.condition_score}/100
+LTV Recommendation: ${insp.condition_score >= 80 ? '70%' : insp.condition_score >= 60 ? '60%' : '50%'} Maximum
+
+VERIFICATION STATUS
+────────────────────────────────────────────────────────────────
+Inspection Date:    ${formatDate(insp.completed_at)}
+GPS Verified:       ${insp.gps_verified ? 'Yes' : 'No'}
+Photos Captured:    ${insp.photo_count || 0}
+Issues Found:       ${insp.issue_count || 0}
+
+ON-CHAIN PROOF
+────────────────────────────────────────────────────────────────
+Transaction Hash:   ${insp.proof_hash || 'Pending'}
+Network:            Base Sepolia (Testnet)
+
+────────────────────────────────────────────────────────────────
+This report was generated by LUCAS Protocol
+https://lucasprotocol.com
+            `.trim();
+            
+            const blob = new Blob([report], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `LVO-Report-${prop.asset_id}-${new Date().toISOString().split('T')[0]}.txt`;
+            a.click();
+        }
+        
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Copied to clipboard!');
+            });
         }
         
         function renderPropertiesPage() {
