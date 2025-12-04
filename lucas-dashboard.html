@@ -1056,71 +1056,118 @@
                 </div>
             </div>
             
-            <!-- Stats -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-icon green">
-                            <i class="fa-solid fa-building"></i>
+            <!-- OVERVIEW PAGE -->
+            <div class="page-content" id="page-overview">
+                <!-- Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon green">
+                                <i class="fa-solid fa-building"></i>
+                            </div>
+                            <span class="stat-change positive">+2 this month</span>
                         </div>
-                        <span class="stat-change positive">+2 this month</span>
+                        <div class="stat-value" id="stat-properties">0</div>
+                        <div class="stat-label">Total Properties</div>
                     </div>
-                    <div class="stat-value" id="stat-properties">0</div>
-                    <div class="stat-label">Total Properties</div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon blue">
+                                <i class="fa-solid fa-clipboard-check"></i>
+                            </div>
+                            <span class="stat-change positive">+5 this week</span>
+                        </div>
+                        <div class="stat-value" id="stat-inspections">0</div>
+                        <div class="stat-label">Completed Inspections</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon yellow">
+                                <i class="fa-solid fa-clock"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="stat-pending">0</div>
+                        <div class="stat-label">Pending Inspections</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon green">
+                                <i class="fa-solid fa-star"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="stat-avg-score">--</div>
+                        <div class="stat-label">Avg Condition Score</div>
+                    </div>
                 </div>
                 
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-icon blue">
-                            <i class="fa-solid fa-clipboard-check"></i>
+                <!-- Content Grid -->
+                <div class="content-grid">
+                    <!-- Recent Inspections -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Recent Inspections</h3>
+                            <a class="card-action" onclick="showPage('inspections')">View All →</a>
                         </div>
-                        <span class="stat-change positive">+5 this week</span>
-                    </div>
-                    <div class="stat-value" id="stat-inspections">0</div>
-                    <div class="stat-label">Completed Inspections</div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-icon yellow">
-                            <i class="fa-solid fa-clock"></i>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Property</th>
+                                        <th>Status</th>
+                                        <th>Score</th>
+                                        <th>Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="inspections-table">
+                                    <tr>
+                                        <td colspan="5">
+                                            <div class="loading">
+                                                <div class="spinner"></div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
-                    <div class="stat-value" id="stat-pending">0</div>
-                    <div class="stat-label">Pending Inspections</div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-icon green">
-                            <i class="fa-solid fa-star"></i>
+                    
+                    <!-- Activity Feed -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Recent Activity</h3>
+                        </div>
+                        <div class="activity-list" id="activity-list">
+                            <div class="loading">
+                                <div class="spinner"></div>
+                            </div>
                         </div>
                     </div>
-                    <div class="stat-value" id="stat-avg-score">--</div>
-                    <div class="stat-label">Avg Condition Score</div>
                 </div>
             </div>
             
-            <!-- Content Grid -->
-            <div class="content-grid">
-                <!-- Recent Inspections -->
+            <!-- PROPERTIES PAGE -->
+            <div class="page-content" id="page-properties" style="display: none;">
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">Recent Inspections</h3>
-                        <a class="card-action">View All →</a>
+                        <h3 class="card-title">All Properties</h3>
+                        <span style="font-size: 13px; color: #666;" id="properties-count-label">0 properties</span>
                     </div>
                     <div class="table-container">
                         <table>
                             <thead>
                                 <tr>
                                     <th>Property</th>
-                                    <th>Status</th>
-                                    <th>Score</th>
-                                    <th>Date</th>
+                                    <th>Type</th>
+                                    <th>Size</th>
+                                    <th>Last Score</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody id="inspections-table">
+                            <tbody id="properties-table-body">
                                 <tr>
                                     <td colspan="5">
                                         <div class="loading">
@@ -1132,16 +1179,45 @@
                         </table>
                     </div>
                 </div>
-                
-                <!-- Activity Feed -->
+            </div>
+            
+            <!-- INSPECTIONS PAGE -->
+            <div class="page-content" id="page-inspections" style="display: none;">
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">Recent Activity</h3>
-                    </div>
-                    <div class="activity-list" id="activity-list">
-                        <div class="loading">
-                            <div class="spinner"></div>
+                        <h3 class="card-title">All Inspections</h3>
+                        <div style="display: flex; gap: 12px; align-items: center;">
+                            <select id="status-filter" onchange="filterInspections()" style="background: var(--lucas-dark); border: 1px solid var(--lucas-border); border-radius: 8px; padding: 8px 12px; color: #fff; font-size: 13px;">
+                                <option value="all">All Status</option>
+                                <option value="completed">Completed</option>
+                                <option value="scheduled">Scheduled</option>
+                                <option value="pending">Pending</option>
+                                <option value="in_progress">In Progress</option>
+                            </select>
                         </div>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Property</th>
+                                    <th>Status</th>
+                                    <th>Score</th>
+                                    <th>Inspector</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="all-inspections-body">
+                                <tr>
+                                    <td colspan="6">
+                                        <div class="loading">
+                                            <div class="spinner"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -1158,6 +1234,21 @@
                 </button>
             </div>
             <div class="modal-body" id="modal-content">
+                <!-- Filled dynamically -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Request Inspection Modal -->
+    <div class="modal-overlay" id="requestModal">
+        <div class="modal" style="max-width: 480px;">
+            <div class="modal-header">
+                <h3 class="modal-title">Request Inspection</h3>
+                <button class="modal-close" onclick="closeRequestModal()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="request-modal-content">
                 <!-- Filled dynamically -->
             </div>
         </div>
@@ -1273,6 +1364,10 @@
             // Properties count
             document.getElementById('stat-properties').textContent = properties.length;
             document.getElementById('property-count').textContent = properties.length;
+            
+            // Properties count label
+            const propsLabel = document.getElementById('properties-count-label');
+            if (propsLabel) propsLabel.textContent = `${properties.length} ${properties.length === 1 ? 'property' : 'properties'}`;
             
             // Completed inspections
             const completed = inspections.filter(i => i.status === 'completed');
@@ -1560,7 +1655,118 @@
         }
         
         function downloadReport(inspectionId) {
-            alert('Report download feature coming soon!');
+            const inspection = inspections.find(i => i.id === inspectionId);
+            if (!inspection) return;
+            
+            const property = inspection.properties || {};
+            
+            // Generate a simple text report
+            const report = `
+LUCAS INSPECTION REPORT
+========================
+Property: ${property.name}, ${property.location}
+Asset ID: ${property.asset_id}
+Date: ${formatDate(inspection.completed_at)}
+
+CONDITION SCORE: ${inspection.condition_score}/100
+
+VERIFICATION CHECKLIST:
+- Property Access: ${inspection.checklist_access ? '✓' : '✗'}
+- Address Verified: ${inspection.checklist_address ? '✓' : '✗'}
+- Type Verified: ${inspection.checklist_type ? '✓' : '✗'}
+- GPS Verified: ${inspection.gps_verified ? '✓' : '✗'}
+
+PHOTOS CAPTURED: ${inspection.photo_count || 0}
+ISSUES FOUND: ${inspection.issue_count || 0}
+
+ON-CHAIN PROOF:
+${inspection.proof_hash || 'N/A'}
+
+---
+Generated by LUCAS Protocol
+            `.trim();
+            
+            const blob = new Blob([report], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `LUCAS-Report-${property.asset_id}-${new Date().toISOString().split('T')[0]}.txt`;
+            a.click();
+        }
+        
+        function filterInspections() {
+            const status = document.getElementById('status-filter').value;
+            renderInspectionsPage(status);
+        }
+        
+        function renderInspectionsPage(filterStatus = 'all') {
+            const container = document.getElementById('all-inspections-body');
+            if (!container) return;
+            
+            let filtered = inspections;
+            if (filterStatus !== 'all') {
+                filtered = inspections.filter(i => i.status === filterStatus);
+            }
+            
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <tr><td colspan="6">
+                        <div class="empty-state">
+                            <i class="fa-solid fa-clipboard-list"></i>
+                            <h3>No inspections found</h3>
+                            <p>${filterStatus !== 'all' ? 'Try a different filter' : 'Request your first property inspection'}</p>
+                        </div>
+                    </td></tr>
+                `;
+                return;
+            }
+            
+            container.innerHTML = filtered.map(inspection => {
+                const property = inspection.properties || {};
+                const inspector = inspection.inspectors || {};
+                const score = inspection.condition_score;
+                const scoreClass = score >= 80 ? 'high' : score >= 60 ? 'medium' : 'low';
+                
+                return `
+                    <tr>
+                        <td>
+                            <div class="property-cell">
+                                <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=100&h=100&fit=crop" 
+                                     alt="${property.name}" class="property-thumb">
+                                <div class="property-info">
+                                    <h4>${property.name || 'Unknown'}, ${property.location || ''}</h4>
+                                    <span>${property.asset_id || ''}</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="status-badge ${inspection.status}">${formatStatus(inspection.status)}</span></td>
+                        <td>
+                            ${score ? `
+                                <div class="score-cell">
+                                    <span>${score}</span>
+                                    <div class="score-bar">
+                                        <div class="score-fill ${scoreClass}" style="width: ${score}%"></div>
+                                    </div>
+                                </div>
+                            ` : '<span style="color: #666;">--</span>'}
+                        </td>
+                        <td>${inspector.name || 'Pending'}</td>
+                        <td>${formatDate(inspection.completed_at || inspection.scheduled_date)}</td>
+                        <td>
+                            <div class="action-btns">
+                                <button class="action-btn" onclick="viewInspection('${inspection.id}')" title="View Details">
+                                    <i class="fa-solid fa-eye"></i>
+                                </button>
+                                ${inspection.status === 'completed' ? `
+                                    <button class="action-btn" onclick="downloadReport('${inspection.id}')" title="Download Report">
+                                        <i class="fa-solid fa-download"></i>
+                                    </button>
+                                ` : ''}
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
         }
         
         // ============================================
@@ -1608,8 +1814,204 @@
             document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
             event.target.closest('.nav-item').classList.add('active');
             
-            // For now, just reload data
-            loadDashboardData();
+            // Hide all pages
+            document.querySelectorAll('.page-content').forEach(p => p.style.display = 'none');
+            
+            // Show selected page
+            const pageEl = document.getElementById(`page-${page}`);
+            if (pageEl) {
+                pageEl.style.display = 'block';
+            }
+            
+            // Update header
+            const titles = {
+                'overview': { title: 'Dashboard', subtitle: 'Property verification overview for your portfolio' },
+                'properties': { title: 'Properties', subtitle: 'Manage your property portfolio' },
+                'inspections': { title: 'Inspections', subtitle: 'View all inspection reports' }
+            };
+            
+            document.querySelector('.header-title h1').textContent = titles[page]?.title || 'Dashboard';
+            document.querySelector('.header-title p').textContent = titles[page]?.subtitle || '';
+            
+            // Render page content
+            if (page === 'properties') renderPropertiesPage();
+            if (page === 'inspections') renderInspectionsPage();
+        }
+        
+        function renderPropertiesPage() {
+            const container = document.getElementById('properties-table-body');
+            if (!container) return;
+            
+            if (properties.length === 0) {
+                container.innerHTML = `
+                    <tr><td colspan="5">
+                        <div class="empty-state">
+                            <i class="fa-solid fa-building"></i>
+                            <h3>No properties yet</h3>
+                            <p>Properties will appear here once added</p>
+                        </div>
+                    </td></tr>
+                `;
+                return;
+            }
+            
+            container.innerHTML = properties.map(prop => {
+                const propInspections = inspections.filter(i => i.property_id === prop.id);
+                const lastInspection = propInspections.find(i => i.status === 'completed');
+                const pendingCount = propInspections.filter(i => i.status !== 'completed').length;
+                
+                return `
+                    <tr>
+                        <td>
+                            <div class="property-cell">
+                                <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=100&h=100&fit=crop" 
+                                     alt="${prop.name}" class="property-thumb">
+                                <div class="property-info">
+                                    <h4>${prop.name}, ${prop.location}</h4>
+                                    <span>${prop.asset_id}</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td>${prop.bedrooms || 0} Bed ${prop.property_type || 'Property'}</td>
+                        <td>${prop.area_sqft ? prop.area_sqft.toLocaleString() + ' sqft' : '--'}</td>
+                        <td>
+                            ${lastInspection ? `
+                                <div class="score-cell">
+                                    <span>${lastInspection.condition_score}</span>
+                                    <div class="score-bar">
+                                        <div class="score-fill ${lastInspection.condition_score >= 80 ? 'high' : lastInspection.condition_score >= 60 ? 'medium' : 'low'}" 
+                                             style="width: ${lastInspection.condition_score}%"></div>
+                                    </div>
+                                </div>
+                            ` : '<span style="color: #666;">No inspection</span>'}
+                        </td>
+                        <td>
+                            <div class="action-btns">
+                                <button class="action-btn" onclick="requestPropertyInspection('${prop.id}')" title="Request Inspection">
+                                    <i class="fa-solid fa-plus"></i>
+                                </button>
+                                <button class="action-btn" onclick="viewPropertyHistory('${prop.id}')" title="View History">
+                                    <i class="fa-solid fa-history"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+        
+        function requestPropertyInspection(propertyId) {
+            const prop = properties.find(p => p.id === propertyId);
+            if (prop) {
+                openRequestModal(prop);
+            }
+        }
+        
+        function viewPropertyHistory(propertyId) {
+            const propInspections = inspections.filter(i => i.property_id === propertyId);
+            if (propInspections.length === 0) {
+                alert('No inspection history for this property');
+                return;
+            }
+            // Show the first completed inspection
+            const completed = propInspections.find(i => i.status === 'completed');
+            if (completed) {
+                viewInspection(completed.id);
+            } else {
+                alert('No completed inspections yet');
+            }
+        }
+        
+        function openRequestModal(property = null) {
+            const modal = document.getElementById('requestModal');
+            const content = document.getElementById('request-modal-content');
+            
+            content.innerHTML = `
+                <div style="padding: 32px;">
+                    <h2 style="font-size: 22px; font-weight: 700; margin-bottom: 8px;">Request Inspection</h2>
+                    <p style="color: #666; margin-bottom: 24px;">Schedule a new property verification</p>
+                    
+                    <div class="input-group">
+                        <label>Property</label>
+                        <select id="request-property" style="width: 100%; background: var(--lucas-dark); border: 1px solid var(--lucas-border); border-radius: 12px; padding: 14px 16px; color: #fff; font-size: 14px;">
+                            ${properties.map(p => `
+                                <option value="${p.id}" ${property && property.id === p.id ? 'selected' : ''}>
+                                    ${p.name}, ${p.location} (${p.asset_id})
+                                </option>
+                            `).join('')}
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Preferred Date</label>
+                        <input type="date" id="request-date" style="width: 100%; background: var(--lucas-dark); border: 1px solid var(--lucas-border); border-radius: 12px; padding: 14px 16px; color: #fff; font-size: 14px;">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Notes (Optional)</label>
+                        <textarea id="request-notes" rows="3" placeholder="Any special instructions..." style="width: 100%; background: var(--lucas-dark); border: 1px solid var(--lucas-border); border-radius: 12px; padding: 14px 16px; color: #fff; font-size: 14px; font-family: inherit; resize: none;"></textarea>
+                    </div>
+                    
+                    <div style="display: flex; gap: 12px; margin-top: 24px;">
+                        <button class="btn btn-secondary" onclick="closeRequestModal()" style="flex: 1;">Cancel</button>
+                        <button class="btn btn-primary" onclick="submitInspectionRequest()" style="flex: 1;">
+                            <i class="fa-solid fa-paper-plane"></i> Submit Request
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // Set default date to tomorrow
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            document.getElementById('request-date').value = tomorrow.toISOString().split('T')[0];
+            
+            modal.classList.add('active');
+        }
+        
+        function closeRequestModal() {
+            document.getElementById('requestModal').classList.remove('active');
+        }
+        
+        async function submitInspectionRequest() {
+            const propertyId = document.getElementById('request-property').value;
+            const date = document.getElementById('request-date').value;
+            const notes = document.getElementById('request-notes').value;
+            
+            if (!propertyId || !date) {
+                alert('Please select a property and date');
+                return;
+            }
+            
+            const prop = properties.find(p => p.id === propertyId);
+            
+            try {
+                const { data, error } = await supabase
+                    .from('inspections')
+                    .insert({
+                        property_id: propertyId,
+                        asset_id: prop?.asset_id,
+                        status: 'scheduled',
+                        scheduled_date: date,
+                        notes: notes
+                    })
+                    .select()
+                    .single();
+                
+                if (error) throw error;
+                
+                closeRequestModal();
+                alert('Inspection request submitted successfully!');
+                loadDashboardData(); // Refresh data
+                
+            } catch (err) {
+                console.error(err);
+                alert('Error submitting request. Please try again.');
+            }
+        }
+        
+        function requestInspection() {
+            openRequestModal();
         }
     </script>
 </body>
