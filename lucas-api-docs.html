@@ -13,9 +13,11 @@
                 extend: {
                     colors: {
                         'lucas-dark': '#0a0a0a',
+                        'lucas-darker': '#050505',
                         'lucas-card': '#111111',
-                        'lucas-border': '#222222',
+                        'lucas-border': '#1e1e1e',
                         'lucas-green': '#DEFF9A',
+                        'code-bg': '#0d0d0d',
                     },
                     fontFamily: {
                         'mono': ['JetBrains Mono', 'monospace'],
@@ -26,120 +28,83 @@
         }
     </script>
     <style>
-        /* Base dark background fallback */
-        html, body {
-            background-color: #0a0a0a !important;
-            color: #d1d5db;
-        }
-        
-        .bg-lucas-dark {
-            background-color: #0a0a0a !important;
-        }
-        
-        /* Custom scrollbar */
+        html, body { background-color: #0a0a0a !important; color: #e5e7eb; }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #0a0a0a; }
-        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: #444; }
-        
-        /* Code highlighting */
-        .code-keyword { color: #c792ea; }
-        .code-string { color: #c3e88d; }
-        .code-number { color: #f78c6c; }
-        .code-property { color: #82aaff; }
-        .code-comment { color: #546e7a; }
-        
-        /* Smooth transitions */
-        .nav-item { transition: all 0.2s ease; }
-        .nav-item:hover { transform: translateX(4px); }
-        
-        /* Active nav indicator */
-        .nav-item.active { 
-            color: #DEFF9A; 
-            border-left-color: #DEFF9A;
-        }
-        
-        /* Code block line numbers */
-        .line-number {
-            user-select: none;
-            opacity: 0.3;
-        }
-        
-        /* Copy button */
-        .copy-btn {
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-        .code-block:hover .copy-btn {
-            opacity: 1;
-        }
-        
-        /* Method badges */
-        .method-get { background: rgba(34, 197, 94, 0.1); color: #22c55e; border-color: rgba(34, 197, 94, 0.3); }
-        .method-post { background: rgba(59, 130, 246, 0.1); color: #3b82f6; border-color: rgba(59, 130, 246, 0.3); }
-        .method-delete { background: rgba(239, 68, 68, 0.1); color: #ef4444; border-color: rgba(239, 68, 68, 0.3); }
-        .method-put { background: rgba(234, 179, 8, 0.1); color: #eab308; border-color: rgba(234, 179, 8, 0.3); }
+        ::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 3px; }
+        .sidebar-section.open .sidebar-items { display: block; }
+        .sidebar-section .sidebar-items { display: none; }
+        .sidebar-section .chevron { transition: transform 0.2s; }
+        .sidebar-section.open .chevron { transform: rotate(90deg); }
+        .nav-link.active { color: #DEFF9A; background: rgba(222, 255, 154, 0.05); border-left-color: #DEFF9A; }
+        .hljs-keyword { color: #c792ea; }
+        .hljs-string { color: #c3e88d; }
+        .hljs-number { color: #f78c6c; }
+        .hljs-attr { color: #ffcb6b; }
+        .hljs-built_in { color: #82aaff; }
+        .method-get { background: rgba(34, 197, 94, 0.15); color: #4ade80; }
+        .method-post { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
+        .method-delete { background: rgba(239, 68, 68, 0.15); color: #f87171; }
+        .lang-tab.active { color: #DEFF9A; border-bottom-color: #DEFF9A; }
+        .param-row:hover { background: rgba(255,255,255,0.02); }
+        .copy-btn.copied { color: #4ade80; }
     </style>
 </head>
 <body class="bg-lucas-dark text-gray-300 font-sans antialiased">
     <div class="flex min-h-screen">
-        <!-- Sidebar Navigation -->
-        <aside class="w-72 border-r border-lucas-border fixed h-screen overflow-y-auto bg-lucas-dark z-50">
-            <!-- Logo -->
-            <div class="p-6 border-b border-lucas-border">
-                <div class="flex items-center gap-3">
+        <!-- Sidebar -->
+        <aside class="w-72 border-r border-lucas-border fixed h-screen overflow-y-auto bg-lucas-dark z-50 flex flex-col">
+            <div class="p-5 border-b border-lucas-border">
+                <a href="https://app.lucas.app" class="flex items-center gap-3">
                     <div class="w-8 h-8 rounded-lg bg-lucas-green flex items-center justify-center">
-                        <svg class="w-5 h-5 text-black" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 2L2 7v10l10 5 10-5V7L12 2zm0 2.18l6.9 3.45L12 11.09 5.1 7.63 12 4.18zM4 8.82l7 3.5v7.36l-7-3.5V8.82zm9 10.86v-7.36l7-3.5v7.36l-7 3.5z"/>
-                        </svg>
+                        <svg class="w-5 h-5 text-black" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7v10l10 5 10-5V7L12 2zm0 2.18l6.9 3.45L12 11.09 5.1 7.63 12 4.18zM4 8.82l7 3.5v7.36l-7-3.5V8.82zm9 10.86v-7.36l7-3.5v7.36l-7 3.5z"/></svg>
                     </div>
-                    <div>
+                    <div class="flex items-baseline gap-2">
                         <span class="text-white font-bold text-lg">LUCAS</span>
-                        <span class="text-gray-500 text-sm ml-2">API Docs</span>
+                        <span class="text-gray-500 text-sm">API</span>
                     </div>
-                </div>
-                <div class="mt-4 flex items-center gap-2 px-3 py-2 bg-lucas-card rounded-lg border border-lucas-border">
-                    <span class="w-2 h-2 rounded-full bg-lucas-green animate-pulse"></span>
-                    <span class="text-xs font-mono text-gray-400">v1.0.0</span>
-                    <span class="text-xs text-gray-600">•</span>
-                    <span class="text-xs text-gray-500">Stable</span>
+                </a>
+            </div>
+            <div class="px-5 py-3 border-b border-lucas-border">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-lucas-green"></span>
+                        <span class="text-xs font-mono text-gray-400">v1.0</span>
+                    </div>
+                    <span class="text-xs px-2 py-0.5 rounded bg-lucas-green/10 text-lucas-green border border-lucas-green/20">Stable</span>
                 </div>
             </div>
-            
-            <!-- Navigation -->
-            <nav class="p-4">
-                <div class="mb-6">
-                    <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 px-3">Getting Started</h3>
-                    <a href="#introduction" class="nav-item active block px-3 py-2 text-sm border-l-2 border-transparent hover:text-white hover:border-gray-600">Introduction</a>
-                    <a href="#authentication" class="nav-item block px-3 py-2 text-sm border-l-2 border-transparent hover:text-white hover:border-gray-600">Authentication</a>
-                    <a href="#quickstart" class="nav-item block px-3 py-2 text-sm border-l-2 border-transparent hover:text-white hover:border-gray-600">Quick Start</a>
+            <div class="p-4 border-b border-lucas-border">
+                <div class="relative">
+                    <input type="text" placeholder="Search docs..." class="w-full px-3 py-2 pl-9 bg-lucas-card border border-lucas-border rounded-lg text-sm focus:outline-none focus:border-lucas-green/50 text-gray-300 placeholder-gray-600">
+                    <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-600 text-xs"></i>
                 </div>
-                
-                <div class="mb-6">
-                    <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 px-3">Core Resources</h3>
-                    <a href="#proofs" class="nav-item block px-3 py-2 text-sm border-l-2 border-transparent hover:text-white hover:border-gray-600">LUCAS Proofs</a>
-                    <a href="#assets" class="nav-item block px-3 py-2 text-sm border-l-2 border-transparent hover:text-white hover:border-gray-600">Assets</a>
-                    <a href="#inspections" class="nav-item block px-3 py-2 text-sm border-l-2 border-transparent hover:text-white hover:border-gray-600">Inspections</a>
-                    <a href="#scores" class="nav-item block px-3 py-2 text-sm border-l-2 border-transparent hover:text-white hover:border-gray-600">Condition Scores</a>
+            </div>
+            <nav class="flex-1 overflow-y-auto p-4">
+                <div class="sidebar-section open mb-4">
+                    <button onclick="toggleSection(this)" class="flex items-center justify-between w-full text-left px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider hover:text-gray-300">
+                        <span>Getting Started</span>
+                        <i class="fa-solid fa-chevron-right chevron text-[10px]"></i>
+                    </button>
+                    <div class="sidebar-items mt-1 space-y-0.5">
+                        <a href="#introduction" class="nav-link active block px-3 py-2 text-sm text-gray-400 hover:text-white border-l-2 border-transparent rounded-r">Introduction</a>
+                        <a href="#authentication" class="nav-link block px-3 py-2 text-sm text-gray-400 hover:text-white border-l-2 border-transparent rounded-r">Authentication</a>
+                        <a href="#errors" class="nav-link block px-3 py-2 text-sm text-gray-400 hover:text-white border-l-2 border-transparent rounded-r">Errors</a>
+                    </div>
                 </div>
-                
-                <div class="mb-6">
-                    <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 px-3">Integration</h3>
-                    <a href="#webhooks" class="nav-item block px-3 py-2 text-sm border-l-2 border-transparent hover:text-white hover:border-gray-600">Webhooks</a>
-                    <a href="#anchoring" class="nav-item block px-3 py-2 text-sm border-l-2 border-transparent hover:text-white hover:border-gray-600">On-chain Anchoring</a>
-                    <a href="#sdks" class="nav-item block px-3 py-2 text-sm border-l-2 border-transparent hover:text-white hover:border-gray-600">SDKs & Libraries</a>
-                </div>
-                
-                <div class="mb-6">
-                    <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 px-3">Reference</h3>
-                    <a href="#errors" class="nav-item block px-3 py-2 text-sm border-l-2 border-transparent hover:text-white hover:border-gray-600">Errors</a>
-                    <a href="#rate-limits" class="nav-item block px-3 py-2 text-sm border-l-2 border-transparent hover:text-white hover:border-gray-600">Rate Limits</a>
-                    <a href="#changelog" class="nav-item block px-3 py-2 text-sm border-l-2 border-transparent hover:text-white hover:border-gray-600">Changelog</a>
+                <div class="sidebar-section open mb-4">
+                    <button onclick="toggleSection(this)" class="flex items-center justify-between w-full text-left px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider hover:text-gray-300">
+                        <span>Core Resources</span>
+                        <i class="fa-solid fa-chevron-right chevron text-[10px]"></i>
+                    </button>
+                    <div class="sidebar-items mt-1 space-y-0.5">
+                        <a href="#proofs" class="nav-link block px-3 py-2 text-sm text-gray-400 hover:text-white border-l-2 border-transparent rounded-r">Proofs</a>
+                        <a href="#assets" class="nav-link block px-3 py-2 text-sm text-gray-400 hover:text-white border-l-2 border-transparent rounded-r">Assets</a>
+                        <a href="#webhooks" class="nav-link block px-3 py-2 text-sm text-gray-400 hover:text-white border-l-2 border-transparent rounded-r">Webhooks</a>
+                    </div>
                 </div>
             </nav>
-            
-            <!-- Footer -->
-            <div class="p-4 border-t border-lucas-border mt-auto">
+            <div class="p-4 border-t border-lucas-border">
                 <a href="https://app.lucas.app" class="flex items-center gap-2 text-sm text-gray-500 hover:text-lucas-green transition">
                     <i class="fa-solid fa-arrow-left text-xs"></i>
                     Back to lucas.app
@@ -149,472 +114,282 @@
         
         <!-- Main Content -->
         <main class="flex-1 ml-72">
-            <!-- Header -->
-            <header class="sticky top-0 z-40 bg-lucas-dark/80 backdrop-blur-xl border-b border-lucas-border">
-                <div class="max-w-4xl mx-auto px-8 py-4 flex items-center justify-between">
-                    <div class="flex items-center gap-4">
-                        <div class="relative">
-                            <input type="text" placeholder="Search documentation..." class="w-80 px-4 py-2 pl-10 bg-lucas-card border border-lucas-border rounded-lg text-sm focus:outline-none focus:border-lucas-green/50 transition">
-                            <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i>
-                            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-600 font-mono">⌘K</span>
-                        </div>
+            <header class="sticky top-0 z-40 bg-lucas-dark/90 backdrop-blur-xl border-b border-lucas-border">
+                <div class="flex items-center justify-between px-8 py-3">
+                    <div class="flex items-center gap-2 text-sm text-gray-500">
+                        <span>Docs</span>
+                        <i class="fa-solid fa-chevron-right text-[10px] text-gray-600"></i>
+                        <span class="text-gray-300">API Reference</span>
                     </div>
                     <div class="flex items-center gap-4">
-                        <a href="#" class="text-sm text-gray-400 hover:text-white transition">API Status</a>
-                        <a href="#" class="text-sm text-gray-400 hover:text-white transition">Support</a>
-                        <a href="#" class="px-4 py-2 bg-lucas-green text-black text-sm font-semibold rounded-lg hover:bg-white transition">Dashboard</a>
+                        <span class="text-sm text-gray-400 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-green-500"></span>API Status</span>
+                        <a href="#" class="px-4 py-1.5 bg-lucas-card border border-lucas-border rounded-lg text-sm text-gray-300 hover:border-lucas-green/50">Dashboard</a>
                     </div>
                 </div>
             </header>
             
-            <!-- Content -->
-            <div class="max-w-4xl mx-auto px-8 py-12">
-                <!-- Introduction -->
-                <section id="introduction" class="mb-20">
-                    <div class="flex items-center gap-3 mb-6">
-                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-lucas-green/20 to-lucas-green/5 border border-lucas-green/20 flex items-center justify-center">
-                            <i class="fa-solid fa-book text-lucas-green text-xl"></i>
-                        </div>
-                        <div>
-                            <h1 class="text-3xl font-bold text-white">LUCAS API</h1>
-                            <p class="text-gray-500">The verification layer for real-world assets</p>
-                        </div>
-                    </div>
-                    
-                    <div class="prose prose-invert max-w-none">
-                        <p class="text-lg text-gray-400 leading-relaxed mb-6">
-                            The LUCAS API provides programmatic access to physical asset verification. Request inspections, retrieve LUCAS Proofs, and integrate real-world condition data into your smart contracts and applications.
-                        </p>
-                        
-                        <div class="grid grid-cols-3 gap-4 mb-8">
-                            <div class="bg-lucas-card border border-lucas-border rounded-xl p-5">
-                                <div class="w-10 h-10 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mb-3">
-                                    <i class="fa-solid fa-shield-check text-blue-400"></i>
-                                </div>
-                                <h3 class="text-white font-semibold mb-1">Verified Data</h3>
-                                <p class="text-sm text-gray-500">GPS-stamped, cryptographically signed inspection data</p>
-                            </div>
-                            <div class="bg-lucas-card border border-lucas-border rounded-xl p-5">
-                                <div class="w-10 h-10 rounded-lg bg-purple-500/10 border border-purple-500/20 flex items-center justify-center mb-3">
-                                    <i class="fa-solid fa-link text-purple-400"></i>
-                                </div>
-                                <h3 class="text-white font-semibold mb-1">On-chain Ready</h3>
-                                <p class="text-sm text-gray-500">Anchor proof hashes to any EVM-compatible chain</p>
-                            </div>
-                            <div class="bg-lucas-card border border-lucas-border rounded-xl p-5">
-                                <div class="w-10 h-10 rounded-lg bg-lucas-green/10 border border-lucas-green/20 flex items-center justify-center mb-3">
-                                    <i class="fa-solid fa-bolt text-lucas-green"></i>
-                                </div>
-                                <h3 class="text-white font-semibold mb-1">Real-time</h3>
-                                <p class="text-sm text-gray-500">Webhooks and live updates as inspections complete</p>
+            <!-- Introduction -->
+            <section id="introduction" class="border-b border-lucas-border">
+                <div class="flex">
+                    <div class="w-1/2 p-10 border-r border-lucas-border">
+                        <h1 class="text-3xl font-bold text-white mb-4">LUCAS API</h1>
+                        <p class="text-gray-400 text-lg leading-relaxed mb-6">The LUCAS API provides programmatic access to physical asset verification. Request inspections, retrieve cryptographically signed proofs, and integrate real-world condition data into your smart contracts.</p>
+                        <div class="mb-8">
+                            <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Base URL</h3>
+                            <div class="bg-lucas-card border border-lucas-border rounded-lg px-4 py-3 font-mono text-sm">
+                                <span class="text-gray-500">https://</span><span class="text-lucas-green">api.lucas.app</span><span class="text-gray-500">/v1</span>
                             </div>
                         </div>
-                        
-                        <!-- Base URL -->
-                        <div class="bg-lucas-card border border-lucas-border rounded-xl overflow-hidden">
-                            <div class="px-5 py-3 border-b border-lucas-border bg-gradient-to-r from-lucas-green/5 to-transparent">
-                                <span class="text-sm font-semibold text-white">Base URL</span>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-lucas-card border border-lucas-border rounded-xl p-4">
+                                <div class="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center mb-3"><i class="fa-solid fa-shield-halved text-blue-400 text-sm"></i></div>
+                                <h4 class="text-white font-semibold text-sm mb-1">Verified Data</h4>
+                                <p class="text-xs text-gray-500">GPS-stamped, cryptographically signed</p>
                             </div>
-                            <div class="p-5">
-                                <code class="font-mono text-lucas-green">https://api.lucas.app/v1</code>
+                            <div class="bg-lucas-card border border-lucas-border rounded-xl p-4">
+                                <div class="w-8 h-8 rounded-lg bg-purple-500/10 flex items-center justify-center mb-3"><i class="fa-solid fa-link text-purple-400 text-sm"></i></div>
+                                <h4 class="text-white font-semibold text-sm mb-1">On-chain Ready</h4>
+                                <p class="text-xs text-gray-500">Anchor to any EVM chain</p>
                             </div>
                         </div>
                     </div>
-                </section>
-                
-                <!-- Authentication -->
-                <section id="authentication" class="mb-20">
-                    <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
-                        <span class="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
-                            <i class="fa-solid fa-key text-amber-400 text-sm"></i>
-                        </span>
-                        Authentication
-                    </h2>
-                    
-                    <p class="text-gray-400 mb-6">
-                        The LUCAS API uses API keys to authenticate requests. You can view and manage your API keys in the <a href="#" class="text-lucas-green hover:underline">Dashboard</a>.
-                    </p>
-                    
-                    <div class="bg-lucas-card border border-lucas-border rounded-xl overflow-hidden mb-6">
-                        <div class="px-5 py-3 border-b border-lucas-border flex items-center justify-between">
-                            <span class="text-sm text-gray-400">API Key Format</span>
-                        </div>
-                        <div class="p-5 font-mono text-sm">
-                            <span class="text-gray-500">lcs_live_</span><span class="text-lucas-green">xxxxxxxxxxxxxxxxxxxxxxxx</span>
-                        </div>
-                    </div>
-                    
-                    <p class="text-gray-400 mb-4">
-                        Include your API key in the <code class="px-2 py-1 bg-lucas-card rounded text-sm font-mono text-white">Authorization</code> header:
-                    </p>
-                    
-                    <!-- Code Block -->
-                    <div class="code-block bg-lucas-card border border-lucas-border rounded-xl overflow-hidden relative">
-                        <div class="px-5 py-3 border-b border-lucas-border flex items-center justify-between">
-                            <div class="flex items-center gap-3">
-                                <span class="text-xs font-mono text-gray-500">bash</span>
+                    <div class="w-1/2 bg-code-bg p-8">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Quick Start</span>
+                            <div class="flex gap-1">
+                                <button onclick="switchLang(this, 'curl')" class="lang-tab active px-3 py-1 text-xs border-b-2 border-transparent">cURL</button>
+                                <button onclick="switchLang(this, 'js')" class="lang-tab px-3 py-1 text-xs border-b-2 border-transparent text-gray-500">Node.js</button>
+                                <button onclick="switchLang(this, 'python')" class="lang-tab px-3 py-1 text-xs border-b-2 border-transparent text-gray-500">Python</button>
                             </div>
-                            <button class="copy-btn text-xs text-gray-500 hover:text-white transition flex items-center gap-1">
-                                <i class="fa-regular fa-copy"></i>
-                                Copy
-                            </button>
                         </div>
-                        <pre class="p-5 overflow-x-auto text-sm"><code><span class="text-gray-500">curl</span> https://api.lucas.app/v1/proofs \
-  <span class="code-property">-H</span> <span class="code-string">"Authorization: Bearer lcs_live_xxxxxxxxxxxx"</span></code></pre>
-                    </div>
-                    
-                    <div class="mt-6 p-4 bg-amber-500/5 border border-amber-500/20 rounded-xl flex gap-3">
-                        <i class="fa-solid fa-triangle-exclamation text-amber-400 mt-0.5"></i>
-                        <div>
-                            <p class="text-sm text-amber-200 font-medium">Keep your API keys secure</p>
-                            <p class="text-sm text-gray-400 mt-1">Never expose API keys in client-side code or public repositories. Use environment variables in production.</p>
+                        <div class="relative">
+                            <pre class="bg-lucas-darker border border-lucas-border rounded-lg p-4 overflow-x-auto text-sm"><code class="lang-curl"><span class="hljs-built_in">curl</span> https://api.lucas.app/v1/proofs \
+  -H <span class="hljs-string">"Authorization: Bearer lcs_live_xxx"</span></code><code class="lang-js hidden"><span class="hljs-keyword">import</span> Lucas <span class="hljs-keyword">from</span> <span class="hljs-string">'@lucas/sdk'</span>;
+<span class="hljs-keyword">const</span> lucas = <span class="hljs-keyword">new</span> Lucas(<span class="hljs-string">'lcs_live_xxx'</span>);
+<span class="hljs-keyword">const</span> proofs = <span class="hljs-keyword">await</span> lucas.proofs.list();</code><code class="lang-python hidden"><span class="hljs-keyword">import</span> lucas
+client = lucas.Client(<span class="hljs-string">'lcs_live_xxx'</span>)
+proofs = client.proofs.list()</code></pre>
+                            <button onclick="copyCode(this)" class="copy-btn absolute top-3 right-3 px-2 py-1 text-xs text-gray-500 hover:text-white bg-lucas-card border border-lucas-border rounded"><i class="fa-regular fa-copy mr-1"></i>Copy</button>
                         </div>
                     </div>
-                </section>
-                
-                <!-- LUCAS Proofs -->
-                <section id="proofs" class="mb-20">
-                    <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
-                        <span class="w-8 h-8 rounded-lg bg-lucas-green/10 border border-lucas-green/20 flex items-center justify-center">
-                            <i class="fa-solid fa-file-shield text-lucas-green text-sm"></i>
-                        </span>
-                        LUCAS Proofs
-                    </h2>
-                    
-                    <p class="text-gray-400 mb-8">
-                        A LUCAS Proof is a cryptographically signed, immutable record of a physical asset's condition at a specific point in time. Each proof contains inspection data, photos, GPS verification, and a condition score.
-                    </p>
-                    
-                    <!-- Endpoints -->
-                    <div class="space-y-4 mb-8">
-                        <div class="bg-lucas-card border border-lucas-border rounded-xl p-5 hover:border-lucas-green/30 transition cursor-pointer">
-                            <div class="flex items-center gap-3 mb-2">
-                                <span class="method-get px-2 py-1 rounded text-xs font-bold font-mono border">GET</span>
-                                <code class="font-mono text-white">/proofs</code>
-                            </div>
-                            <p class="text-sm text-gray-500">List all proofs for your organization</p>
-                        </div>
-                        
-                        <div class="bg-lucas-card border border-lucas-border rounded-xl p-5 hover:border-lucas-green/30 transition cursor-pointer">
-                            <div class="flex items-center gap-3 mb-2">
-                                <span class="method-get px-2 py-1 rounded text-xs font-bold font-mono border">GET</span>
-                                <code class="font-mono text-white">/proofs/<span class="text-gray-500">{proof_id}</span></code>
-                            </div>
-                            <p class="text-sm text-gray-500">Retrieve a specific proof by ID</p>
-                        </div>
-                        
-                        <div class="bg-lucas-card border border-lucas-border rounded-xl p-5 hover:border-lucas-green/30 transition cursor-pointer">
-                            <div class="flex items-center gap-3 mb-2">
-                                <span class="method-post px-2 py-1 rounded text-xs font-bold font-mono border">POST</span>
-                                <code class="font-mono text-white">/proofs/request</code>
-                            </div>
-                            <p class="text-sm text-gray-500">Request a new inspection and proof</p>
-                        </div>
-                    </div>
-                    
-                    <!-- Example Response -->
-                    <h3 class="text-lg font-semibold text-white mb-4">The Proof Object</h3>
-                    
-                    <div class="code-block bg-lucas-card border border-lucas-border rounded-xl overflow-hidden relative">
-                        <div class="px-5 py-3 border-b border-lucas-border flex items-center justify-between">
-                            <div class="flex items-center gap-3">
-                                <span class="text-xs font-mono text-gray-500">json</span>
-                                <span class="text-xs text-gray-600">•</span>
-                                <span class="text-xs text-gray-500">LUCAS Proof Response</span>
-                            </div>
-                            <button class="copy-btn text-xs text-gray-500 hover:text-white transition flex items-center gap-1">
-                                <i class="fa-regular fa-copy"></i>
-                                Copy
-                            </button>
-                        </div>
-                        <pre class="p-5 overflow-x-auto text-sm leading-relaxed"><code>{
-  <span class="code-property">"proof_id"</span>: <span class="code-string">"PROOF-2024-0847"</span>,
-  <span class="code-property">"asset_id"</span>: <span class="code-string">"asset_marina_1205"</span>,
-  <span class="code-property">"type"</span>: <span class="code-string">"recurring_inspection"</span>,
-  <span class="code-property">"timestamp"</span>: <span class="code-string">"2024-12-05T14:32:00Z"</span>,
-  <span class="code-property">"inspector"</span>: {
-    <span class="code-property">"id"</span>: <span class="code-string">"insp_ahmed_k"</span>,
-    <span class="code-property">"verified"</span>: <span class="code-keyword">true</span>,
-    <span class="code-property">"credentials"</span>: [<span class="code-string">"RICS"</span>, <span class="code-string">"RERA"</span>]
-  },
-  <span class="code-property">"location"</span>: {
-    <span class="code-property">"lat"</span>: <span class="code-number">25.0762</span>,
-    <span class="code-property">"lng"</span>: <span class="code-number">55.1304</span>,
-    <span class="code-property">"verified"</span>: <span class="code-keyword">true</span>,
-    <span class="code-property">"accuracy_m"</span>: <span class="code-number">3.2</span>
-  },
-  <span class="code-property">"condition"</span>: {
-    <span class="code-property">"score"</span>: <span class="code-number">94</span>,
-    <span class="code-property">"grade"</span>: <span class="code-string">"A"</span>,
-    <span class="code-property">"issues_found"</span>: <span class="code-number">1</span>,
-    <span class="code-property">"issues_critical"</span>: <span class="code-number">0</span>
-  },
-  <span class="code-property">"issues"</span>: [
-    {
-      <span class="code-property">"id"</span>: <span class="code-string">"issue_001"</span>,
-      <span class="code-property">"category"</span>: <span class="code-string">"hvac"</span>,
-      <span class="code-property">"severity"</span>: <span class="code-string">"low"</span>,
-      <span class="code-property">"description"</span>: <span class="code-string">"Minor AC drain condensation"</span>,
-      <span class="code-property">"estimated_cost"</span>: <span class="code-number">150</span>,
-      <span class="code-property">"if_ignored_cost"</span>: <span class="code-number">1350</span>
-    }
-  ],
-  <span class="code-property">"signature"</span>: {
-    <span class="code-property">"hash"</span>: <span class="code-string">"sha256:7f83b1657ff1fc53b92dc..."</span>,
-    <span class="code-property">"algorithm"</span>: <span class="code-string">"SHA-256"</span>,
-    <span class="code-property">"anchor_tx"</span>: <span class="code-string">"0x1234...abcd"</span>,
-    <span class="code-property">"chain"</span>: <span class="code-string">"polygon"</span>
-  },
-  <span class="code-property">"yield_impact"</span>: {
-    <span class="code-property">"risk_level"</span>: <span class="code-string">"low"</span>,
-    <span class="code-property">"projected_apy_effect"</span>: <span class="code-number">-0.02</span>
-  }
-}</code></pre>
-                    </div>
-                </section>
-                
-                <!-- Webhooks -->
-                <section id="webhooks" class="mb-20">
-                    <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
-                        <span class="w-8 h-8 rounded-lg bg-purple-500/10 border border-purple-500/20 flex items-center justify-center">
-                            <i class="fa-solid fa-bolt text-purple-400 text-sm"></i>
-                        </span>
-                        Webhooks
-                    </h2>
-                    
-                    <p class="text-gray-400 mb-8">
-                        Receive real-time notifications when events occur. LUCAS sends POST requests to your configured endpoints with event data.
-                    </p>
-                    
-                    <!-- Event Types -->
-                    <h3 class="text-lg font-semibold text-white mb-4">Event Types</h3>
-                    
-                    <div class="bg-lucas-card border border-lucas-border rounded-xl overflow-hidden mb-8">
-                        <table class="w-full">
-                            <thead>
-                                <tr class="border-b border-lucas-border">
-                                    <th class="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Event</th>
-                                    <th class="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Description</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-lucas-border">
-                                <tr>
-                                    <td class="px-5 py-4"><code class="text-sm font-mono text-lucas-green">proof.completed</code></td>
-                                    <td class="px-5 py-4 text-sm text-gray-400">A new LUCAS Proof is ready</td>
-                                </tr>
-                                <tr>
-                                    <td class="px-5 py-4"><code class="text-sm font-mono text-lucas-green">proof.anchored</code></td>
-                                    <td class="px-5 py-4 text-sm text-gray-400">Proof hash written to blockchain</td>
-                                </tr>
-                                <tr>
-                                    <td class="px-5 py-4"><code class="text-sm font-mono text-lucas-green">asset.score_changed</code></td>
-                                    <td class="px-5 py-4 text-sm text-gray-400">Asset condition score updated</td>
-                                </tr>
-                                <tr>
-                                    <td class="px-5 py-4"><code class="text-sm font-mono text-lucas-green">issue.detected</code></td>
-                                    <td class="px-5 py-4 text-sm text-gray-400">New issue found during inspection</td>
-                                </tr>
-                                <tr>
-                                    <td class="px-5 py-4"><code class="text-sm font-mono text-lucas-green">issue.resolved</code></td>
-                                    <td class="px-5 py-4 text-sm text-gray-400">Issue marked as fixed</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    <!-- Webhook Payload -->
-                    <h3 class="text-lg font-semibold text-white mb-4">Example Payload</h3>
-                    
-                    <div class="code-block bg-lucas-card border border-lucas-border rounded-xl overflow-hidden relative">
-                        <div class="px-5 py-3 border-b border-lucas-border flex items-center justify-between">
-                            <span class="text-xs font-mono text-gray-500">json</span>
-                            <button class="copy-btn text-xs text-gray-500 hover:text-white transition flex items-center gap-1">
-                                <i class="fa-regular fa-copy"></i>
-                                Copy
-                            </button>
-                        </div>
-                        <pre class="p-5 overflow-x-auto text-sm leading-relaxed"><code>{
-  <span class="code-property">"event"</span>: <span class="code-string">"proof.completed"</span>,
-  <span class="code-property">"timestamp"</span>: <span class="code-string">"2024-12-05T14:32:00Z"</span>,
-  <span class="code-property">"data"</span>: {
-    <span class="code-property">"proof_id"</span>: <span class="code-string">"PROOF-2024-0847"</span>,
-    <span class="code-property">"asset_id"</span>: <span class="code-string">"asset_marina_1205"</span>,
-    <span class="code-property">"condition_score"</span>: <span class="code-number">94</span>,
-    <span class="code-property">"issues_found"</span>: <span class="code-number">1</span>
-  }
-}</code></pre>
-                    </div>
-                </section>
-                
-                <!-- SDKs -->
-                <section id="sdks" class="mb-20">
-                    <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
-                        <span class="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
-                            <i class="fa-solid fa-cube text-blue-400 text-sm"></i>
-                        </span>
-                        SDKs & Libraries
-                    </h2>
-                    
-                    <p class="text-gray-400 mb-8">
-                        Official client libraries for popular languages. All SDKs are open source and available on GitHub.
-                    </p>
-                    
-                    <div class="grid grid-cols-3 gap-4 mb-8">
-                        <div class="bg-lucas-card border border-lucas-border rounded-xl p-5 hover:border-lucas-green/30 transition">
-                            <div class="flex items-center gap-3 mb-3">
-                                <i class="fa-brands fa-js text-yellow-400 text-2xl"></i>
-                                <span class="text-white font-semibold">JavaScript</span>
-                            </div>
-                            <code class="text-xs font-mono text-gray-500 block mb-3">npm install @lucas/sdk</code>
-                            <a href="#" class="text-xs text-lucas-green hover:underline">View on GitHub →</a>
-                        </div>
-                        
-                        <div class="bg-lucas-card border border-lucas-border rounded-xl p-5 hover:border-lucas-green/30 transition">
-                            <div class="flex items-center gap-3 mb-3">
-                                <i class="fa-brands fa-python text-blue-400 text-2xl"></i>
-                                <span class="text-white font-semibold">Python</span>
-                            </div>
-                            <code class="text-xs font-mono text-gray-500 block mb-3">pip install lucas-sdk</code>
-                            <a href="#" class="text-xs text-lucas-green hover:underline">View on GitHub →</a>
-                        </div>
-                        
-                        <div class="bg-lucas-card border border-lucas-border rounded-xl p-5 hover:border-lucas-green/30 transition">
-                            <div class="flex items-center gap-3 mb-3">
-                                <i class="fa-brands fa-golang text-cyan-400 text-2xl"></i>
-                                <span class="text-white font-semibold">Go</span>
-                            </div>
-                            <code class="text-xs font-mono text-gray-500 block mb-3">go get github.com/lucas/go-sdk</code>
-                            <a href="#" class="text-xs text-lucas-green hover:underline">View on GitHub →</a>
-                        </div>
-                    </div>
-                    
-                    <!-- Quick Start Code -->
-                    <h3 class="text-lg font-semibold text-white mb-4">Quick Start</h3>
-                    
-                    <div class="code-block bg-lucas-card border border-lucas-border rounded-xl overflow-hidden relative">
-                        <div class="px-5 py-3 border-b border-lucas-border flex items-center justify-between">
-                            <div class="flex items-center gap-2">
-                                <button class="px-3 py-1 bg-lucas-green/10 text-lucas-green text-xs font-medium rounded">JavaScript</button>
-                                <button class="px-3 py-1 text-gray-500 text-xs font-medium rounded hover:text-white transition">Python</button>
-                                <button class="px-3 py-1 text-gray-500 text-xs font-medium rounded hover:text-white transition">Go</button>
-                            </div>
-                            <button class="copy-btn text-xs text-gray-500 hover:text-white transition flex items-center gap-1">
-                                <i class="fa-regular fa-copy"></i>
-                                Copy
-                            </button>
-                        </div>
-                        <pre class="p-5 overflow-x-auto text-sm leading-relaxed"><code><span class="code-keyword">import</span> { LucasClient } <span class="code-keyword">from</span> <span class="code-string">'@lucas/sdk'</span>;
-
-<span class="code-keyword">const</span> lucas = <span class="code-keyword">new</span> LucasClient(<span class="code-string">'lcs_live_xxxxxxxxxxxx'</span>);
-
-<span class="code-comment">// Get latest proof for an asset</span>
-<span class="code-keyword">const</span> proof = <span class="code-keyword">await</span> lucas.assets.getLatestProof(<span class="code-string">'asset_marina_1205'</span>);
-
-console.log(<span class="code-string">`Condition Score: <span class="code-keyword">${</span>proof.condition.score<span class="code-keyword">}</span>`</span>);
-console.log(<span class="code-string">`Issues Found: <span class="code-keyword">${</span>proof.issues_found<span class="code-keyword">}</span>`</span>);
-
-<span class="code-comment">// Request a new inspection</span>
-<span class="code-keyword">const</span> request = <span class="code-keyword">await</span> lucas.proofs.request({
-  asset_id: <span class="code-string">'asset_marina_1205'</span>,
-  type: <span class="code-string">'recurring_inspection'</span>,
-  priority: <span class="code-string">'standard'</span>,
-  webhook_url: <span class="code-string">'https://yourapp.com/webhooks/lucas'</span>
-});</code></pre>
-                    </div>
-                </section>
-                
-                <!-- Rate Limits -->
-                <section id="rate-limits" class="mb-20">
-                    <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
-                        <span class="w-8 h-8 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center">
-                            <i class="fa-solid fa-gauge-high text-red-400 text-sm"></i>
-                        </span>
-                        Rate Limits
-                    </h2>
-                    
-                    <p class="text-gray-400 mb-8">
-                        API requests are rate limited based on your plan. Rate limit headers are included in every response.
-                    </p>
-                    
-                    <div class="bg-lucas-card border border-lucas-border rounded-xl overflow-hidden">
-                        <table class="w-full">
-                            <thead>
-                                <tr class="border-b border-lucas-border">
-                                    <th class="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Plan</th>
-                                    <th class="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Rate Limit</th>
-                                    <th class="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Burst</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-lucas-border">
-                                <tr>
-                                    <td class="px-5 py-4 text-white font-medium">Pilot</td>
-                                    <td class="px-5 py-4 text-sm text-gray-400">100 requests/min</td>
-                                    <td class="px-5 py-4 text-sm text-gray-400">200 requests</td>
-                                </tr>
-                                <tr>
-                                    <td class="px-5 py-4 text-white font-medium">Growth</td>
-                                    <td class="px-5 py-4 text-sm text-gray-400">500 requests/min</td>
-                                    <td class="px-5 py-4 text-sm text-gray-400">1,000 requests</td>
-                                </tr>
-                                <tr>
-                                    <td class="px-5 py-4 text-white font-medium">Enterprise</td>
-                                    <td class="px-5 py-4 text-sm text-gray-400">Custom</td>
-                                    <td class="px-5 py-4 text-sm text-gray-400">Custom</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </section>
-                
-            </div>
+                </div>
+            </section>
             
-            <!-- Footer -->
-            <footer class="border-t border-lucas-border py-8">
-                <div class="max-w-4xl mx-auto px-8 flex items-center justify-between">
-                    <p class="text-sm text-gray-600">© 2025 LUCAS. All rights reserved.</p>
-                    <div class="flex items-center gap-6">
-                        <a href="#" class="text-sm text-gray-500 hover:text-white transition">Terms</a>
-                        <a href="#" class="text-sm text-gray-500 hover:text-white transition">Privacy</a>
-                        <a href="#" class="text-sm text-gray-500 hover:text-white transition">Status</a>
+            <!-- Authentication -->
+            <section id="authentication" class="border-b border-lucas-border">
+                <div class="flex">
+                    <div class="w-1/2 p-10 border-r border-lucas-border">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center"><i class="fa-solid fa-key text-amber-400 text-sm"></i></div>
+                            <h2 class="text-2xl font-bold text-white">Authentication</h2>
+                        </div>
+                        <p class="text-gray-400 mb-6">Include your API key in the <code class="px-1.5 py-0.5 bg-lucas-card rounded text-sm font-mono text-gray-300">Authorization</code> header.</p>
+                        <div class="mb-6">
+                            <h3 class="text-sm font-semibold text-white mb-3">API Key Format</h3>
+                            <div class="bg-lucas-card border border-lucas-border rounded-lg px-4 py-3 font-mono text-sm">
+                                <span class="text-gray-500">lcs_</span><span class="text-amber-400">live</span><span class="text-gray-500">_</span><span class="text-lucas-green">xxxxxxxxxxxxxxxx</span>
+                            </div>
+                        </div>
+                        <div class="p-4 bg-amber-500/5 border border-amber-500/20 rounded-xl flex gap-3">
+                            <i class="fa-solid fa-triangle-exclamation text-amber-400 mt-0.5"></i>
+                            <div>
+                                <p class="text-sm text-amber-200 font-medium">Protect your API keys</p>
+                                <p class="text-xs text-gray-400 mt-1">Never expose keys in client-side code.</p>
+                            </div>
+                        </div>
                     </div>
+                    <div class="w-1/2 bg-code-bg p-8">
+                        <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 block">Authenticated Request</span>
+                        <div class="relative">
+                            <pre class="bg-lucas-darker border border-lucas-border rounded-lg p-4 text-sm"><code><span class="hljs-built_in">curl</span> https://api.lucas.app/v1/proofs/PROOF-2024-0847 \
+  -H <span class="hljs-string">"Authorization: Bearer lcs_live_xxxxxxxxxxxx"</span></code></pre>
+                            <button onclick="copyCode(this)" class="copy-btn absolute top-3 right-3 px-2 py-1 text-xs text-gray-500 hover:text-white bg-lucas-card border border-lucas-border rounded"><i class="fa-regular fa-copy mr-1"></i>Copy</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Proofs -->
+            <section id="proofs" class="border-b border-lucas-border">
+                <div class="flex">
+                    <div class="w-1/2 p-10 border-r border-lucas-border">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-8 h-8 rounded-lg bg-lucas-green/10 flex items-center justify-center"><i class="fa-solid fa-file-shield text-lucas-green text-sm"></i></div>
+                            <h2 class="text-2xl font-bold text-white">Proofs</h2>
+                        </div>
+                        <p class="text-gray-400 mb-6">A Proof is a cryptographically signed record of a physical asset's condition at a specific point in time.</p>
+                        <div class="space-y-3 mb-8">
+                            <div class="flex items-center gap-3 p-3 bg-lucas-card border border-lucas-border rounded-lg hover:border-lucas-green/30 transition">
+                                <span class="method-get px-2 py-0.5 rounded text-[10px] font-bold font-mono">GET</span>
+                                <code class="text-sm text-gray-300 font-mono">/proofs</code>
+                                <span class="text-xs text-gray-500 ml-auto">List all proofs</span>
+                            </div>
+                            <div class="flex items-center gap-3 p-3 bg-lucas-card border border-lucas-border rounded-lg hover:border-lucas-green/30 transition">
+                                <span class="method-get px-2 py-0.5 rounded text-[10px] font-bold font-mono">GET</span>
+                                <code class="text-sm text-gray-300 font-mono">/proofs/:id</code>
+                                <span class="text-xs text-gray-500 ml-auto">Retrieve a proof</span>
+                            </div>
+                            <div class="flex items-center gap-3 p-3 bg-lucas-card border border-lucas-border rounded-lg hover:border-lucas-green/30 transition">
+                                <span class="method-post px-2 py-0.5 rounded text-[10px] font-bold font-mono">POST</span>
+                                <code class="text-sm text-gray-300 font-mono">/proofs/request</code>
+                                <span class="text-xs text-gray-500 ml-auto">Request new proof</span>
+                            </div>
+                        </div>
+                        <h3 class="text-sm font-semibold text-white mb-3">The Proof Object</h3>
+                        <div class="border border-lucas-border rounded-lg overflow-hidden text-sm">
+                            <table class="w-full">
+                                <tbody class="divide-y divide-lucas-border">
+                                    <tr class="param-row"><td class="px-4 py-3 font-mono text-lucas-green">proof_id</td><td class="px-4 py-3 text-gray-500">string</td><td class="px-4 py-3 text-gray-400">Unique identifier</td></tr>
+                                    <tr class="param-row"><td class="px-4 py-3 font-mono text-lucas-green">asset_id</td><td class="px-4 py-3 text-gray-500">string</td><td class="px-4 py-3 text-gray-400">Related asset</td></tr>
+                                    <tr class="param-row"><td class="px-4 py-3 font-mono text-lucas-green">condition.score</td><td class="px-4 py-3 text-gray-500">integer</td><td class="px-4 py-3 text-gray-400">Score 0-100</td></tr>
+                                    <tr class="param-row"><td class="px-4 py-3 font-mono text-lucas-green">issues</td><td class="px-4 py-3 text-gray-500">array</td><td class="px-4 py-3 text-gray-400">Detected issues</td></tr>
+                                    <tr class="param-row"><td class="px-4 py-3 font-mono text-lucas-green">signature.hash</td><td class="px-4 py-3 text-gray-500">string</td><td class="px-4 py-3 text-gray-400">SHA-256 hash</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="w-1/2 bg-code-bg p-8">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-semibold text-gray-500 uppercase">Response</span>
+                            <span class="text-xs px-2 py-0.5 bg-green-500/10 text-green-400 rounded font-mono">200 OK</span>
+                        </div>
+                        <div class="relative">
+                            <pre class="bg-lucas-darker border border-lucas-border rounded-lg p-4 overflow-x-auto text-sm leading-relaxed"><code>{
+  <span class="hljs-attr">"proof_id"</span>: <span class="hljs-string">"PROOF-2024-0847"</span>,
+  <span class="hljs-attr">"asset_id"</span>: <span class="hljs-string">"asset_marina_1205"</span>,
+  <span class="hljs-attr">"timestamp"</span>: <span class="hljs-string">"2024-12-05T14:32:00Z"</span>,
+  <span class="hljs-attr">"condition"</span>: {
+    <span class="hljs-attr">"score"</span>: <span class="hljs-number">94</span>,
+    <span class="hljs-attr">"grade"</span>: <span class="hljs-string">"A"</span>,
+    <span class="hljs-attr">"issues_found"</span>: <span class="hljs-number">1</span>
+  },
+  <span class="hljs-attr">"issues"</span>: [{
+    <span class="hljs-attr">"category"</span>: <span class="hljs-string">"hvac"</span>,
+    <span class="hljs-attr">"severity"</span>: <span class="hljs-string">"low"</span>,
+    <span class="hljs-attr">"estimated_cost"</span>: <span class="hljs-number">150</span>
+  }],
+  <span class="hljs-attr">"signature"</span>: {
+    <span class="hljs-attr">"hash"</span>: <span class="hljs-string">"sha256:7f83b165..."</span>,
+    <span class="hljs-attr">"chain"</span>: <span class="hljs-string">"polygon"</span>
+  }
+}</code></pre>
+                            <button onclick="copyCode(this)" class="copy-btn absolute top-3 right-3 px-2 py-1 text-xs text-gray-500 hover:text-white bg-lucas-card border border-lucas-border rounded"><i class="fa-regular fa-copy mr-1"></i>Copy</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Webhooks -->
+            <section id="webhooks" class="border-b border-lucas-border">
+                <div class="flex">
+                    <div class="w-1/2 p-10 border-r border-lucas-border">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-8 h-8 rounded-lg bg-purple-500/10 flex items-center justify-center"><i class="fa-solid fa-bolt text-purple-400 text-sm"></i></div>
+                            <h2 class="text-2xl font-bold text-white">Webhooks</h2>
+                        </div>
+                        <p class="text-gray-400 mb-6">Receive real-time notifications when events occur.</p>
+                        <h3 class="text-sm font-semibold text-white mb-3">Event Types</h3>
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between p-3 bg-lucas-card border border-lucas-border rounded-lg">
+                                <code class="text-sm font-mono text-lucas-green">proof.completed</code>
+                                <span class="text-xs text-gray-500">New proof ready</span>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-lucas-card border border-lucas-border rounded-lg">
+                                <code class="text-sm font-mono text-lucas-green">proof.anchored</code>
+                                <span class="text-xs text-gray-500">Written to chain</span>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-lucas-card border border-lucas-border rounded-lg">
+                                <code class="text-sm font-mono text-lucas-green">issue.detected</code>
+                                <span class="text-xs text-gray-500">New issue found</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="w-1/2 bg-code-bg p-8">
+                        <span class="text-xs font-semibold text-gray-500 uppercase mb-3 block">Webhook Payload</span>
+                        <div class="relative">
+                            <pre class="bg-lucas-darker border border-lucas-border rounded-lg p-4 text-sm"><code>{
+  <span class="hljs-attr">"type"</span>: <span class="hljs-string">"proof.completed"</span>,
+  <span class="hljs-attr">"created"</span>: <span class="hljs-string">"2024-12-05T14:32:00Z"</span>,
+  <span class="hljs-attr">"data"</span>: {
+    <span class="hljs-attr">"proof_id"</span>: <span class="hljs-string">"PROOF-2024-0847"</span>,
+    <span class="hljs-attr">"condition_score"</span>: <span class="hljs-number">94</span>
+  }
+}</code></pre>
+                            <button onclick="copyCode(this)" class="copy-btn absolute top-3 right-3 px-2 py-1 text-xs text-gray-500 hover:text-white bg-lucas-card border border-lucas-border rounded"><i class="fa-regular fa-copy mr-1"></i>Copy</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Errors -->
+            <section id="errors" class="border-b border-lucas-border">
+                <div class="flex">
+                    <div class="w-1/2 p-10 border-r border-lucas-border">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center"><i class="fa-solid fa-circle-exclamation text-red-400 text-sm"></i></div>
+                            <h2 class="text-2xl font-bold text-white">Errors</h2>
+                        </div>
+                        <p class="text-gray-400 mb-6">LUCAS uses conventional HTTP response codes.</p>
+                        <div class="border border-lucas-border rounded-lg overflow-hidden text-sm">
+                            <table class="w-full">
+                                <thead class="bg-lucas-card"><tr><th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Code</th><th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Description</th></tr></thead>
+                                <tbody class="divide-y divide-lucas-border">
+                                    <tr class="param-row"><td class="px-4 py-3 text-green-400 font-mono">200</td><td class="px-4 py-3 text-gray-400">Success</td></tr>
+                                    <tr class="param-row"><td class="px-4 py-3 text-amber-400 font-mono">400</td><td class="px-4 py-3 text-gray-400">Bad request</td></tr>
+                                    <tr class="param-row"><td class="px-4 py-3 text-amber-400 font-mono">401</td><td class="px-4 py-3 text-gray-400">Unauthorized</td></tr>
+                                    <tr class="param-row"><td class="px-4 py-3 text-amber-400 font-mono">429</td><td class="px-4 py-3 text-gray-400">Rate limited</td></tr>
+                                    <tr class="param-row"><td class="px-4 py-3 text-red-400 font-mono">500</td><td class="px-4 py-3 text-gray-400">Server error</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="w-1/2 bg-code-bg p-8">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-semibold text-gray-500 uppercase">Error Response</span>
+                            <span class="text-xs px-2 py-0.5 bg-red-500/10 text-red-400 rounded font-mono">401</span>
+                        </div>
+                        <pre class="bg-lucas-darker border border-lucas-border rounded-lg p-4 text-sm"><code>{
+  <span class="hljs-attr">"error"</span>: {
+    <span class="hljs-attr">"code"</span>: <span class="hljs-string">"invalid_api_key"</span>,
+    <span class="hljs-attr">"message"</span>: <span class="hljs-string">"Invalid API key provided."</span>
+  }
+}</code></pre>
+                    </div>
+                </div>
+            </section>
+            
+            <footer class="border-t border-lucas-border py-8 px-10">
+                <div class="flex items-center justify-between text-sm">
+                    <p class="text-gray-600">© 2025 LUCAS. All rights reserved.</p>
+                    <a href="https://app.lucas.app" class="text-gray-500 hover:text-lucas-green">lucas.app</a>
                 </div>
             </footer>
         </main>
     </div>
     
     <script>
-        // Copy button functionality
-        document.querySelectorAll('.copy-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const codeBlock = btn.closest('.code-block');
-                const code = codeBlock.querySelector('code').innerText;
-                navigator.clipboard.writeText(code);
-                btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
-                setTimeout(() => {
-                    btn.innerHTML = '<i class="fa-regular fa-copy"></i> Copy';
-                }, 2000);
-            });
-        });
-        
-        // Active nav highlighting
-        const sections = document.querySelectorAll('section[id]');
-        const navItems = document.querySelectorAll('.nav-item');
-        
+        function toggleSection(btn) {
+            btn.closest('.sidebar-section').classList.toggle('open');
+        }
+        function switchLang(btn, lang) {
+            const container = btn.closest('div');
+            container.querySelectorAll('.lang-tab').forEach(t => t.classList.remove('active'));
+            btn.classList.add('active');
+            const pre = container.parentElement.querySelector('pre');
+            pre.querySelectorAll('code').forEach(c => c.classList.add('hidden'));
+            pre.querySelector('.lang-' + lang).classList.remove('hidden');
+        }
+        function copyCode(btn) {
+            const code = btn.closest('.relative').querySelector('code:not(.hidden)') || btn.closest('.relative').querySelector('code');
+            navigator.clipboard.writeText(code.innerText);
+            btn.innerHTML = '<i class="fa-solid fa-check mr-1"></i>Copied!';
+            btn.classList.add('copied');
+            setTimeout(() => { btn.innerHTML = '<i class="fa-regular fa-copy mr-1"></i>Copy'; btn.classList.remove('copied'); }, 2000);
+        }
         window.addEventListener('scroll', () => {
             let current = '';
-            sections.forEach(section => {
-                const sectionTop = section.offsetTop;
-                if (scrollY >= sectionTop - 100) {
-                    current = section.getAttribute('id');
-                }
-            });
-            
-            navItems.forEach(item => {
-                item.classList.remove('active');
-                if (item.getAttribute('href') === '#' + current) {
-                    item.classList.add('active');
-                }
-            });
+            document.querySelectorAll('section[id]').forEach(s => { if (scrollY >= s.offsetTop - 100) current = s.id; });
+            document.querySelectorAll('.nav-link').forEach(l => { l.classList.remove('active'); if (l.getAttribute('href') === '#' + current) l.classList.add('active'); });
         });
     </script>
 </body>
