@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Become a LUCAS Inspector | Earn 700-800 AED/Day in Dubai</title>
-    <meta name="description" content="Join the LUCAS inspector fleet. Earn 700-800 AED per day performing property inspections in Dubai and Abu Dhabi. Flexible hours, training provided.">
+    <title>Become a Certified LUCAS Inspector | Dubai</title>
+    <meta name="description" content="Join LUCAS's network of certified property inspectors in Dubai. Professional training, consistent work, and the opportunity to protect real estate investments.">
     
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-WY6D9FX91Z"></script>
@@ -42,54 +42,25 @@
     </script>
     <style>
         body { background-color: #050505; color: #fff; font-family: 'Urbanist', sans-serif; }
-        .glass-panel {
-            background: rgba(20, 20, 20, 0.7);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
         
-        /* Range slider styling */
-        input[type="range"] {
-            -webkit-appearance: none;
-            appearance: none;
-            background: transparent;
-            cursor: pointer;
-        }
-        input[type="range"]::-webkit-slider-runnable-track {
-            height: 8px;
-            background: linear-gradient(to right, rgba(222, 255, 154, 0.3), rgba(222, 255, 154, 0.1));
-            border-radius: 4px;
-            border: 1px solid rgba(222, 255, 154, 0.2);
-        }
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 24px;
-            height: 24px;
-            background: #deff9a;
-            border-radius: 50%;
-            margin-top: -9px;
-            box-shadow: 0 0 20px rgba(222, 255, 154, 0.5);
-        }
-        input[type="range"]::-moz-range-track {
-            height: 8px;
-            background: linear-gradient(to right, rgba(222, 255, 154, 0.3), rgba(222, 255, 154, 0.1));
-            border-radius: 4px;
-        }
-        input[type="range"]::-moz-range-thumb {
-            width: 24px;
-            height: 24px;
-            background: #deff9a;
-            border-radius: 50%;
-            border: none;
-        }
+        /* Reveal animations */
+        .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
         
         /* FAQ */
+        .faq-item { display: block; }
         .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out, opacity 0.2s ease; opacity: 0; }
-        .faq-item.open .faq-answer { max-height: 300px; opacity: 1; }
+        .faq-item.open .faq-answer { max-height: 500px; opacity: 1; }
         .faq-item.open .faq-icon { transform: rotate(180deg); }
         .faq-item.open button { border-color: rgba(222, 255, 154, 0.3); background-color: rgba(222, 255, 154, 0.03); }
+        
+        /* Gradient text */
+        .gradient-text {
+            background: linear-gradient(135deg, #deff9a 0%, #a8e063 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
     </style>
 </head>
 <body class="antialiased selection:bg-lucas-green selection:text-black">
@@ -99,14 +70,14 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-20">
                 <a href="https://lucas.app" class="flex items-center">
-                    <img src="LUCAS_logo White_on Rectangle_Transparent.svg" alt="LUCAS" class="h-10 w-auto" onerror="this.style.display='none';this.nextElementSibling.style.display='inline';">
-                    <span class="text-2xl font-bold tracking-tight text-white hidden">LUCAS<span class="text-lucas-green">.</span></span>
+                    <img src="logo.png" alt="LUCAS" class="h-10 w-auto" onerror="this.style.display='none';this.nextElementSibling.style.display='inline-flex';">
+                    <span class="text-2xl font-bold tracking-tight text-white hidden items-center">LUCAS<span class="text-lucas-green">.</span></span>
                 </a>
                 
                 <div class="hidden md:flex items-center gap-8">
-                    <a href="#earnings" class="text-sm font-medium text-gray-400 hover:text-white transition">Earnings</a>
-                    <a href="#how-it-works" class="text-sm font-medium text-gray-400 hover:text-white transition">How It Works</a>
-                    <a href="#requirements" class="text-sm font-medium text-gray-400 hover:text-white transition">Requirements</a>
+                    <a href="#opportunity" class="text-sm font-medium text-gray-400 hover:text-white transition">The Opportunity</a>
+                    <a href="#standards" class="text-sm font-medium text-gray-400 hover:text-white transition">Our Standards</a>
+                    <a href="#journey" class="text-sm font-medium text-gray-400 hover:text-white transition">Certification</a>
                     <a href="#faq" class="text-sm font-medium text-gray-400 hover:text-white transition">FAQ</a>
                 </div>
                 
@@ -117,7 +88,9 @@
         </div>
     </nav>
 
-    <!-- Hero Section -->
+    <!-- ============================================ -->
+    <!-- HERO - Professional Opportunity Focus -->
+    <!-- ============================================ -->
     <section class="relative pt-32 pb-20 sm:pt-40 sm:pb-28 overflow-hidden">
         <!-- Background -->
         <div class="absolute inset-0">
@@ -128,311 +101,401 @@
         <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="text-center">
                 <!-- Badge -->
-                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-lucas-green/10 border border-lucas-green/20 mb-8">
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-lucas-card border border-lucas-border mb-8">
                     <span class="w-2 h-2 rounded-full bg-lucas-green animate-pulse"></span>
-                    <span class="text-sm text-lucas-green font-medium">Now Recruiting in Dubai & Abu Dhabi</span>
+                    <span class="text-sm text-gray-400">Limited positions in <span class="text-white font-medium">Dubai</span></span>
                 </div>
 
-                <!-- Headline -->
+                <!-- Headline - Professional focus -->
                 <h1 class="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight mb-6">
-                    <span class="text-white">Earn </span>
-                    <span class="text-lucas-green">700-800 AED</span>
-                    <br class="hidden sm:block">
-                    <span class="text-white">Per Day</span>
+                    <span class="text-white">Become a Certified</span>
+                    <br>
+                    <span class="gradient-text">LUCAS Inspector</span>
                 </h1>
 
-                <!-- Sub-headline -->
-                <p class="text-xl sm:text-2xl text-gray-400 mb-8 max-w-2xl mx-auto">
-                    Join the LUCAS inspector fleet. Flexible hours. Professional training. Guaranteed work.
+                <!-- Sub-headline - Mission-driven -->
+                <p class="text-xl sm:text-2xl text-gray-400 mb-4 max-w-3xl mx-auto">
+                    Join a network of professionals protecting millions in real estate investments across Dubai.
+                </p>
+                <p class="text-gray-500 mb-10 max-w-2xl mx-auto">
+                    We're building the most trusted property inspection network in the UAE. If you have an eye for detail and take pride in professional work, we want to hear from you.
                 </p>
 
-                <!-- Key Stats -->
-                <div class="flex flex-wrap justify-center gap-4 sm:gap-8 mb-10">
-                    <div class="px-5 py-3 rounded-xl bg-lucas-card border border-lucas-border">
-                        <p class="text-lucas-green font-bold text-2xl">6-8</p>
-                        <p class="text-gray-500 text-sm">Inspections/day</p>
-                    </div>
-                    <div class="px-5 py-3 rounded-xl bg-lucas-card border border-lucas-border">
-                        <p class="text-lucas-green font-bold text-2xl">100-120</p>
-                        <p class="text-gray-500 text-sm">AED per inspection</p>
-                    </div>
-                    <div class="px-5 py-3 rounded-xl bg-lucas-card border border-lucas-border">
-                        <p class="text-lucas-green font-bold text-2xl">Flexible</p>
-                        <p class="text-gray-500 text-sm">Choose your hours</p>
-                    </div>
-                </div>
-
                 <!-- CTA -->
-                <a href="#apply" class="inline-flex items-center gap-3 px-8 py-4 bg-lucas-green text-black font-bold text-lg rounded-full hover:bg-white hover:scale-105 transition-all">
-                    <span>Apply to Join</span>
-                    <i class="fa-solid fa-arrow-right"></i>
-                </a>
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
+                    <a href="#apply" class="inline-flex items-center gap-3 px-8 py-4 bg-lucas-green text-black font-bold text-lg rounded-full hover:bg-white hover:scale-105 transition-all">
+                        <span>Apply to Join</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+                    <a href="#opportunity" class="inline-flex items-center gap-2 px-6 py-4 text-gray-400 hover:text-white transition">
+                        <span>Learn more</span>
+                        <i class="fa-solid fa-chevron-down text-xs"></i>
+                    </a>
+                </div>
+
+                <!-- Trust indicators -->
+                <div class="flex flex-wrap justify-center gap-6 sm:gap-10 text-sm text-gray-500">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-shield-halved text-lucas-green"></i>
+                        <span>Background verified</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-certificate text-lucas-green"></i>
+                        <span>Paid certification training</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-calendar-check text-lucas-green"></i>
+                        <span>Consistent assignments</span>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- Earnings Calculator -->
-    <section id="earnings" class="py-20 bg-black relative">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">Calculate Your Earnings</h2>
-                <p class="text-gray-400">See what you could earn based on your availability</p>
+    <!-- ============================================ -->
+    <!-- WHY THIS MATTERS - Connect to Mission -->
+    <!-- ============================================ -->
+    <section class="py-20 bg-black relative overflow-hidden">
+        <div class="absolute inset-0">
+            <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-lucas-green/5 rounded-full blur-[150px]"></div>
+        </div>
+        
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-16 reveal">
+                <p class="text-lucas-green text-sm font-medium tracking-[0.3em] uppercase mb-4">The Mission</p>
+                <h2 class="text-3xl sm:text-5xl font-bold text-white tracking-tight mb-6">Your Inspections Protect Real Investments</h2>
+                <p class="text-gray-400 max-w-2xl mx-auto">
+                    Every photo you take, every issue you flag, helps property owners catch problems before they become disasters. You're not just inspecting — you're protecting.
+                </p>
             </div>
 
-            <div class="bg-lucas-card border border-lucas-border rounded-3xl p-6 sm:p-10">
-                <!-- Days per week slider -->
-                <div class="mb-8">
-                    <div class="flex items-center justify-between mb-3">
-                        <label class="text-gray-400">Days per week</label>
-                        <span id="days-label" class="text-white font-bold text-xl">5 days</span>
+            <div class="grid md:grid-cols-3 gap-6 reveal">
+                <div class="bg-lucas-card border border-lucas-border rounded-2xl p-6 text-center hover:border-lucas-green/30 transition-colors">
+                    <div class="w-14 h-14 rounded-2xl bg-lucas-green/10 border border-lucas-green/30 flex items-center justify-center mx-auto mb-4">
+                        <i class="fa-solid fa-building-shield text-lucas-green text-xl"></i>
                     </div>
-                    <input type="range" id="days-slider" min="1" max="7" value="5" class="w-full">
-                    <div class="flex justify-between text-xs text-gray-500 mt-2">
-                        <span>1 day</span>
-                        <span>7 days</span>
-                    </div>
+                    <h3 class="text-white font-bold mb-2">Protect Property Value</h3>
+                    <p class="text-gray-500 text-sm">Your detailed inspections help owners maintain their investments and catch issues early.</p>
                 </div>
 
-                <!-- Inspections per day slider -->
-                <div class="mb-10">
-                    <div class="flex items-center justify-between mb-3">
-                        <label class="text-gray-400">Inspections per day</label>
-                        <span id="inspections-label" class="text-white font-bold text-xl">6 inspections</span>
+                <div class="bg-lucas-card border border-lucas-border rounded-2xl p-6 text-center hover:border-lucas-green/30 transition-colors">
+                    <div class="w-14 h-14 rounded-2xl bg-lucas-green/10 border border-lucas-green/30 flex items-center justify-center mx-auto mb-4">
+                        <i class="fa-solid fa-file-contract text-lucas-green text-xl"></i>
                     </div>
-                    <input type="range" id="inspections-slider" min="4" max="10" value="6" class="w-full">
-                    <div class="flex justify-between text-xs text-gray-500 mt-2">
-                        <span>4 (part-time)</span>
-                        <span>10 (max)</span>
-                    </div>
+                    <h3 class="text-white font-bold mb-2">Create Trusted Records</h3>
+                    <p class="text-gray-500 text-sm">Your work becomes official documentation that investors and institutions rely on.</p>
                 </div>
 
-                <!-- Results -->
-                <div class="grid sm:grid-cols-3 gap-4">
-                    <div class="bg-black/50 rounded-2xl p-5 text-center">
-                        <p class="text-gray-500 text-sm mb-2">Daily</p>
-                        <p id="daily-earnings" class="text-3xl font-bold text-white">660 <span class="text-lg text-gray-500">AED</span></p>
+                <div class="bg-lucas-card border border-lucas-border rounded-2xl p-6 text-center hover:border-lucas-green/30 transition-colors">
+                    <div class="w-14 h-14 rounded-2xl bg-lucas-green/10 border border-lucas-green/30 flex items-center justify-center mx-auto mb-4">
+                        <i class="fa-solid fa-handshake text-lucas-green text-xl"></i>
                     </div>
-                    <div class="bg-black/50 rounded-2xl p-5 text-center">
-                        <p class="text-gray-500 text-sm mb-2">Weekly</p>
-                        <p id="weekly-earnings" class="text-3xl font-bold text-white">3,300 <span class="text-lg text-gray-500">AED</span></p>
-                    </div>
-                    <div class="bg-lucas-green/10 border border-lucas-green/30 rounded-2xl p-5 text-center">
-                        <p class="text-lucas-green text-sm mb-2">Monthly</p>
-                        <p id="monthly-earnings" class="text-3xl font-bold text-lucas-green">14,300 <span class="text-lg">AED</span></p>
-                    </div>
+                    <h3 class="text-white font-bold mb-2">Build Market Trust</h3>
+                    <p class="text-gray-500 text-sm">You're part of raising the standard for property verification in Dubai's real estate market.</p>
                 </div>
-
-                <p class="text-center text-gray-500 text-xs mt-6">Based on avg. 110 AED per inspection. Actual earnings vary by location and efficiency.</p>
             </div>
         </div>
     </section>
 
-    <script>
-    (function() {
-        const daysSlider = document.getElementById('days-slider');
-        const inspectionsSlider = document.getElementById('inspections-slider');
-        const daysLabel = document.getElementById('days-label');
-        const inspectionsLabel = document.getElementById('inspections-label');
-        const dailyEl = document.getElementById('daily-earnings');
-        const weeklyEl = document.getElementById('weekly-earnings');
-        const monthlyEl = document.getElementById('monthly-earnings');
-
-        const perInspection = 110; // AED average
-
-        function update() {
-            const days = parseInt(daysSlider.value);
-            const inspections = parseInt(inspectionsSlider.value);
-            
-            daysLabel.textContent = days + (days === 1 ? ' day' : ' days');
-            inspectionsLabel.textContent = inspections + ' inspections';
-
-            const daily = inspections * perInspection;
-            const weekly = daily * days;
-            const monthly = weekly * 4.33; // avg weeks per month
-
-            dailyEl.innerHTML = daily.toLocaleString() + ' <span class="text-lg text-gray-500">AED</span>';
-            weeklyEl.innerHTML = weekly.toLocaleString() + ' <span class="text-lg text-gray-500">AED</span>';
-            monthlyEl.innerHTML = Math.round(monthly).toLocaleString() + ' <span class="text-lg">AED</span>';
-        }
-
-        daysSlider.addEventListener('input', update);
-        inspectionsSlider.addEventListener('input', update);
-        update();
-    })();
-    </script>
-
-    <!-- How It Works -->
-    <section id="how-it-works" class="py-20 bg-gradient-to-b from-black to-lucas-dark">
+    <!-- ============================================ -->
+    <!-- THE OPPORTUNITY - Earnings (Secondary) -->
+    <!-- ============================================ -->
+    <section id="opportunity" class="py-20 bg-gradient-to-b from-black to-lucas-dark relative">
         <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">How It Works</h2>
-                <p class="text-gray-400">A typical day as a LUCAS inspector</p>
+            <div class="text-center mb-16 reveal">
+                <p class="text-lucas-green text-sm font-medium tracking-[0.3em] uppercase mb-4">The Opportunity</p>
+                <h2 class="text-3xl sm:text-5xl font-bold text-white tracking-tight mb-6">Professional Work. Professional Pay.</h2>
+                <p class="text-gray-400 max-w-2xl mx-auto">
+                    Certified LUCAS inspectors earn competitive rates with the flexibility to build their own schedule.
+                </p>
             </div>
 
-            <div class="grid md:grid-cols-4 gap-6">
-                <!-- Step 1 -->
-                <div class="text-center">
-                    <div class="w-16 h-16 rounded-2xl bg-lucas-green/10 border border-lucas-green/30 flex items-center justify-center mx-auto mb-4">
-                        <i class="fa-solid fa-mobile-screen text-lucas-green text-2xl"></i>
+            <div class="grid lg:grid-cols-2 gap-8 items-center">
+                <!-- Left: Key benefits -->
+                <div class="space-y-6 reveal">
+                    <div class="flex items-start gap-4 p-5 bg-lucas-card border border-lucas-border rounded-xl hover:border-lucas-green/30 transition-colors">
+                        <div class="w-12 h-12 rounded-xl bg-lucas-green/10 border border-lucas-green/30 flex items-center justify-center flex-shrink-0">
+                            <i class="fa-solid fa-coins text-lucas-green"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-white font-bold mb-1">Earn 700–800 AED per day</h3>
+                            <p class="text-gray-500 text-sm">Based on 6-7 inspections at 100-120 AED each. Top performers earn more.</p>
+                        </div>
                     </div>
-                    <div class="text-lucas-green font-bold text-sm mb-2">1. Get Assigned</div>
-                    <p class="text-gray-500 text-sm">Open the app, see your route for the day. All units clustered for efficiency.</p>
+
+                    <div class="flex items-start gap-4 p-5 bg-lucas-card border border-lucas-border rounded-xl hover:border-lucas-green/30 transition-colors">
+                        <div class="w-12 h-12 rounded-xl bg-lucas-green/10 border border-lucas-green/30 flex items-center justify-center flex-shrink-0">
+                            <i class="fa-solid fa-calendar-days text-lucas-green"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-white font-bold mb-1">Flexible scheduling</h3>
+                            <p class="text-gray-500 text-sm">Choose your days. Full-time, part-time, or weekends — you decide.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-4 p-5 bg-lucas-card border border-lucas-border rounded-xl hover:border-lucas-green/30 transition-colors">
+                        <div class="w-12 h-12 rounded-xl bg-lucas-green/10 border border-lucas-green/30 flex items-center justify-center flex-shrink-0">
+                            <i class="fa-solid fa-route text-lucas-green"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-white font-bold mb-1">Optimized routes</h3>
+                            <p class="text-gray-500 text-sm">Assignments clustered by area to minimize travel time and maximize earnings.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-4 p-5 bg-lucas-card border border-lucas-border rounded-xl hover:border-lucas-green/30 transition-colors">
+                        <div class="w-12 h-12 rounded-xl bg-lucas-green/10 border border-lucas-green/30 flex items-center justify-center flex-shrink-0">
+                            <i class="fa-solid fa-wallet text-lucas-green"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-white font-bold mb-1">Weekly payouts</h3>
+                            <p class="text-gray-500 text-sm">Direct bank transfers every week. No chasing payments.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Sample day card -->
+                <div class="reveal">
+                    <div class="bg-lucas-card border border-lucas-border rounded-2xl overflow-hidden">
+                        <div class="px-6 py-4 border-b border-lucas-border bg-gradient-to-r from-lucas-green/10 to-transparent">
+                            <h3 class="text-white font-bold">Sample Day</h3>
+                            <p class="text-gray-500 text-sm">Marina / JBR route</p>
+                        </div>
+                        <div class="p-6 space-y-3">
+                            <div class="flex items-center gap-4 px-4 py-3 rounded-xl bg-black/30">
+                                <span class="text-lucas-green font-mono text-sm w-14">8:00</span>
+                                <span class="text-gray-300 text-sm">Start route — Marina Walk</span>
+                            </div>
+                            <div class="flex items-center gap-4 px-4 py-3 rounded-xl bg-black/30">
+                                <span class="text-lucas-green font-mono text-sm w-14">8:30</span>
+                                <span class="text-gray-300 text-sm">Unit 1 — Marina Heights</span>
+                            </div>
+                            <div class="flex items-center gap-4 px-4 py-3 rounded-xl bg-black/30">
+                                <span class="text-lucas-green font-mono text-sm w-14">9:00</span>
+                                <span class="text-gray-300 text-sm">Unit 2 — Same building</span>
+                            </div>
+                            <div class="flex items-center gap-4 px-4 py-3 rounded-xl bg-black/30">
+                                <span class="text-lucas-green font-mono text-sm w-14">9:30</span>
+                                <span class="text-gray-300 text-sm">Unit 3 — Adjacent tower</span>
+                            </div>
+                            <div class="flex items-center gap-4 px-4 py-3 rounded-xl bg-black/30">
+                                <span class="text-lucas-green font-mono text-sm w-14">10:30</span>
+                                <span class="text-gray-300 text-sm">Units 4-5 — JBR cluster</span>
+                            </div>
+                            <div class="flex items-center gap-4 px-4 py-3 rounded-xl bg-black/30">
+                                <span class="text-lucas-green font-mono text-sm w-14">12:00</span>
+                                <span class="text-gray-300 text-sm">Units 6-7 — Final inspections</span>
+                            </div>
+                            <div class="flex items-center gap-4 px-4 py-3 rounded-xl bg-lucas-green/10 border border-lucas-green/30">
+                                <span class="text-lucas-green font-mono text-sm w-14">13:00</span>
+                                <span class="text-lucas-green text-sm font-medium">Done — 770 AED earned</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- OUR STANDARDS - What We Expect -->
+    <!-- ============================================ -->
+    <section id="standards" class="py-20 bg-lucas-dark relative">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 reveal">
+                <p class="text-lucas-green text-sm font-medium tracking-[0.3em] uppercase mb-4">Our Standards</p>
+                <h2 class="text-3xl sm:text-5xl font-bold text-white tracking-tight mb-6">We're Selective for a Reason</h2>
+                <p class="text-gray-400 max-w-2xl mx-auto">
+                    Our clients trust LUCAS because they trust our inspectors. We maintain high standards to protect that trust.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Requirements -->
+                <div class="reveal">
+                    <div class="bg-lucas-card border border-lucas-border rounded-2xl p-6 h-full">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="w-10 h-10 rounded-xl bg-lucas-green/10 border border-lucas-green/30 flex items-center justify-center">
+                                <i class="fa-solid fa-clipboard-check text-lucas-green"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-white">Requirements</h3>
+                        </div>
+                        <ul class="space-y-4">
+                            <li class="flex items-start gap-3">
+                                <i class="fa-solid fa-check text-lucas-green mt-1"></i>
+                                <div>
+                                    <p class="text-white font-medium">Valid Emirates ID</p>
+                                    <p class="text-gray-500 text-sm">UAE residency required for background verification</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <i class="fa-solid fa-check text-lucas-green mt-1"></i>
+                                <div>
+                                    <p class="text-white font-medium">Smartphone with quality camera</p>
+                                    <p class="text-gray-500 text-sm">iPhone 11+ or equivalent Android device</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <i class="fa-solid fa-check text-lucas-green mt-1"></i>
+                                <div>
+                                    <p class="text-white font-medium">Strong English communication</p>
+                                    <p class="text-gray-500 text-sm">Written reports must be clear and professional</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <i class="fa-solid fa-check text-lucas-green mt-1"></i>
+                                <div>
+                                    <p class="text-white font-medium">Attention to detail</p>
+                                    <p class="text-gray-500 text-sm">You'll need to spot issues others miss</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Preferred -->
+                <div class="reveal">
+                    <div class="bg-lucas-card border border-lucas-border rounded-2xl p-6 h-full">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center">
+                                <i class="fa-solid fa-star text-amber-400"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-white">Preferred Background</h3>
+                        </div>
+                        <ul class="space-y-4">
+                            <li class="flex items-start gap-3">
+                                <i class="fa-solid fa-plus text-amber-400 mt-1"></i>
+                                <div>
+                                    <p class="text-white font-medium">Property or FM experience</p>
+                                    <p class="text-gray-500 text-sm">Real estate, facilities management, or maintenance background</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <i class="fa-solid fa-plus text-amber-400 mt-1"></i>
+                                <div>
+                                    <p class="text-white font-medium">Own vehicle</p>
+                                    <p class="text-gray-500 text-sm">Car or motorbike for faster routes and more assignments</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <i class="fa-solid fa-plus text-amber-400 mt-1"></i>
+                                <div>
+                                    <p class="text-white font-medium">Photography skills</p>
+                                    <p class="text-gray-500 text-sm">Understanding of composition and documentation</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <i class="fa-solid fa-plus text-amber-400 mt-1"></i>
+                                <div>
+                                    <p class="text-white font-medium">Technical aptitude</p>
+                                    <p class="text-gray-500 text-sm">Comfortable with apps and digital workflows</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quality note -->
+            <div class="mt-10 reveal">
+                <div class="bg-gradient-to-r from-lucas-card to-black border border-lucas-border rounded-2xl p-6 flex flex-col sm:flex-row items-center gap-6">
+                    <div class="w-16 h-16 rounded-2xl bg-lucas-green/10 border border-lucas-green/30 flex items-center justify-center flex-shrink-0">
+                        <i class="fa-solid fa-graduation-cap text-lucas-green text-2xl"></i>
+                    </div>
+                    <div class="text-center sm:text-left">
+                        <h4 class="text-white font-bold text-lg mb-1">New to property inspection?</h4>
+                        <p class="text-gray-400">If you meet our requirements and have the right mindset, we'll train you. Our 2-day paid certification covers everything you need to succeed — from our 47-point checklist to professional documentation standards.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- CERTIFICATION JOURNEY -->
+    <!-- ============================================ -->
+    <section id="journey" class="py-20 bg-gradient-to-b from-lucas-dark to-black relative overflow-hidden">
+        <div class="absolute inset-0">
+            <div class="absolute bottom-0 left-1/4 w-[500px] h-[500px] bg-lucas-green/5 rounded-full blur-[150px]"></div>
+        </div>
+        
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-16 reveal">
+                <p class="text-lucas-green text-sm font-medium tracking-[0.3em] uppercase mb-4">The Journey</p>
+                <h2 class="text-3xl sm:text-5xl font-bold text-white tracking-tight mb-6">From Application to Certified</h2>
+                <p class="text-gray-400 max-w-2xl mx-auto">
+                    Our structured onboarding ensures every inspector meets LUCAS standards.
+                </p>
+            </div>
+
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 reveal">
+                <!-- Step 1 -->
+                <div class="relative">
+                    <div class="bg-lucas-card border border-lucas-border rounded-2xl p-6 text-center h-full hover:border-lucas-green/30 transition-colors">
+                        <div class="w-10 h-10 rounded-full bg-lucas-green text-black font-bold flex items-center justify-center mx-auto mb-4">1</div>
+                        <h3 class="text-white font-bold mb-2">Apply</h3>
+                        <p class="text-gray-500 text-sm">Submit your application. We review within 48 hours.</p>
+                    </div>
                 </div>
 
                 <!-- Step 2 -->
-                <div class="text-center">
-                    <div class="w-16 h-16 rounded-2xl bg-lucas-green/10 border border-lucas-green/30 flex items-center justify-center mx-auto mb-4">
-                        <i class="fa-solid fa-route text-lucas-green text-2xl"></i>
+                <div class="relative">
+                    <div class="bg-lucas-card border border-lucas-border rounded-2xl p-6 text-center h-full hover:border-lucas-green/30 transition-colors">
+                        <div class="w-10 h-10 rounded-full bg-lucas-green text-black font-bold flex items-center justify-center mx-auto mb-4">2</div>
+                        <h3 class="text-white font-bold mb-2">Interview</h3>
+                        <p class="text-gray-500 text-sm">Brief call to understand your background and availability.</p>
                     </div>
-                    <div class="text-lucas-green font-bold text-sm mb-2">2. Travel</div>
-                    <p class="text-gray-500 text-sm">Head to your first building. Routes optimized to minimize driving time.</p>
                 </div>
 
                 <!-- Step 3 -->
-                <div class="text-center">
-                    <div class="w-16 h-16 rounded-2xl bg-lucas-green/10 border border-lucas-green/30 flex items-center justify-center mx-auto mb-4">
-                        <i class="fa-solid fa-camera text-lucas-green text-2xl"></i>
+                <div class="relative">
+                    <div class="bg-lucas-card border border-lucas-border rounded-2xl p-6 text-center h-full hover:border-lucas-green/30 transition-colors">
+                        <div class="w-10 h-10 rounded-full bg-lucas-green text-black font-bold flex items-center justify-center mx-auto mb-4">3</div>
+                        <h3 class="text-white font-bold mb-2">Training</h3>
+                        <p class="text-gray-500 text-sm">2-day paid certification. Learn our standards and app.</p>
                     </div>
-                    <div class="text-lucas-green font-bold text-sm mb-2">3. Inspect</div>
-                    <p class="text-gray-500 text-sm">Follow the 47-point checklist. Take photos. Flag issues. ~25 mins per unit.</p>
                 </div>
 
                 <!-- Step 4 -->
-                <div class="text-center">
-                    <div class="w-16 h-16 rounded-2xl bg-lucas-green/10 border border-lucas-green/30 flex items-center justify-center mx-auto mb-4">
-                        <i class="fa-solid fa-circle-check text-lucas-green text-2xl"></i>
+                <div class="relative">
+                    <div class="bg-lucas-card border border-lucas-border rounded-2xl p-6 text-center h-full hover:border-lucas-green/30 transition-colors">
+                        <div class="w-10 h-10 rounded-full bg-lucas-green text-black font-bold flex items-center justify-center mx-auto mb-4">4</div>
+                        <h3 class="text-white font-bold mb-2">Certified</h3>
+                        <p class="text-gray-500 text-sm">Pass certification, start receiving assignments immediately.</p>
                     </div>
-                    <div class="text-lucas-green font-bold text-sm mb-2">4. Submit & Earn</div>
-                    <p class="text-gray-500 text-sm">Upload your inspection. Payment processed weekly to your bank account.</p>
                 </div>
             </div>
 
-            <!-- Day in the Life -->
-            <div class="mt-16 bg-lucas-card border border-lucas-border rounded-2xl p-6 sm:p-8">
-                <h3 class="text-xl font-bold text-white mb-6 text-center">Sample Day Schedule</h3>
-                <div class="grid sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
-                    <div class="flex items-center gap-4 px-4 py-3 rounded-xl bg-black/30">
-                        <span class="text-lucas-green font-mono text-sm w-16">8:00</span>
-                        <span class="text-gray-300 text-sm">Start route — Dubai Marina</span>
-                    </div>
-                    <div class="flex items-center gap-4 px-4 py-3 rounded-xl bg-black/30">
-                        <span class="text-lucas-green font-mono text-sm w-16">8:30</span>
-                        <span class="text-gray-300 text-sm">Unit 1 — Marina Views Tower</span>
-                    </div>
-                    <div class="flex items-center gap-4 px-4 py-3 rounded-xl bg-black/30">
-                        <span class="text-lucas-green font-mono text-sm w-16">9:00</span>
-                        <span class="text-gray-300 text-sm">Unit 2 — Same building</span>
-                    </div>
-                    <div class="flex items-center gap-4 px-4 py-3 rounded-xl bg-black/30">
-                        <span class="text-lucas-green font-mono text-sm w-16">9:30</span>
-                        <span class="text-gray-300 text-sm">Unit 3 — Adjacent tower</span>
-                    </div>
-                    <div class="flex items-center gap-4 px-4 py-3 rounded-xl bg-black/30">
-                        <span class="text-lucas-green font-mono text-sm w-16">10:00</span>
-                        <span class="text-gray-300 text-sm">Units 4-5 — JBR cluster</span>
-                    </div>
-                    <div class="flex items-center gap-4 px-4 py-3 rounded-xl bg-black/30">
-                        <span class="text-lucas-green font-mono text-sm w-16">11:30</span>
-                        <span class="text-gray-300 text-sm">Unit 6 — Final inspection</span>
-                    </div>
-                    <div class="flex items-center gap-4 px-4 py-3 rounded-xl bg-lucas-green/10 border border-lucas-green/30 sm:col-span-2">
-                        <span class="text-lucas-green font-mono text-sm w-16">12:00</span>
-                        <span class="text-lucas-green text-sm font-medium">Done! 6 units × 110 AED = 660 AED earned</span>
-                    </div>
-                </div>
-            </div>
+            <!-- Timeline note -->
+            <p class="text-center text-gray-500 text-sm mt-10 reveal">Typical timeline: 1-2 weeks from application to first assignment</p>
         </div>
     </section>
 
-    <!-- Requirements -->
-    <section id="requirements" class="py-20 bg-lucas-dark">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">Requirements</h2>
-                <p class="text-gray-400">What you need to get started</p>
-            </div>
-
-            <div class="grid sm:grid-cols-2 gap-6">
-                <!-- Must Have -->
-                <div class="bg-lucas-card border border-lucas-border rounded-2xl p-6">
-                    <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                        <i class="fa-solid fa-check-circle text-lucas-green"></i>
-                        Must Have
-                    </h3>
-                    <ul class="space-y-3">
-                        <li class="flex items-start gap-3">
-                            <i class="fa-solid fa-id-card text-lucas-green mt-1"></i>
-                            <div>
-                                <p class="text-white font-medium">Valid Emirates ID</p>
-                                <p class="text-gray-500 text-sm">UAE residency required</p>
-                            </div>
-                        </li>
-                        <li class="flex items-start gap-3">
-                            <i class="fa-solid fa-mobile-screen text-lucas-green mt-1"></i>
-                            <div>
-                                <p class="text-white font-medium">Smartphone</p>
-                                <p class="text-gray-500 text-sm">iPhone or Android with good camera</p>
-                            </div>
-                        </li>
-                        <li class="flex items-start gap-3">
-                            <i class="fa-solid fa-language text-lucas-green mt-1"></i>
-                            <div>
-                                <p class="text-white font-medium">English proficiency</p>
-                                <p class="text-gray-500 text-sm">Read instructions, write reports</p>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-
-                <!-- Nice to Have -->
-                <div class="bg-lucas-card border border-lucas-border rounded-2xl p-6">
-                    <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                        <i class="fa-solid fa-star text-amber-400"></i>
-                        Nice to Have
-                    </h3>
-                    <ul class="space-y-3">
-                        <li class="flex items-start gap-3">
-                            <i class="fa-solid fa-car text-amber-400 mt-1"></i>
-                            <div>
-                                <p class="text-white font-medium">Own vehicle</p>
-                                <p class="text-gray-500 text-sm">Car or motorbike for faster routes</p>
-                            </div>
-                        </li>
-                        <li class="flex items-start gap-3">
-                            <i class="fa-solid fa-building text-amber-400 mt-1"></i>
-                            <div>
-                                <p class="text-white font-medium">Property experience</p>
-                                <p class="text-gray-500 text-sm">Real estate, FM, or maintenance background</p>
-                            </div>
-                        </li>
-                        <li class="flex items-start gap-3">
-                            <i class="fa-solid fa-camera text-amber-400 mt-1"></i>
-                            <div>
-                                <p class="text-white font-medium">Photography skills</p>
-                                <p class="text-gray-500 text-sm">Eye for detail helps</p>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Training Note -->
-            <div class="mt-8 bg-lucas-green/10 border border-lucas-green/30 rounded-2xl p-6 text-center">
-                <i class="fa-solid fa-graduation-cap text-lucas-green text-2xl mb-3"></i>
-                <h4 class="text-white font-bold mb-2">No experience? No problem.</h4>
-                <p class="text-gray-400">We provide 2-day paid training covering our inspection checklist, app usage, and quality standards. You'll be certified and ready to earn.</p>
-            </div>
-        </div>
-    </section>
-
+    <!-- ============================================ -->
     <!-- FAQ -->
-    <section id="faq" class="py-20 bg-gradient-to-b from-lucas-dark to-black">
+    <!-- ============================================ -->
+    <section id="faq" class="py-20 bg-black relative">
         <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">FAQ</h2>
+            <div class="text-center mb-12 reveal">
+                <p class="text-lucas-green text-sm font-medium tracking-[0.3em] uppercase mb-4">FAQ</p>
+                <h2 class="text-3xl sm:text-4xl font-bold text-white">Common Questions</h2>
             </div>
 
-            <div class="space-y-3">
+            <div class="space-y-3 reveal">
+                <div class="faq-item group">
+                    <button onclick="toggleFaq(this)" class="w-full bg-lucas-card hover:bg-lucas-card/80 border border-lucas-border hover:border-lucas-green/30 rounded-xl px-6 py-5 text-left transition-all duration-200 flex items-center justify-between">
+                        <span class="font-semibold text-white pr-4">How much can I realistically earn?</span>
+                        <span class="w-8 h-8 rounded-full bg-lucas-green/10 flex items-center justify-center flex-shrink-0">
+                            <i class="fa-solid fa-chevron-down text-lucas-green text-xs faq-icon transition-transform duration-200"></i>
+                        </span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="px-6 py-4 text-gray-400 text-sm leading-relaxed">
+                            Most inspectors complete 6-7 inspections per day, earning 700-800 AED daily. Full-time inspectors (5-6 days/week) typically earn 15,000-20,000 AED monthly. Your actual earnings depend on your efficiency, availability, and the routes you're assigned.
+                        </div>
+                    </div>
+                </div>
+
                 <div class="faq-item group">
                     <button onclick="toggleFaq(this)" class="w-full bg-lucas-card hover:bg-lucas-card/80 border border-lucas-border hover:border-lucas-green/30 rounded-xl px-6 py-5 text-left transition-all duration-200 flex items-center justify-between">
                         <span class="font-semibold text-white pr-4">How do I get paid?</span>
@@ -442,77 +505,63 @@
                     </button>
                     <div class="faq-answer">
                         <div class="px-6 py-4 text-gray-400 text-sm leading-relaxed">
-                            Weekly bank transfers every Sunday. You'll see your completed inspections and earnings in the app in real-time. We pay per inspection, not hourly — the faster and more efficient you are, the more you earn.
+                            Weekly bank transfers every Sunday. You'll see your completed inspections and earnings in the app in real-time. Payment is per inspection completed and approved.
                         </div>
                     </div>
                 </div>
 
                 <div class="faq-item group">
                     <button onclick="toggleFaq(this)" class="w-full bg-lucas-card hover:bg-lucas-card/80 border border-lucas-border hover:border-lucas-green/30 rounded-xl px-6 py-5 text-left transition-all duration-200 flex items-center justify-between">
-                        <span class="font-semibold text-white pr-4">Can I choose my own hours?</span>
+                        <span class="font-semibold text-white pr-4">What does the training cover?</span>
                         <span class="w-8 h-8 rounded-full bg-lucas-green/10 flex items-center justify-center flex-shrink-0">
                             <i class="fa-solid fa-chevron-down text-lucas-green text-xs faq-icon transition-transform duration-200"></i>
                         </span>
                     </button>
                     <div class="faq-answer">
                         <div class="px-6 py-4 text-gray-400 text-sm leading-relaxed">
-                            Yes. You set your availability in the app each week. Want to work mornings only? Just weekends? That's fine. More availability = more inspections assigned to you.
+                            Our 2-day certification covers: the 47-point inspection checklist, how to identify common issues (AC, plumbing, mold, structural), professional photography standards, using the LUCAS app, and client communication. Training is paid — you'll earn while you learn.
                         </div>
                     </div>
                 </div>
 
                 <div class="faq-item group">
                     <button onclick="toggleFaq(this)" class="w-full bg-lucas-card hover:bg-lucas-card/80 border border-lucas-border hover:border-lucas-green/30 rounded-xl px-6 py-5 text-left transition-all duration-200 flex items-center justify-between">
-                        <span class="font-semibold text-white pr-4">What if no one is home?</span>
+                        <span class="font-semibold text-white pr-4">Do I need my own vehicle?</span>
                         <span class="w-8 h-8 rounded-full bg-lucas-green/10 flex items-center justify-center flex-shrink-0">
                             <i class="fa-solid fa-chevron-down text-lucas-green text-xs faq-icon transition-transform duration-200"></i>
                         </span>
                     </button>
                     <div class="faq-answer">
                         <div class="px-6 py-4 text-gray-400 text-sm leading-relaxed">
-                            We coordinate access in advance. Most units have key lockboxes or building management handoffs. You'll rarely need the tenant present. If access fails, you get a partial fee and move to the next unit.
+                            A vehicle is strongly preferred — it allows you to complete more inspections efficiently. Car or motorbike both work. If you don't have a vehicle, you may be limited to routes accessible by metro/walking, which means fewer daily assignments.
                         </div>
                     </div>
                 </div>
 
                 <div class="faq-item group">
                     <button onclick="toggleFaq(this)" class="w-full bg-lucas-card hover:bg-lucas-card/80 border border-lucas-border hover:border-lucas-green/30 rounded-xl px-6 py-5 text-left transition-all duration-200 flex items-center justify-between">
-                        <span class="font-semibold text-white pr-4">Is this a full-time job?</span>
+                        <span class="font-semibold text-white pr-4">How flexible is the schedule?</span>
                         <span class="w-8 h-8 rounded-full bg-lucas-green/10 flex items-center justify-center flex-shrink-0">
                             <i class="fa-solid fa-chevron-down text-lucas-green text-xs faq-icon transition-transform duration-200"></i>
                         </span>
                     </button>
                     <div class="faq-answer">
                         <div class="px-6 py-4 text-gray-400 text-sm leading-relaxed">
-                            It can be. Many inspectors work full-time (5-6 days/week, 6-8 inspections/day). Others do it part-time alongside other work. You're an independent contractor, not an employee — you control your schedule.
+                            You set your availability weekly. Want to work 3 days? 6 days? Weekends only? You choose. We assign routes based on your availability and location. The more consistent your schedule, the better routes you'll get.
                         </div>
                     </div>
                 </div>
 
                 <div class="faq-item group">
                     <button onclick="toggleFaq(this)" class="w-full bg-lucas-card hover:bg-lucas-card/80 border border-lucas-border hover:border-lucas-green/30 rounded-xl px-6 py-5 text-left transition-all duration-200 flex items-center justify-between">
-                        <span class="font-semibold text-white pr-4">What areas are you recruiting in?</span>
+                        <span class="font-semibold text-white pr-4">What areas do you cover?</span>
                         <span class="w-8 h-8 rounded-full bg-lucas-green/10 flex items-center justify-center flex-shrink-0">
                             <i class="fa-solid fa-chevron-down text-lucas-green text-xs faq-icon transition-transform duration-200"></i>
                         </span>
                     </button>
                     <div class="faq-answer">
                         <div class="px-6 py-4 text-gray-400 text-sm leading-relaxed">
-                            Dubai: Marina, Downtown, JBR, Palm Jumeirah, Business Bay, JLT, DIFC. Abu Dhabi: Saadiyat, Yas, Corniche area. We assign routes based on where you live to minimize your commute.
-                        </div>
-                    </div>
-                </div>
-
-                <div class="faq-item group">
-                    <button onclick="toggleFaq(this)" class="w-full bg-lucas-card hover:bg-lucas-card/80 border border-lucas-border hover:border-lucas-green/30 rounded-xl px-6 py-5 text-left transition-all duration-200 flex items-center justify-between">
-                        <span class="font-semibold text-white pr-4">Do I need a trade license?</span>
-                        <span class="w-8 h-8 rounded-full bg-lucas-green/10 flex items-center justify-center flex-shrink-0">
-                            <i class="fa-solid fa-chevron-down text-lucas-green text-xs faq-icon transition-transform duration-200"></i>
-                        </span>
-                    </button>
-                    <div class="faq-answer">
-                        <div class="px-6 py-4 text-gray-400 text-sm leading-relaxed">
-                            You can work under LUCAS's license initially. If you want to go fully independent later, we can help you set up a freelancer permit. Many inspectors start under us and transition over time.
+                            Currently recruiting in Dubai — Marina, Downtown, JBR, Palm Jumeirah, Business Bay, JLT, DIFC, and surrounding areas. We match you with routes near your home base to minimize commute time.
                         </div>
                     </div>
                 </div>
@@ -520,19 +569,22 @@
         </div>
     </section>
 
-    <!-- Application Form -->
-    <section id="apply" class="py-20 bg-black relative overflow-hidden">
+    <!-- ============================================ -->
+    <!-- APPLICATION FORM -->
+    <!-- ============================================ -->
+    <section id="apply" class="py-20 bg-gradient-to-b from-black to-lucas-dark relative overflow-hidden">
         <div class="absolute inset-0">
             <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-lucas-green/10 rounded-full blur-[150px]"></div>
         </div>
 
         <div class="max-w-xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div class="text-center mb-10">
-                <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">Apply Now</h2>
-                <p class="text-gray-400">Takes 2 minutes. We'll review and get back to you within 48 hours.</p>
+            <div class="text-center mb-10 reveal">
+                <p class="text-lucas-green text-sm font-medium tracking-[0.3em] uppercase mb-4">Apply</p>
+                <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">Join Our Network</h2>
+                <p class="text-gray-400">Takes 2 minutes. We review every application within 48 hours.</p>
             </div>
 
-            <div class="bg-lucas-card border border-lucas-green/30 rounded-2xl p-6 sm:p-8">
+            <div class="bg-lucas-card border border-lucas-green/30 rounded-2xl p-6 sm:p-8 reveal">
                 <form id="inspector-application" class="space-y-5" action="https://formspree.io/f/xzzoryvn" method="POST">
                     <input type="hidden" name="form_type" value="Inspector Application">
                     
@@ -541,34 +593,37 @@
                         <input type="text" name="name" required class="w-full bg-black border border-lucas-border rounded-xl px-4 py-3 text-white focus:border-lucas-green outline-none transition" placeholder="Your full name">
                     </div>
 
-                    <div>
-                        <label class="text-gray-400 text-sm mb-2 block">Email *</label>
-                        <input type="email" name="email" required class="w-full bg-black border border-lucas-border rounded-xl px-4 py-3 text-white focus:border-lucas-green outline-none transition" placeholder="your@email.com">
-                    </div>
-
-                    <div>
-                        <label class="text-gray-400 text-sm mb-2 block">Phone / WhatsApp *</label>
-                        <input type="tel" name="phone" required class="w-full bg-black border border-lucas-border rounded-xl px-4 py-3 text-white focus:border-lucas-green outline-none transition" placeholder="+971 50 XXX XXXX">
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid sm:grid-cols-2 gap-4">
                         <div>
-                            <label class="text-gray-400 text-sm mb-2 block">City *</label>
+                            <label class="text-gray-400 text-sm mb-2 block">Email *</label>
+                            <input type="email" name="email" required class="w-full bg-black border border-lucas-border rounded-xl px-4 py-3 text-white focus:border-lucas-green outline-none transition" placeholder="your@email.com">
+                        </div>
+                        <div>
+                            <label class="text-gray-400 text-sm mb-2 block">WhatsApp *</label>
+                            <input type="tel" name="phone" required class="w-full bg-black border border-lucas-border rounded-xl px-4 py-3 text-white focus:border-lucas-green outline-none transition" placeholder="+971 50 XXX XXXX">
+                        </div>
+                    </div>
+
+                    <div class="grid sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-gray-400 text-sm mb-2 block">Area in Dubai *</label>
                             <select name="city" required class="w-full bg-black border border-lucas-border rounded-xl px-4 py-3 text-white focus:border-lucas-green outline-none transition">
-                                <option value="">Select...</option>
-                                <option value="Dubai - Marina/JBR">Dubai - Marina/JBR</option>
-                                <option value="Dubai - Downtown/DIFC">Dubai - Downtown/DIFC</option>
-                                <option value="Dubai - Other">Dubai - Other</option>
-                                <option value="Abu Dhabi">Abu Dhabi</option>
-                                <option value="Other UAE">Other UAE</option>
+                                <option value="">Select area...</option>
+                                <option value="Dubai Marina / JBR">Marina / JBR</option>
+                                <option value="Downtown / DIFC">Downtown / DIFC</option>
+                                <option value="Business Bay">Business Bay</option>
+                                <option value="Palm Jumeirah">Palm Jumeirah</option>
+                                <option value="JLT / JVC">JLT / JVC</option>
+                                <option value="Other Dubai">Other Dubai area</option>
                             </select>
                         </div>
                         <div>
-                            <label class="text-gray-400 text-sm mb-2 block">Own Vehicle?</label>
-                            <select name="vehicle" class="w-full bg-black border border-lucas-border rounded-xl px-4 py-3 text-white focus:border-lucas-green outline-none transition">
-                                <option value="Yes - Car">Yes - Car</option>
-                                <option value="Yes - Motorbike">Yes - Motorbike</option>
-                                <option value="No">No</option>
+                            <label class="text-gray-400 text-sm mb-2 block">Own Vehicle? *</label>
+                            <select name="vehicle" required class="w-full bg-black border border-lucas-border rounded-xl px-4 py-3 text-white focus:border-lucas-green outline-none transition">
+                                <option value="">Select...</option>
+                                <option value="Yes - Car">Yes — Car</option>
+                                <option value="Yes - Motorbike">Yes — Motorbike</option>
+                                <option value="No">No vehicle</option>
                             </select>
                         </div>
                     </div>
@@ -576,12 +631,13 @@
                     <div>
                         <label class="text-gray-400 text-sm mb-2 block">Relevant Experience</label>
                         <select name="experience" class="w-full bg-black border border-lucas-border rounded-xl px-4 py-3 text-white focus:border-lucas-green outline-none transition">
-                            <option value="None">None - I'm new to this</option>
-                            <option value="Property Management">Property Management</option>
-                            <option value="Real Estate">Real Estate</option>
-                            <option value="Maintenance/Facilities">Maintenance/Facilities</option>
-                            <option value="Photography">Photography</option>
-                            <option value="Other">Other</option>
+                            <option value="None">No prior property experience</option>
+                            <option value="Property Management">Property management</option>
+                            <option value="Real Estate">Real estate</option>
+                            <option value="Facilities Management">Facilities management</option>
+                            <option value="Maintenance">Maintenance / technical</option>
+                            <option value="Photography">Photography / documentation</option>
+                            <option value="Other">Other relevant experience</option>
                         </select>
                     </div>
 
@@ -590,44 +646,56 @@
                         <select name="availability" class="w-full bg-black border border-lucas-border rounded-xl px-4 py-3 text-white focus:border-lucas-green outline-none transition">
                             <option value="Full-time">Full-time (5-6 days/week)</option>
                             <option value="Part-time">Part-time (2-4 days/week)</option>
-                            <option value="Weekends only">Weekends only</option>
-                            <option value="Flexible">Flexible</option>
+                            <option value="Weekends">Weekends only</option>
+                            <option value="Flexible">Flexible / varies</option>
                         </select>
                     </div>
 
-                    <button type="submit" class="w-full bg-lucas-green text-black font-bold py-4 rounded-xl hover:bg-white transition text-lg mt-4">
+                    <div>
+                        <label class="text-gray-400 text-sm mb-2 block">Anything else we should know?</label>
+                        <textarea name="notes" rows="3" class="w-full bg-black border border-lucas-border rounded-xl px-4 py-3 text-white focus:border-lucas-green outline-none transition resize-none" placeholder="Optional — tell us about yourself, your experience, or ask questions"></textarea>
+                    </div>
+
+                    <button type="submit" class="w-full bg-lucas-green text-black font-bold py-4 rounded-xl hover:bg-white transition text-lg mt-2">
                         Submit Application
                     </button>
+                    
+                    <p class="text-center text-gray-500 text-xs">By applying, you confirm you have a valid Emirates ID and meet our basic requirements.</p>
                 </form>
             </div>
         </div>
     </section>
 
-    <!-- Footer -->
+    <!-- ============================================ -->
+    <!-- FOOTER -->
+    <!-- ============================================ -->
     <footer class="bg-lucas-dark border-t border-lucas-border py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex flex-col sm:flex-row items-center justify-between gap-6">
                 <div class="flex items-center gap-3">
-                    <img src="LUCAS_logo White_on Rectangle_Transparent.svg" alt="LUCAS" class="h-8" onerror="this.outerHTML='<span class=\'text-white font-bold text-xl\'>LUCAS</span>'">
+                    <img src="logo.png" alt="LUCAS" class="h-8" onerror="this.outerHTML='<span class=\"text-white font-bold text-xl\">LUCAS</span>'">
                     <span class="text-gray-500">|</span>
                     <span class="text-gray-400 text-sm">Inspector Recruitment</span>
                 </div>
                 
                 <div class="flex items-center gap-4">
-                    <a href="https://wa.me/971501234567" target="_blank" class="w-10 h-10 rounded-full bg-[#25D366] flex items-center justify-center text-white hover:scale-110 transition">
+                    <a href="https://wa.me/971585072588" target="_blank" class="w-10 h-10 rounded-full bg-[#25D366] flex items-center justify-center text-white hover:scale-110 transition">
                         <i class="fa-brands fa-whatsapp text-xl"></i>
                     </a>
-                    <a href="/cdn-cgi/l/email-protection#5f36312c2f3a3c2b302d2c1f332a3c3e2c713e2f2f" class="text-gray-400 hover:text-lucas-green transition text-sm"><span class="__cf_email__" data-cfemail="a9c0c7dad9cccaddc6dbdae9c5dccac8da87c8d9d9">[email&#160;protected]</span></a>
+                    <a href="mailto:hello@lucas.app" class="text-gray-400 hover:text-lucas-green transition text-sm">hello@lucas.app</a>
                 </div>
             </div>
             
             <div class="mt-8 pt-8 border-t border-lucas-border text-center">
-                <a href="https://lucas.app" class="text-gray-500 hover:text-lucas-green transition text-sm">← Back to LUCAS.app</a>
+                <a href="https://lucas.app" class="text-gray-500 hover:text-lucas-green transition text-sm">← Back to lucas.app</a>
             </div>
         </div>
     </footer>
 
-    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    <!-- ============================================ -->
+    <!-- SCRIPTS -->
+    <!-- ============================================ -->
+    <script>
         function toggleFaq(button) {
             const item = button.closest('.faq-item');
             document.querySelectorAll('.faq-item').forEach(other => {
@@ -651,9 +719,34 @@
                     headers: { 'Accept': 'application/json' }
                 });
                 if (response.ok) {
-                    this.innerHTML = '<div class="text-center py-8"><div class="w-20 h-20 mx-auto mb-4 rounded-full bg-lucas-green/20 flex items-center justify-center"><i class="fa-solid fa-check text-lucas-green text-4xl"></i></div><h3 class="text-2xl font-bold text-white mb-2">Application Received!</h3><p class="text-gray-400">We\'ll review your application and contact you within 48 hours via WhatsApp or email.</p></div>';
+                    this.innerHTML = '<div class="text-center py-8"><div class="w-20 h-20 mx-auto mb-4 rounded-full bg-lucas-green/20 flex items-center justify-center"><i class="fa-solid fa-check text-lucas-green text-4xl"></i></div><h3 class="text-2xl font-bold text-white mb-2">Application Received!</h3><p class="text-gray-400">We\'ll review your application and contact you within 48 hours via WhatsApp.</p></div>';
                 } else {
                     throw new Error('Submission failed');
                 }
             } catch (error) {
-          
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Application';
+                alert('Something went wrong. Please try again or contact us via WhatsApp.');
+            }
+        });
+
+        // Scroll reveal animation
+        document.addEventListener('DOMContentLoaded', function() {
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+        });
+    </script>
+</body>
+</html>
