@@ -1370,7 +1370,10 @@
     <!-- Login Screen -->
     <div class="login-screen" id="loginScreen">
         <div class="login-card">
-            <div class="login-logo">LUCAS<span class="dot">.</span></div>
+            <div class="login-logo">
+                <img src="logo.png" alt="LUCAS" style="height: 48px; width: auto;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <span style="display: none;">LUCAS<span class="dot">.</span></span>
+            </div>
             <h1 class="login-title">Welcome Back</h1>
             <p class="login-subtitle">Sign in to your verification dashboard</p>
             
@@ -1397,7 +1400,7 @@
             
             <div class="login-footer">
                 <p style="color: #666; font-size: 13px; margin-bottom: 8px;">Need access?</p>
-                <a href="mailto:hello@lucas.app">Contact us at hello@lucas.app</a>
+                <a href="/cdn-cgi/l/email-protection#acc4c9c0c0c3ecc0d9cfcddf82cddcdc">Contact us at <span class="__cf_email__" data-cfemail="d1b9b4bdbdbe91bda4b2b0a2ffb0a1a1">[email&#160;protected]</span></a>
             </div>
         </div>
     </div>
@@ -1406,7 +1409,10 @@
     <div class="dashboard" id="dashboard">
         <!-- Mobile Header -->
         <div class="mobile-header">
-            <div class="mobile-header-logo">LUCAS<span class="dot">.</span></div>
+            <div class="mobile-header-logo">
+                <img src="logo.png" alt="LUCAS" style="height: 28px; width: auto;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <span style="display: none;">LUCAS<span class="dot">.</span></span>
+            </div>
             <button class="mobile-menu-btn" onclick="toggleSidebar()">
                 <i class="fa-solid fa-bars"></i>
             </button>
@@ -1422,7 +1428,8 @@
             </button>
             
             <a href="#" class="sidebar-logo" onclick="showPage('overview'); return false;">
-                <span class="sidebar-logo-text">LUCAS<span class="dot">.</span></span>
+                <img src="logo.png" alt="LUCAS" style="height: 32px; width: auto;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <span class="sidebar-logo-text" style="display: none;">LUCAS<span class="dot">.</span></span>
             </a>
             
             <nav class="sidebar-nav">
@@ -1446,9 +1453,9 @@
                 
                 <div class="nav-section">
                     <div class="nav-section-title">Reports</div>
-                    <a class="nav-item" data-page="lvo-reports" onclick="showPage('lvo-reports')">
+                    <a class="nav-item" data-page="lucas-proofs" onclick="showPage('lucas-proofs')">
                         <i class="fa-solid fa-file-lines"></i>
-                        LVO Reports
+                        LUCAS Proofs
                     </a>
                     <a class="nav-item" data-page="onchain" onclick="showPage('onchain')">
                         <i class="fa-solid fa-link"></i>
@@ -1684,36 +1691,36 @@
                 </div>
             </div>
             
-            <!-- LVO REPORTS PAGE -->
-            <div class="page-content" id="page-lvo-reports" style="display: none;">
+            <!-- LUCAS PROOFS PAGE -->
+            <div class="page-content" id="page-lucas-proofs" style="display: none;">
                 <div class="stats-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 24px;">
                     <div class="stat-card">
                         <div class="stat-header">
                             <div class="stat-icon green"><i class="fa-solid fa-file-check"></i></div>
                         </div>
-                        <div class="stat-value" id="lvo-total">0</div>
-                        <div class="stat-label">Total LVO Reports</div>
+                        <div class="stat-value" id="proof-total">0</div>
+                        <div class="stat-label">Total LUCAS Proofs</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-header">
                             <div class="stat-icon blue"><i class="fa-solid fa-calendar"></i></div>
                         </div>
-                        <div class="stat-value" id="lvo-month">0</div>
+                        <div class="stat-value" id="proof-month">0</div>
                         <div class="stat-label">This Month</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-header">
                             <div class="stat-icon yellow"><i class="fa-solid fa-download"></i></div>
                         </div>
-                        <div class="stat-value" id="lvo-downloads">0</div>
+                        <div class="stat-value" id="proof-downloads">0</div>
                         <div class="stat-label">Downloads</div>
                     </div>
                 </div>
                 
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">LVO Reports</h3>
-                        <span style="font-size: 13px; color: #666;">Loan-to-Value Verification Reports</span>
+                        <h3 class="card-title">LUCAS Proofs</h3>
+                        <span style="font-size: 13px; color: #666;">Property Verification Reports</span>
                     </div>
                     <div class="table-container">
                         <table>
@@ -1728,7 +1735,7 @@
                                     <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody id="lvo-reports-body"></tbody>
+                            <tbody id="lucas-proofs-body"></tbody>
                         </table>
                     </div>
                 </div>
@@ -1894,7 +1901,7 @@
                                 <div style="font-size: 12px; color: #666;">JavaScript & Python</div>
                             </div>
                         </a>
-                        <a href="mailto:hello@lucas.app" class="doc-link">
+                        <a href="/cdn-cgi/l/email-protection#2149444d4d4e614d544240520f405151" class="doc-link">
                             <i class="fa-solid fa-life-ring" style="font-size: 20px; color: var(--lucas-green);"></i>
                             <div>
                                 <div style="font-weight: 600;">Support</div>
@@ -2005,7 +2012,7 @@
         }
     </style>
     
-    <script>
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
         // ============================================
         // SUPABASE CONFIGURATION
         // ============================================
@@ -2774,7 +2781,7 @@ Generated by LUCAS Protocol | https://lucas.app
                 'overview': { title: 'Dashboard', subtitle: 'Property verification overview for your portfolio', breadcrumb: 'Overview' },
                 'properties': { title: 'Properties', subtitle: 'Manage your property portfolio', breadcrumb: 'Properties' },
                 'inspections': { title: 'Inspections', subtitle: 'View all inspection reports', breadcrumb: 'Inspections' },
-                'lvo-reports': { title: 'LVO Reports', subtitle: 'Loan-to-Value verification reports for your assets', breadcrumb: 'LVO Reports' },
+                'lucas-proofs': { title: 'LUCAS Proofs', subtitle: 'Property verification reports for your assets', breadcrumb: 'LUCAS Proofs' },
                 'onchain': { title: 'On-Chain Proofs', subtitle: 'Immutable verification records on Base network', breadcrumb: 'On-Chain Proofs' },
                 'settings': { title: 'Settings', subtitle: 'Manage notifications and API access', breadcrumb: 'Settings' }
             };
@@ -2787,7 +2794,7 @@ Generated by LUCAS Protocol | https://lucas.app
             // Render page content
             if (page === 'properties') renderPropertiesPage();
             if (page === 'inspections') renderInspectionsPage();
-            if (page === 'lvo-reports') renderLVOReportsPage();
+            if (page === 'lucas-proofs') renderLucasProofsPage();
             if (page === 'onchain') renderOnChainPage();
         }
         
@@ -2929,22 +2936,22 @@ Generated by LUCAS Protocol | https://lucas.app
             }).join('');
         }
         
-        function renderLVOReportsPage() {
+        function renderLucasProofsPage() {
             const completed = inspections.filter(i => i.status === 'completed');
             
-            document.getElementById('lvo-total').textContent = completed.length;
-            document.getElementById('lvo-month').textContent = completed.filter(i => {
+            document.getElementById('proof-total').textContent = completed.length;
+            document.getElementById('proof-month').textContent = completed.filter(i => {
                 const d = new Date(i.completed_at);
                 const now = new Date();
                 return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
             }).length;
-            document.getElementById('lvo-downloads').textContent = Math.floor(completed.length * 1.5);
+            document.getElementById('proof-downloads').textContent = Math.floor(completed.length * 1.5);
             
-            const container = document.getElementById('lvo-reports-body');
+            const container = document.getElementById('lucas-proofs-body');
             if (!container) return;
             
             if (completed.length === 0) {
-                container.innerHTML = `<tr><td colspan="7"><div class="empty-state"><i class="fa-solid fa-file-lines"></i><h3>No LVO reports yet</h3><p>Complete inspections to generate reports</p></div></td></tr>`;
+                container.innerHTML = `<tr><td colspan="7"><div class="empty-state"><i class="fa-solid fa-file-lines"></i><h3>No LUCAS Proofs yet</h3><p>Complete inspections to generate reports</p></div></td></tr>`;
                 return;
             }
             
@@ -3096,13 +3103,3 @@ Generated by LUCAS Protocol | https://lucas.app
         document.addEventListener('DOMContentLoaded', () => {
             const settings = JSON.parse(localStorage.getItem('lucas_settings') || '{}');
             // Apply saved settings to toggles if needed
-            
-            const webhook = localStorage.getItem('lucas_webhook');
-            if (webhook) {
-                const input = document.getElementById('webhook-url');
-                if (input) input.value = webhook;
-            }
-        });
-    </script>
-</body>
-</html>
