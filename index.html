@@ -175,11 +175,11 @@
         }
         
         .login-logo img {
-            height: 120px;
+            height: 160px;
         }
         
         .login-logo span {
-            font-size: 2.5rem;
+            font-size: 3rem;
             font-weight: 700;
             color: var(--slate-900);
             letter-spacing: -0.03em;
@@ -1285,7 +1285,7 @@
         <div class="login-card">
             <div class="login-header">
                 <div class="login-logo">
-                    <img src="https://app.lucas.app/vertical-logo-dark.png" alt="LUCAS" style="height: 120px; display: none;" onload="this.style.display='inline'; this.nextElementSibling.style.display='none';">
+                    <img src="https://app.lucas.app/vertical-logo-dark.png" alt="LUCAS" style="height: 160px; display: none;" onload="this.style.display='inline'; this.nextElementSibling.style.display='none';">
                     <span>LUCAS<span>.</span></span>
                 </div>
                 <p class="login-subtitle">The trust layer for real estate</p>
@@ -2060,4 +2060,10 @@
             const mins = Math.floor(diff / 60000);
             if (mins < 1) return 'Just now';
             if (mins < 60) return `${mins}m ago`;
-            const hrs = Math
+            const hrs = Math.floor(diff / 3600000);
+            if (hrs < 24) return `${hrs}h ago`;
+            return formatDate(d);
+        }
+    </script>
+</body>
+</html>
