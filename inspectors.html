@@ -2452,8 +2452,13 @@
                 item.classList.remove('active');
                 item.removeAttribute('aria-current');
             });
-            event.currentTarget?.classList.add('active');
-            event.currentTarget?.setAttribute('aria-current', 'page');
+            
+            // Find and activate the correct nav item
+            const activeNav = document.querySelector(`.nav-item[onclick="switchTab('${tab}')"]`);
+            if (activeNav) {
+                activeNav.classList.add('active');
+                activeNav.setAttribute('aria-current', 'page');
+            }
             
             showScreen(screens[tab]);
             
