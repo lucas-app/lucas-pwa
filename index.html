@@ -1276,7 +1276,10 @@
     <div class="login-screen" id="loginScreen">
         <div class="login-card">
             <div class="login-header">
-                <div class="login-logo">LUCAS<span>.</span></div>
+                <div class="login-logo">
+                    <img src="logo-dark.png" alt="LUCAS" style="height: 32px; display: none;" onload="this.style.display='inline'; this.nextElementSibling.style.display='none';">
+                    <span>LUCAS<span>.</span></span>
+                </div>
                 <p class="login-subtitle">Property verification platform</p>
             </div>
             
@@ -1302,7 +1305,7 @@
             </form>
             
             <div class="login-footer">
-                Need access? <a href="mailto:hello@lucas.app">Contact us</a>
+                Need access? <a href="/cdn-cgi/l/email-protection#82eae7eeeeedc2eef7e1e3f1ace3f2f2">Contact us</a>
             </div>
         </div>
     </div>
@@ -1311,7 +1314,10 @@
     <div class="dashboard" id="dashboard">
         <!-- Mobile Header -->
         <div class="mobile-header">
-            <div class="mobile-logo">LUCAS<span>.</span></div>
+            <div class="mobile-logo">
+                <img src="logo-dark.png" alt="LUCAS" style="height: 24px; display: none;" onload="this.style.display='inline'; this.nextElementSibling.style.display='none';">
+                <span>LUCAS<span>.</span></span>
+            </div>
             <button class="menu-btn" onclick="toggleSidebar()">
                 <i class="fa-solid fa-bars"></i>
             </button>
@@ -1326,7 +1332,10 @@
             </button>
             
             <div class="sidebar-header">
-                <a href="#" class="sidebar-logo" onclick="showPage('overview'); return false;">LUCAS<span>.</span></a>
+                <a href="#" class="sidebar-logo" onclick="showPage('overview'); return false;">
+                    <img src="logo-dark.png" alt="LUCAS" style="height: 24px; display: none;" onload="this.style.display='inline'; this.nextElementSibling.style.display='none';">
+                    <span>LUCAS<span>.</span></span>
+                </a>
             </div>
             
             <nav class="sidebar-nav">
@@ -1667,7 +1676,7 @@
         </div>
     </div>
     
-    <script>
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
         // Supabase
         const SUPABASE_URL = 'https://irztntmenxchzicfegid.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlyenRudG1lbnhjaHppY2ZlZ2lkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQxMTA4ODQsImV4cCI6MjA3OTY4Njg4NH0.EjaO-HXjzElo_eHqEWzagsqGg-gEVqUxY1ri-MhofPw';
@@ -2043,10 +2052,4 @@
             const mins = Math.floor(diff / 60000);
             if (mins < 1) return 'Just now';
             if (mins < 60) return `${mins}m ago`;
-            const hrs = Math.floor(diff / 3600000);
-            if (hrs < 24) return `${hrs}h ago`;
-            return formatDate(d);
-        }
-    </script>
-</body>
-</html>
+            const hrs = Math
