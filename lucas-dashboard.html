@@ -3,281 +3,1270 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LUCAS Dashboard | Property Verification Platform</title>
+    <title>LUCAS Dashboard</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <style>
+        /* ========================================
+           DESIGN SYSTEM
+           ======================================== */
         :root {
-            --green: #16a34a;
-            --green-light: #dcfce7;
-            --green-dark: #15803d;
-            --dark: #111827;
-            --bg: #f8fafc;
-            --card: #ffffff;
-            --border: #e5e7eb;
-            --text: #111827;
-            --text-secondary: #6b7280;
-            --text-muted: #9ca3af;
-            --shadow: 0 1px 3px rgba(0,0,0,0.1);
-            --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
-            --sidebar-width: 250px;
+            /* Neutral palette - slate tones */
+            --slate-950: #020617;
+            --slate-900: #0f172a;
+            --slate-800: #1e293b;
+            --slate-700: #334155;
+            --slate-600: #475569;
+            --slate-500: #64748b;
+            --slate-400: #94a3b8;
+            --slate-300: #cbd5e1;
+            --slate-200: #e2e8f0;
+            --slate-100: #f1f5f9;
+            --slate-50: #f8fafc;
+            
+            /* Brand - single green accent */
+            --emerald-600: #059669;
+            --emerald-500: #10b981;
+            --emerald-400: #34d399;
+            --emerald-100: #d1fae5;
+            --emerald-50: #ecfdf5;
+            
+            /* Semantic */
+            --amber-500: #f59e0b;
+            --amber-100: #fef3c7;
+            --red-500: #ef4444;
+            --red-100: #fee2e2;
+            --blue-500: #3b82f6;
+            --blue-100: #dbeafe;
+            
+            /* Layout */
+            --sidebar-width: 260px;
+            --header-height: 64px;
+            
+            /* Shadows - very subtle */
+            --shadow-xs: 0 1px 2px rgba(0,0,0,0.04);
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.05), 0 4px 6px -2px rgba(0,0,0,0.02);
+            
+            /* Transitions */
+            --transition-fast: 150ms ease;
+            --transition-base: 200ms ease;
+            --transition-slow: 300ms ease;
+            
+            /* Radius */
+            --radius-sm: 6px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
         }
         
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        /* ========================================
+           RESET & BASE
+           ======================================== */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            font-size: 16px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
         
         body {
-            font-family: 'Inter', -apple-system, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            font-size: 14px;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--slate-50);
+            color: var(--slate-900);
             line-height: 1.5;
+            min-height: 100vh;
         }
         
-        /* Toast */
-        .toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
-        .toast { display: flex; align-items: center; gap: 12px; padding: 14px 16px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; box-shadow: var(--shadow-lg); animation: slideIn 0.3s; max-width: 360px; }
-        .toast.success { border-left: 4px solid var(--green); }
-        .toast.error { border-left: 4px solid #ef4444; }
-        .toast.warning { border-left: 4px solid #f59e0b; }
-        .toast.info { border-left: 4px solid #3b82f6; }
-        .toast-icon { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; }
-        .toast.success .toast-icon { background: var(--green-light); color: var(--green); }
-        .toast.error .toast-icon { background: #fee2e2; color: #dc2626; }
-        .toast.warning .toast-icon { background: #fef3c7; color: #d97706; }
-        .toast.info .toast-icon { background: #dbeafe; color: #2563eb; }
-        .toast-content { flex: 1; }
-        .toast-title { font-weight: 600; font-size: 13px; }
-        .toast-message { font-size: 12px; color: var(--text-secondary); }
-        .toast-close { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 4px; }
-        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        .toast.removing { animation: slideOut 0.3s forwards; }
-        @keyframes slideOut { to { transform: translateX(100%); opacity: 0; } }
+        ::selection {
+            background: var(--emerald-100);
+            color: var(--emerald-600);
+        }
         
-        /* Login */
-        .login-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; background: linear-gradient(135deg, #f0fdf4 0%, var(--bg) 100%); }
-        .login-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 40px; width: 100%; max-width: 400px; box-shadow: var(--shadow-lg); text-align: center; }
-        .login-logo { margin-bottom: 24px; }
-        .login-logo img { height: 44px; }
-        .login-logo-text { font-size: 26px; font-weight: 700; color: var(--dark); display: none; }
-        .login-logo-text .dot { color: var(--green); }
-        .login-title { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
-        .login-subtitle { color: var(--text-secondary); font-size: 14px; margin-bottom: 28px; }
+        /* ========================================
+           TYPOGRAPHY
+           ======================================== */
+        h1, h2, h3, h4, h5, h6 {
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            color: var(--slate-900);
+        }
         
-        .input-group { margin-bottom: 16px; text-align: left; }
-        .input-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
-        .input-group input, .input-group select, .input-group textarea { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 11px 14px; font-size: 14px; font-family: inherit; transition: all 0.2s; color: var(--text); }
-        .input-group input:focus, .input-group select:focus { outline: none; border-color: var(--green); box-shadow: 0 0 0 3px rgba(22,163,74,0.1); }
-        .input-group input.input-error { border-color: #ef4444; }
-        .input-error-message { color: #ef4444; font-size: 12px; margin-top: 4px; display: none; }
+        .mono {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875em;
+        }
         
-        .btn { width: 100%; padding: 11px 20px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
-        .btn-primary { background: var(--green); color: #fff; }
-        .btn-primary:hover:not(:disabled) { background: var(--green-dark); }
-        .btn-secondary { background: var(--card); color: var(--text); border: 1px solid var(--border); }
-        .btn-secondary:hover:not(:disabled) { background: var(--bg); }
-        .btn .spinner-small { width: 16px; height: 16px; border: 2px solid transparent; border-top-color: currentColor; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        /* ========================================
+           TOAST SYSTEM
+           ======================================== */
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column-reverse;
+            gap: 8px;
+        }
         
-        .login-footer { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border); }
-        .login-footer p { color: var(--text-secondary); font-size: 13px; margin-bottom: 6px; }
-        .login-footer a { color: var(--green); text-decoration: none; font-weight: 500; }
+        .toast {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: var(--slate-900);
+            color: white;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            font-size: 0.875rem;
+            font-weight: 500;
+            animation: toastIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            max-width: 360px;
+        }
         
-        /* Dashboard */
-        .dashboard { display: none; min-height: 100vh; }
-        .dashboard.active { display: block; }
+        .toast.success { background: var(--emerald-600); }
+        .toast.error { background: var(--red-500); }
+        .toast.removing { animation: toastOut 0.2s ease forwards; }
         
-        /* Sidebar */
-        .sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: var(--sidebar-width); background: var(--dark); padding: 20px; display: flex; flex-direction: column; z-index: 100; transition: transform 0.3s; }
-        .sidebar-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 28px; text-decoration: none; }
-        .sidebar-logo img { height: 28px; }
-        .sidebar-logo-text { font-weight: 700; font-size: 18px; color: #fff; display: none; }
-        .sidebar-logo-text .dot { color: var(--green); }
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateY(8px) scale(0.96); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes toastOut {
+            to { opacity: 0; transform: translateY(-8px) scale(0.96); }
+        }
         
-        .nav-section { margin-bottom: 24px; }
-        .nav-section-title { font-size: 10px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 10px; padding-left: 10px; }
-        .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 6px; color: #9ca3af; text-decoration: none; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; margin-bottom: 2px; }
-        .nav-item:hover { background: rgba(255,255,255,0.05); color: #fff; }
-        .nav-item.active { background: rgba(22,163,74,0.15); color: #4ade80; }
-        .nav-item i { width: 18px; text-align: center; font-size: 14px; }
-        .nav-item .badge { margin-left: auto; background: #4ade80; color: var(--dark); font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 8px; }
-        .nav-item .badge.pending { background: #fbbf24; }
+        /* ========================================
+           LOGIN
+           ======================================== */
+        .login-screen {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background: var(--slate-50);
+        }
         
-        .sidebar-user { padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.1); margin-top: auto; }
-        .user-info { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-        .user-avatar { width: 36px; height: 36px; border-radius: 8px; background: linear-gradient(135deg, #4ade80, #22c55e); display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--dark); font-size: 13px; }
-        .user-name { font-weight: 600; font-size: 13px; color: #fff; }
-        .user-role { font-size: 11px; color: #6b7280; }
-        .sidebar .btn-secondary { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); color: #9ca3af; font-size: 13px; padding: 9px; }
-        .sidebar .btn-secondary:hover { background: rgba(255,255,255,0.1); color: #fff; }
+        .login-card {
+            width: 100%;
+            max-width: 380px;
+        }
         
-        /* Mobile */
-        .mobile-header { display: none; position: fixed; top: 0; left: 0; right: 0; height: 60px; background: var(--card); border-bottom: 1px solid var(--border); padding: 0 16px; align-items: center; justify-content: space-between; z-index: 99; }
-        .mobile-header-logo img { height: 26px; }
-        .mobile-header-logo span { font-size: 18px; font-weight: 700; display: none; }
-        .mobile-menu-btn { width: 38px; height: 38px; border-radius: 8px; border: 1px solid var(--border); background: transparent; color: var(--text); cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 99; }
-        .sidebar-overlay.active { display: block; }
-        .sidebar-close { display: none; position: absolute; top: 16px; right: 16px; width: 30px; height: 30px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); background: transparent; color: #9ca3af; cursor: pointer; align-items: center; justify-content: center; }
+        .login-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
         
-        /* Main */
-        .main { margin-left: var(--sidebar-width); padding: 28px; min-height: 100vh; }
-        .breadcrumbs { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; font-size: 12px; }
-        .breadcrumbs a { color: var(--text-muted); text-decoration: none; }
-        .breadcrumbs a:hover { color: var(--green); }
-        .breadcrumbs .separator { color: var(--text-muted); }
-        .breadcrumbs .current { color: var(--text-secondary); }
+        .login-logo {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--slate-900);
+            letter-spacing: -0.03em;
+            margin-bottom: 8px;
+        }
         
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px; }
-        .header-title h1 { font-size: 24px; font-weight: 700; margin-bottom: 4px; }
-        .header-title p { color: var(--text-secondary); font-size: 13px; }
-        .header-actions { display: flex; gap: 8px; }
-        .header-btn { padding: 9px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; border: none; font-family: inherit; }
-        .header-btn.primary { background: var(--green); color: #fff; }
-        .header-btn.primary:hover { background: var(--green-dark); }
-        .header-btn.secondary { background: var(--card); color: var(--text); border: 1px solid var(--border); }
-        .header-btn.secondary:hover { background: var(--bg); }
+        .login-logo span { color: var(--emerald-500); }
         
-        /* Stats */
-        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
-        .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px; transition: all 0.2s; cursor: pointer; }
-        .stat-card:hover { box-shadow: var(--shadow); border-color: var(--green); }
-        .stat-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
-        .stat-icon { width: 38px; height: 38px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; }
-        .stat-icon.green { background: var(--green-light); color: var(--green); }
-        .stat-icon.blue { background: #dbeafe; color: #2563eb; }
-        .stat-icon.yellow { background: #fef3c7; color: #d97706; }
-        .stat-change { font-size: 10px; padding: 3px 6px; border-radius: 4px; font-weight: 600; }
-        .stat-change.positive { background: var(--green-light); color: var(--green-dark); }
-        .stat-change.neutral { background: #f3f4f6; color: var(--text-muted); }
-        .stat-value { font-size: 28px; font-weight: 700; margin-bottom: 2px; }
-        .stat-label { font-size: 12px; color: var(--text-secondary); }
+        .login-subtitle {
+            color: var(--slate-500);
+            font-size: 0.9375rem;
+        }
         
-        /* Cards */
-        .content-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
-        .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
-        .card-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 18px; border-bottom: 1px solid var(--border); }
-        .card-title { font-size: 14px; font-weight: 600; }
-        .card-action { font-size: 12px; color: var(--green); cursor: pointer; font-weight: 500; }
+        .login-form {
+            background: white;
+            border: 1px solid var(--slate-200);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+        }
         
-        /* Table */
-        .table-container { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 550px; }
-        th { text-align: left; padding: 10px 16px; font-size: 11px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.03em; background: var(--bg); }
-        td { padding: 12px 16px; border-top: 1px solid var(--border); font-size: 13px; }
-        tbody tr:hover { background: var(--bg); }
+        .form-group {
+            margin-bottom: 16px;
+        }
         
-        .property-cell { display: flex; align-items: center; gap: 10px; }
-        .property-thumb { width: 36px; height: 36px; border-radius: 6px; background: linear-gradient(135deg, var(--bg), var(--border)); display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 13px; }
-        .property-info h4 { font-weight: 600; font-size: 13px; margin-bottom: 1px; }
-        .property-info span { font-size: 11px; color: var(--text-muted); font-family: monospace; }
+        .form-group:last-of-type {
+            margin-bottom: 20px;
+        }
         
-        .status-badge { display: inline-flex; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
-        .status-badge.completed { background: var(--green-light); color: var(--green-dark); }
-        .status-badge.pending { background: #fef3c7; color: #b45309; }
-        .status-badge.scheduled { background: #dbeafe; color: #1d4ed8; }
-        .status-badge.in_progress { background: #f3e8ff; color: #7c3aed; }
+        .form-label {
+            display: block;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            color: var(--slate-700);
+            margin-bottom: 6px;
+        }
         
-        .score-cell { display: flex; align-items: center; gap: 6px; }
-        .score-cell span { font-weight: 600; min-width: 20px; font-size: 12px; }
-        .score-bar { width: 45px; height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; }
-        .score-fill { height: 100%; border-radius: 3px; }
-        .score-fill.high { background: var(--green); }
-        .score-fill.medium { background: #f59e0b; }
-        .score-fill.low { background: #ef4444; }
+        .form-input {
+            width: 100%;
+            height: 44px;
+            padding: 0 14px;
+            background: var(--slate-50);
+            border: 1px solid var(--slate-200);
+            border-radius: var(--radius-md);
+            font-family: inherit;
+            font-size: 0.9375rem;
+            color: var(--slate-900);
+            transition: var(--transition-fast);
+        }
         
-        .action-btns { display: flex; gap: 4px; }
-        .action-btn { width: 28px; height: 28px; border-radius: 6px; border: 1px solid var(--border); background: transparent; color: var(--text-secondary); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 11px; transition: all 0.2s; }
-        .action-btn:hover { border-color: var(--green); color: var(--green); background: var(--green-light); }
+        .form-input:hover {
+            border-color: var(--slate-300);
+        }
         
-        /* Activity */
-        .activity-list { padding: 6px 0; max-height: 340px; overflow-y: auto; }
-        .activity-item { display: flex; gap: 12px; padding: 12px 16px; cursor: pointer; transition: background 0.2s; }
-        .activity-item:hover { background: var(--bg); }
-        .activity-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 12px; }
-        .activity-icon.green { background: var(--green-light); color: var(--green); }
-        .activity-icon.blue { background: #dbeafe; color: #2563eb; }
-        .activity-icon.yellow { background: #fef3c7; color: #d97706; }
-        .activity-icon.purple { background: #f3e8ff; color: #7c3aed; }
-        .activity-title { font-size: 13px; line-height: 1.4; }
-        .activity-title strong { font-weight: 600; }
-        .activity-time { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+        .form-input:focus {
+            outline: none;
+            border-color: var(--emerald-500);
+            box-shadow: 0 0 0 3px var(--emerald-50);
+            background: white;
+        }
         
-        /* Modal */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; padding: 20px; z-index: 1000; }
-        .modal-overlay.active { display: flex; }
-        .modal { background: var(--card); border-radius: 14px; width: 100%; max-width: 560px; max-height: 85vh; overflow-y: auto; box-shadow: var(--shadow-lg); }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 18px 20px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--card); }
-        .modal-title { font-size: 16px; font-weight: 600; }
-        .modal-close { width: 30px; height: 30px; border-radius: 6px; border: 1px solid var(--border); background: transparent; color: var(--text-secondary); cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        .modal-close:hover { border-color: #ef4444; color: #ef4444; background: #fee2e2; }
-        .modal-body { padding: 20px; }
+        .form-input.error {
+            border-color: var(--red-500);
+            box-shadow: 0 0 0 3px var(--red-100);
+        }
         
-        .detail-header { display: flex; gap: 16px; margin-bottom: 20px; }
-        .detail-image { width: 90px; height: 90px; border-radius: 10px; background: linear-gradient(135deg, var(--bg), var(--border)); display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 24px; }
-        .detail-info h2 { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
-        .detail-info .asset-id { font-family: monospace; font-size: 12px; color: var(--text-muted); margin-bottom: 10px; }
-        .detail-badges { display: flex; gap: 6px; flex-wrap: wrap; }
+        .form-error {
+            color: var(--red-500);
+            font-size: 0.8125rem;
+            margin-top: 6px;
+            display: none;
+        }
         
-        .detail-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
-        .detail-stat { background: var(--bg); border-radius: 8px; padding: 14px; text-align: center; }
-        .detail-stat-value { font-size: 22px; font-weight: 700; color: var(--green); }
-        .detail-stat-label { font-size: 10px; color: var(--text-secondary); text-transform: uppercase; margin-top: 2px; }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            height: 44px;
+            padding: 0 20px;
+            border: none;
+            border-radius: var(--radius-md);
+            font-family: inherit;
+            font-size: 0.9375rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
         
-        .detail-section { margin-bottom: 20px; }
-        .detail-section-title { font-size: 11px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 10px; }
-        .check-item { background: var(--bg); border-radius: 6px; padding: 10px; margin-bottom: 6px; display: flex; align-items: center; gap: 10px; font-size: 13px; }
-        .check-item i { font-size: 14px; }
-        .proof-hash { font-family: monospace; font-size: 11px; color: var(--green); background: var(--green-light); padding: 10px; border-radius: 6px; word-break: break-all; border: 1px solid #bbf7d0; }
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
         
-        /* Empty */
-        .empty-state { text-align: center; padding: 40px 20px; }
-        .empty-state i { font-size: 36px; color: var(--text-muted); margin-bottom: 12px; opacity: 0.5; }
-        .empty-state h3 { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
-        .empty-state p { font-size: 13px; color: var(--text-secondary); margin-bottom: 16px; }
-        .empty-state .btn { width: auto; display: inline-flex; }
+        .btn-primary {
+            width: 100%;
+            background: var(--slate-900);
+            color: white;
+        }
         
-        /* Loading */
-        .loading { display: flex; align-items: center; justify-content: center; padding: 40px; }
-        .spinner { width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--green); border-radius: 50%; animation: spin 1s linear infinite; }
+        .btn-primary:hover:not(:disabled) {
+            background: var(--slate-800);
+        }
+        
+        .btn-primary:active:not(:disabled) {
+            transform: scale(0.98);
+        }
+        
+        .btn-ghost {
+            background: transparent;
+            color: var(--slate-600);
+        }
+        
+        .btn-ghost:hover {
+            background: var(--slate-100);
+            color: var(--slate-900);
+        }
+        
+        .spinner {
+            width: 18px;
+            height: 18px;
+            border: 2px solid transparent;
+            border-top-color: currentColor;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+        
         @keyframes spin { to { transform: rotate(360deg); } }
         
-        /* Toggle */
-        .toggle-switch { position: relative; width: 40px; height: 22px; cursor: pointer; }
-        .toggle-switch input { opacity: 0; width: 0; height: 0; }
-        .toggle-slider { position: absolute; inset: 0; background: var(--border); border-radius: 22px; transition: 0.3s; }
-        .toggle-slider::before { content: ''; position: absolute; left: 3px; top: 3px; width: 16px; height: 16px; background: #fff; border-radius: 50%; transition: 0.3s; box-shadow: var(--shadow); }
-        .toggle-switch input:checked + .toggle-slider { background: var(--green); }
-        .toggle-switch input:checked + .toggle-slider::before { transform: translateX(18px); }
-        
-        .doc-link { display: flex; align-items: center; gap: 10px; padding: 12px; background: var(--bg); border-radius: 8px; text-decoration: none; color: inherit; transition: all 0.2s; border: 1px solid transparent; }
-        .doc-link:hover { border-color: var(--green); background: var(--green-light); }
-        .doc-link i { font-size: 16px; color: var(--green); }
-        
-        /* Responsive */
-        @media (max-width: 1100px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } .content-grid { grid-template-columns: 1fr; } }
-        @media (max-width: 768px) {
-            .mobile-header { display: flex; }
-            .sidebar { transform: translateX(-100%); }
-            .sidebar.open { transform: translateX(0); }
-            .sidebar-close { display: flex; }
-            .main { margin-left: 0; padding: 76px 16px 20px; }
-            .stats-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
-            .stat-card { padding: 14px; }
-            .stat-value { font-size: 22px; }
-            .header { flex-direction: column; align-items: stretch; }
-            .header-actions { width: 100%; }
-            .header-btn { flex: 1; justify-content: center; }
-            .breadcrumbs { display: none; }
-            .detail-header { flex-direction: column; align-items: center; text-align: center; }
-            .detail-stats { grid-template-columns: 1fr; }
-            .toast-container { left: 16px; right: 16px; top: 76px; }
+        .login-footer {
+            text-align: center;
+            margin-top: 24px;
+            color: var(--slate-500);
+            font-size: 0.875rem;
         }
-        @media (max-width: 480px) { .stats-grid { grid-template-columns: 1fr; } }
+        
+        .login-footer a {
+            color: var(--emerald-600);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .login-footer a:hover {
+            text-decoration: underline;
+        }
+        
+        /* ========================================
+           DASHBOARD LAYOUT
+           ======================================== */
+        .dashboard {
+            display: none;
+            min-height: 100vh;
+        }
+        
+        .dashboard.active {
+            display: flex;
+        }
+        
+        /* ========================================
+           SIDEBAR
+           ======================================== */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: var(--sidebar-width);
+            background: white;
+            border-right: 1px solid var(--slate-200);
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+            transition: transform var(--transition-slow);
+        }
+        
+        .sidebar-header {
+            height: var(--header-height);
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid var(--slate-100);
+        }
+        
+        .sidebar-logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--slate-900);
+            letter-spacing: -0.02em;
+            text-decoration: none;
+        }
+        
+        .sidebar-logo span { color: var(--emerald-500); }
+        
+        .sidebar-nav {
+            flex: 1;
+            padding: 16px 12px;
+            overflow-y: auto;
+        }
+        
+        .nav-section {
+            margin-bottom: 24px;
+        }
+        
+        .nav-section-label {
+            font-size: 0.6875rem;
+            font-weight: 600;
+            color: var(--slate-400);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0 8px;
+            margin-bottom: 8px;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: var(--radius-md);
+            color: var(--slate-600);
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            transition: var(--transition-fast);
+            margin-bottom: 2px;
+        }
+        
+        .nav-item:hover {
+            background: var(--slate-50);
+            color: var(--slate-900);
+        }
+        
+        .nav-item.active {
+            background: var(--emerald-50);
+            color: var(--emerald-600);
+        }
+        
+        .nav-item i {
+            width: 18px;
+            font-size: 0.9375rem;
+            opacity: 0.75;
+        }
+        
+        .nav-item.active i {
+            opacity: 1;
+        }
+        
+        .nav-badge {
+            margin-left: auto;
+            min-width: 20px;
+            height: 20px;
+            padding: 0 6px;
+            background: var(--slate-100);
+            border-radius: 10px;
+            font-size: 0.6875rem;
+            font-weight: 600;
+            color: var(--slate-600);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .nav-item.active .nav-badge {
+            background: var(--emerald-100);
+            color: var(--emerald-600);
+        }
+        
+        .sidebar-footer {
+            padding: 16px;
+            border-top: 1px solid var(--slate-100);
+        }
+        
+        .user-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: var(--slate-50);
+            border-radius: var(--radius-md);
+        }
+        
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-md);
+            background: linear-gradient(135deg, var(--emerald-400), var(--emerald-500));
+            color: white;
+            font-size: 0.8125rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .user-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .user-name {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--slate-900);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .user-role {
+            font-size: 0.75rem;
+            color: var(--slate-500);
+        }
+        
+        .logout-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-sm);
+            border: none;
+            background: transparent;
+            color: var(--slate-400);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition-fast);
+        }
+        
+        .logout-btn:hover {
+            background: var(--slate-200);
+            color: var(--slate-600);
+        }
+        
+        /* ========================================
+           MOBILE HEADER
+           ======================================== */
+        .mobile-header {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 56px;
+            background: white;
+            border-bottom: 1px solid var(--slate-200);
+            padding: 0 16px;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 90;
+        }
+        
+        .mobile-logo {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--slate-900);
+        }
+        
+        .mobile-logo span { color: var(--emerald-500); }
+        
+        .menu-btn {
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: transparent;
+            color: var(--slate-600);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+        
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(4px);
+            z-index: 99;
+        }
+        
+        .sidebar-overlay.active { display: block; }
+        
+        .sidebar-close {
+            display: none;
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--slate-200);
+            background: white;
+            color: var(--slate-500);
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* ========================================
+           MAIN CONTENT
+           ======================================== */
+        .main {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+        }
+        
+        .main-header {
+            position: sticky;
+            top: 0;
+            height: var(--header-height);
+            background: rgba(248, 250, 252, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--slate-200);
+            padding: 0 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 50;
+        }
+        
+        .page-info h1 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--slate-900);
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .main-content {
+            padding: 32px;
+            max-width: 1400px;
+        }
+        
+        /* ========================================
+           STATS
+           ======================================== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+        
+        .stat-card {
+            background: white;
+            border: 1px solid var(--slate-200);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            transition: var(--transition-fast);
+            cursor: pointer;
+        }
+        
+        .stat-card:hover {
+            border-color: var(--slate-300);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .stat-label {
+            font-size: 0.8125rem;
+            font-weight: 500;
+            color: var(--slate-500);
+            margin-bottom: 8px;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--slate-900);
+            letter-spacing: -0.02em;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+        
+        .stat-change {
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .stat-change.positive { color: var(--emerald-600); }
+        .stat-change.neutral { color: var(--slate-400); }
+        
+        /* ========================================
+           CARDS & TABLES
+           ======================================== */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 24px;
+        }
+        
+        .card {
+            background: white;
+            border: 1px solid var(--slate-200);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+        
+        .card-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--slate-100);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .card-title {
+            font-size: 0.9375rem;
+            font-weight: 600;
+            color: var(--slate-900);
+        }
+        
+        .card-action {
+            font-size: 0.8125rem;
+            font-weight: 500;
+            color: var(--slate-500);
+            text-decoration: none;
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+        
+        .card-action:hover {
+            color: var(--emerald-600);
+        }
+        
+        .table-wrap {
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th {
+            text-align: left;
+            padding: 12px 20px;
+            font-size: 0.6875rem;
+            font-weight: 600;
+            color: var(--slate-500);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            background: var(--slate-50);
+            border-bottom: 1px solid var(--slate-100);
+        }
+        
+        td {
+            padding: 14px 20px;
+            font-size: 0.875rem;
+            color: var(--slate-700);
+            border-bottom: 1px solid var(--slate-100);
+        }
+        
+        tbody tr {
+            transition: var(--transition-fast);
+        }
+        
+        tbody tr:hover {
+            background: var(--slate-50);
+        }
+        
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .property-cell {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .property-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-md);
+            background: var(--slate-100);
+            color: var(--slate-500);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.875rem;
+        }
+        
+        .property-name {
+            font-weight: 600;
+            color: var(--slate-900);
+        }
+        
+        .property-id {
+            font-size: 0.75rem;
+            color: var(--slate-500);
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .badge-success {
+            background: var(--emerald-50);
+            color: var(--emerald-600);
+        }
+        
+        .badge-warning {
+            background: var(--amber-100);
+            color: var(--amber-500);
+        }
+        
+        .badge-info {
+            background: var(--blue-100);
+            color: var(--blue-500);
+        }
+        
+        .score-display {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .score-value {
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--slate-900);
+        }
+        
+        .score-bar {
+            width: 48px;
+            height: 4px;
+            background: var(--slate-200);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        
+        .score-fill {
+            height: 100%;
+            border-radius: 2px;
+            background: var(--emerald-500);
+        }
+        
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            border: 1px solid var(--slate-200);
+            border-radius: var(--radius-sm);
+            background: white;
+            color: var(--slate-500);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8125rem;
+            transition: var(--transition-fast);
+        }
+        
+        .action-btn:hover {
+            border-color: var(--emerald-500);
+            color: var(--emerald-600);
+            background: var(--emerald-50);
+        }
+        
+        /* ========================================
+           ACTIVITY FEED
+           ======================================== */
+        .activity-list {
+            padding: 8px 0;
+        }
+        
+        .activity-item {
+            display: flex;
+            gap: 12px;
+            padding: 12px 20px;
+            transition: var(--transition-fast);
+            cursor: pointer;
+        }
+        
+        .activity-item:hover {
+            background: var(--slate-50);
+        }
+        
+        .activity-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-top: 6px;
+            flex-shrink: 0;
+        }
+        
+        .activity-dot.success { background: var(--emerald-500); }
+        .activity-dot.warning { background: var(--amber-500); }
+        .activity-dot.info { background: var(--blue-500); }
+        
+        .activity-content {
+            flex: 1;
+        }
+        
+        .activity-text {
+            font-size: 0.875rem;
+            color: var(--slate-700);
+            line-height: 1.4;
+        }
+        
+        .activity-text strong {
+            font-weight: 600;
+            color: var(--slate-900);
+        }
+        
+        .activity-time {
+            font-size: 0.75rem;
+            color: var(--slate-400);
+            margin-top: 4px;
+        }
+        
+        /* ========================================
+           EMPTY STATE
+           ======================================== */
+        .empty-state {
+            text-align: center;
+            padding: 48px 24px;
+        }
+        
+        .empty-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 16px;
+            background: var(--slate-100);
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--slate-400);
+            font-size: 1.25rem;
+        }
+        
+        .empty-state h3 {
+            font-size: 0.9375rem;
+            font-weight: 600;
+            color: var(--slate-900);
+            margin-bottom: 4px;
+        }
+        
+        .empty-state p {
+            font-size: 0.875rem;
+            color: var(--slate-500);
+            margin-bottom: 20px;
+        }
+        
+        /* ========================================
+           MODAL
+           ======================================== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            z-index: 1000;
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+        }
+        
+        .modal {
+            background: white;
+            border-radius: var(--radius-xl);
+            width: 100%;
+            max-width: 480px;
+            max-height: 85vh;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--slate-100);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .modal-title {
+            font-size: 1.0625rem;
+            font-weight: 600;
+        }
+        
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            border: 1px solid var(--slate-200);
+            border-radius: var(--radius-sm);
+            background: white;
+            color: var(--slate-500);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition-fast);
+        }
+        
+        .modal-close:hover {
+            background: var(--red-100);
+            border-color: var(--red-500);
+            color: var(--red-500);
+        }
+        
+        .modal-body {
+            padding: 24px;
+            overflow-y: auto;
+            max-height: calc(85vh - 70px);
+        }
+        
+        /* Modal Detail View */
+        .detail-header {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .detail-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: var(--radius-lg);
+            background: var(--slate-100);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--slate-400);
+            font-size: 1.5rem;
+        }
+        
+        .detail-title {
+            font-size: 1.125rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        
+        .detail-id {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8125rem;
+            color: var(--slate-500);
+        }
+        
+        .detail-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        
+        .detail-stat {
+            background: var(--slate-50);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            text-align: center;
+        }
+        
+        .detail-stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--emerald-600);
+        }
+        
+        .detail-stat-label {
+            font-size: 0.6875rem;
+            font-weight: 600;
+            color: var(--slate-500);
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            margin-top: 4px;
+        }
+        
+        .detail-section {
+            margin-bottom: 20px;
+        }
+        
+        .detail-section-title {
+            font-size: 0.6875rem;
+            font-weight: 700;
+            color: var(--slate-400);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 12px;
+        }
+        
+        .checklist-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        
+        .check-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 12px;
+            background: var(--slate-50);
+            border-radius: var(--radius-md);
+            font-size: 0.8125rem;
+            font-weight: 500;
+            color: var(--slate-700);
+        }
+        
+        .check-item i {
+            font-size: 0.875rem;
+        }
+        
+        .check-item.pass i { color: var(--emerald-500); }
+        .check-item.fail i { color: var(--red-500); }
+        
+        .proof-hash {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--emerald-600);
+            background: var(--emerald-50);
+            border: 1px solid var(--emerald-100);
+            padding: 12px;
+            border-radius: var(--radius-md);
+            word-break: break-all;
+        }
+        
+        /* ========================================
+           SETTINGS
+           ======================================== */
+        .settings-section {
+            margin-bottom: 32px;
+        }
+        
+        .settings-title {
+            font-size: 0.8125rem;
+            font-weight: 600;
+            color: var(--slate-900);
+            margin-bottom: 16px;
+        }
+        
+        .setting-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--slate-100);
+        }
+        
+        .setting-row:last-child {
+            border-bottom: none;
+        }
+        
+        .setting-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--slate-700);
+        }
+        
+        .setting-desc {
+            font-size: 0.8125rem;
+            color: var(--slate-500);
+            margin-top: 2px;
+        }
+        
+        .toggle {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            cursor: pointer;
+        }
+        
+        .toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-track {
+            position: absolute;
+            inset: 0;
+            background: var(--slate-200);
+            border-radius: 12px;
+            transition: var(--transition-fast);
+        }
+        
+        .toggle-track::before {
+            content: '';
+            position: absolute;
+            left: 2px;
+            top: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition-fast);
+        }
+        
+        .toggle input:checked + .toggle-track {
+            background: var(--emerald-500);
+        }
+        
+        .toggle input:checked + .toggle-track::before {
+            transform: translateX(20px);
+        }
+        
+        /* ========================================
+           RESPONSIVE
+           ======================================== */
+        @media (max-width: 1200px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .mobile-header {
+                display: flex;
+            }
+            
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            
+            .sidebar-close {
+                display: flex;
+            }
+            
+            .main {
+                margin-left: 0;
+            }
+            
+            .main-header {
+                display: none;
+            }
+            
+            .main-content {
+                padding: 72px 16px 24px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+            }
+            
+            .stat-card {
+                padding: 16px;
+            }
+            
+            .stat-value {
+                font-size: 1.5rem;
+            }
+            
+            .detail-header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            
+            .detail-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .checklist-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .toast-container {
+                left: 16px;
+                right: 16px;
+                bottom: 16px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
@@ -286,276 +1275,778 @@
     <!-- Login -->
     <div class="login-screen" id="loginScreen">
         <div class="login-card">
-            <div class="login-logo">
-                <img src="logo-dark.png" alt="LUCAS" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                <div class="login-logo-text">LUCAS<span class="dot">.</span></div>
+            <div class="login-header">
+                <div class="login-logo">LUCAS<span>.</span></div>
+                <p class="login-subtitle">Property verification platform</p>
             </div>
-            <h1 class="login-title">Welcome back</h1>
-            <p class="login-subtitle">Sign in to your verification dashboard</p>
             
-            <form onsubmit="handleLogin(event)">
-                <div class="input-group">
-                    <label>Platform</label>
-                    <select id="platform-select">
+            <form class="login-form" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label class="form-label">Platform</label>
+                    <select class="form-input" id="platform-select">
                         <option value="admin">LUCAS Admin</option>
                         <option value="stake">Stake</option>
                         <option value="smartcrowd">SmartCrowd</option>
                         <option value="prypco">PRYPCO</option>
                     </select>
                 </div>
-                <div class="input-group">
-                    <label>Access Code</label>
-                    <input type="password" id="access-code" placeholder="Enter access code" required>
-                    <p class="input-error-message" id="login-error">Invalid access code</p>
+                <div class="form-group">
+                    <label class="form-label">Access Code</label>
+                    <input type="password" class="form-input" id="access-code" placeholder="Enter your code" required>
+                    <p class="form-error" id="login-error">Invalid access code. Please try again.</p>
                 </div>
                 <button type="submit" class="btn btn-primary" id="login-btn">
-                    <span class="btn-text">Sign In</span>
-                    <span class="spinner-small" style="display: none;"></span>
+                    <span id="login-text">Sign in</span>
+                    <span class="spinner" id="login-spinner" style="display: none;"></span>
                 </button>
             </form>
             
             <div class="login-footer">
-                <p>Need access?</p>
-                <a href="mailto:hello@lucas.app">Contact hello@lucas.app</a>
+                Need access? <a href="mailto:hello@lucas.app">Contact us</a>
             </div>
         </div>
     </div>
     
     <!-- Dashboard -->
     <div class="dashboard" id="dashboard">
+        <!-- Mobile Header -->
         <div class="mobile-header">
-            <div class="mobile-header-logo">
-                <img src="logo-dark.png" alt="LUCAS" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                <span>LUCAS<span style="color:var(--green)">.</span></span>
-            </div>
-            <button class="mobile-menu-btn" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+            <div class="mobile-logo">LUCAS<span>.</span></div>
+            <button class="menu-btn" onclick="toggleSidebar()">
+                <i class="fa-solid fa-bars"></i>
+            </button>
         </div>
         
         <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
         
+        <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
-            <button class="sidebar-close" onclick="closeSidebar()"><i class="fa-solid fa-xmark"></i></button>
-            <a href="#" class="sidebar-logo" onclick="showPage('overview'); return false;">
-                <img src="logo.png" alt="LUCAS" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                <span class="sidebar-logo-text">LUCAS<span class="dot">.</span></span>
-            </a>
+            <button class="sidebar-close" onclick="closeSidebar()">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            
+            <div class="sidebar-header">
+                <a href="#" class="sidebar-logo" onclick="showPage('overview'); return false;">LUCAS<span>.</span></a>
+            </div>
             
             <nav class="sidebar-nav">
                 <div class="nav-section">
-                    <div class="nav-section-title">Overview</div>
-                    <a class="nav-item active" data-page="overview" onclick="showPage('overview')"><i class="fa-solid fa-chart-pie"></i>Dashboard</a>
-                    <a class="nav-item" data-page="properties" onclick="showPage('properties')"><i class="fa-solid fa-building"></i>Properties<span class="badge" id="property-count">0</span></a>
-                    <a class="nav-item" data-page="inspections" onclick="showPage('inspections')"><i class="fa-solid fa-clipboard-check"></i>Inspections<span class="badge pending" id="pending-count" style="display:none">0</span></a>
+                    <div class="nav-section-label">Overview</div>
+                    <a class="nav-item active" data-page="overview" onclick="showPage('overview')">
+                        <i class="fa-solid fa-grid-2"></i>
+                        Dashboard
+                    </a>
+                    <a class="nav-item" data-page="properties" onclick="showPage('properties')">
+                        <i class="fa-solid fa-building"></i>
+                        Properties
+                        <span class="nav-badge" id="property-count">0</span>
+                    </a>
+                    <a class="nav-item" data-page="inspections" onclick="showPage('inspections')">
+                        <i class="fa-solid fa-clipboard-check"></i>
+                        Inspections
+                    </a>
                 </div>
+                
                 <div class="nav-section">
-                    <div class="nav-section-title">Reports</div>
-                    <a class="nav-item" data-page="lucas-proofs" onclick="showPage('lucas-proofs')"><i class="fa-solid fa-file-lines"></i>LUCAS Proofs</a>
-                    <a class="nav-item" data-page="onchain" onclick="showPage('onchain')"><i class="fa-solid fa-link"></i>On-Chain</a>
+                    <div class="nav-section-label">Reports</div>
+                    <a class="nav-item" data-page="lucas-proofs" onclick="showPage('lucas-proofs')">
+                        <i class="fa-solid fa-file-lines"></i>
+                        LUCAS Proofs
+                    </a>
+                    <a class="nav-item" data-page="onchain" onclick="showPage('onchain')">
+                        <i class="fa-solid fa-cube"></i>
+                        On-Chain
+                    </a>
                 </div>
+                
                 <div class="nav-section">
-                    <div class="nav-section-title">Account</div>
-                    <a class="nav-item" data-page="settings" onclick="showPage('settings')"><i class="fa-solid fa-gear"></i>Settings</a>
+                    <div class="nav-section-label">Account</div>
+                    <a class="nav-item" data-page="settings" onclick="showPage('settings')">
+                        <i class="fa-solid fa-gear"></i>
+                        Settings
+                    </a>
                 </div>
             </nav>
             
-            <div class="sidebar-user">
-                <div class="user-info">
+            <div class="sidebar-footer">
+                <div class="user-card">
                     <div class="user-avatar" id="user-avatar">LA</div>
-                    <div>
+                    <div class="user-info">
                         <div class="user-name" id="user-name">LUCAS Admin</div>
                         <div class="user-role" id="user-role">Administrator</div>
                     </div>
+                    <button class="logout-btn" onclick="logout()" title="Sign out">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    </button>
                 </div>
-                <button class="btn btn-secondary" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Sign Out</button>
             </div>
         </aside>
         
+        <!-- Main -->
         <main class="main">
-            <div class="breadcrumbs"><a href="#" onclick="showPage('overview')">Dashboard</a><span class="separator">/</span><span class="current" id="breadcrumb-current">Overview</span></div>
-            
-            <div class="header">
-                <div class="header-title">
+            <header class="main-header">
+                <div class="page-info">
                     <h1 id="page-title">Dashboard</h1>
-                    <p id="page-subtitle">Property verification overview</p>
                 </div>
                 <div class="header-actions">
-                    <button class="header-btn secondary" onclick="refreshData()"><i class="fa-solid fa-arrows-rotate"></i>Refresh</button>
-                    <button class="header-btn secondary" onclick="exportData()"><i class="fa-solid fa-download"></i>Export</button>
-                    <button class="header-btn primary" onclick="openRequestModal()"><i class="fa-solid fa-plus"></i>New Inspection</button>
+                    <button class="btn btn-ghost" onclick="refreshData()">
+                        <i class="fa-solid fa-arrows-rotate"></i>
+                        Refresh
+                    </button>
+                    <button class="btn btn-primary" onclick="openRequestModal()">
+                        <i class="fa-solid fa-plus"></i>
+                        New Inspection
+                    </button>
                 </div>
-            </div>
+            </header>
             
-            <!-- Overview -->
-            <div class="page-content" id="page-overview">
-                <div class="stats-grid">
-                    <div class="stat-card" onclick="showPage('properties')">
-                        <div class="stat-header"><div class="stat-icon green"><i class="fa-solid fa-building"></i></div><span class="stat-change neutral" id="stat-properties-change">--</span></div>
-                        <div class="stat-value" id="stat-properties">0</div>
-                        <div class="stat-label">Total Properties</div>
+            <div class="main-content">
+                <!-- Overview -->
+                <div class="page-content" id="page-overview">
+                    <div class="stats-grid">
+                        <div class="stat-card" onclick="showPage('properties')">
+                            <div class="stat-label">Total Properties</div>
+                            <div class="stat-value" id="stat-properties">0</div>
+                            <div class="stat-change neutral" id="stat-properties-change">No change</div>
+                        </div>
+                        <div class="stat-card" onclick="showPage('inspections')">
+                            <div class="stat-label">Completed</div>
+                            <div class="stat-value" id="stat-completed">0</div>
+                            <div class="stat-change neutral" id="stat-completed-change">No change</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Pending</div>
+                            <div class="stat-value" id="stat-pending">0</div>
+                            <div class="stat-change neutral">Awaiting inspection</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Avg Score</div>
+                            <div class="stat-value" id="stat-score">—</div>
+                            <div class="stat-change neutral">Condition rating</div>
+                        </div>
                     </div>
-                    <div class="stat-card" onclick="showPage('inspections')">
-                        <div class="stat-header"><div class="stat-icon blue"><i class="fa-solid fa-clipboard-check"></i></div><span class="stat-change neutral" id="stat-inspections-change">--</span></div>
-                        <div class="stat-value" id="stat-inspections">0</div>
-                        <div class="stat-label">Completed</div>
-                    </div>
-                    <div class="stat-card" onclick="showPage('inspections')">
-                        <div class="stat-header"><div class="stat-icon yellow"><i class="fa-solid fa-clock"></i></div></div>
-                        <div class="stat-value" id="stat-pending">0</div>
-                        <div class="stat-label">Pending</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-header"><div class="stat-icon green"><i class="fa-solid fa-star"></i></div></div>
-                        <div class="stat-value" id="stat-avg-score">--</div>
-                        <div class="stat-label">Avg Score</div>
+                    
+                    <div class="content-grid">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Recent Inspections</h3>
+                                <a class="card-action" onclick="showPage('inspections')">View all →</a>
+                            </div>
+                            <div class="table-wrap">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Property</th>
+                                            <th>Status</th>
+                                            <th>Score</th>
+                                            <th>Date</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="inspections-table"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Activity</h3>
+                            </div>
+                            <div class="activity-list" id="activity-list"></div>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="content-grid">
+                <!-- Properties -->
+                <div class="page-content" id="page-properties" style="display: none;">
                     <div class="card">
-                        <div class="card-header"><h3 class="card-title">Recent Inspections</h3><a class="card-action" onclick="showPage('inspections')">View All →</a></div>
-                        <div class="table-container">
-                            <table><thead><tr><th>Property</th><th>Status</th><th>Score</th><th>Date</th><th></th></tr></thead><tbody id="inspections-table"><tr><td colspan="5"><div class="loading"><div class="spinner"></div></div></td></tr></tbody></table>
+                        <div class="card-header">
+                            <h3 class="card-title">All Properties</h3>
+                            <span style="font-size: 0.8125rem; color: var(--slate-500);" id="props-count">0 properties</span>
+                        </div>
+                        <div class="table-wrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Property</th>
+                                        <th>Type</th>
+                                        <th>Size</th>
+                                        <th>Last Score</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="properties-table"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Inspections -->
+                <div class="page-content" id="page-inspections" style="display: none;">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">All Inspections</h3>
+                            <select id="status-filter" onchange="renderInspectionsPage()" style="height: 36px; padding: 0 12px; background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: var(--radius-md); font-size: 0.8125rem; color: var(--slate-700); cursor: pointer;">
+                                <option value="all">All status</option>
+                                <option value="completed">Completed</option>
+                                <option value="scheduled">Scheduled</option>
+                                <option value="pending">Pending</option>
+                            </select>
+                        </div>
+                        <div class="table-wrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Property</th>
+                                        <th>Status</th>
+                                        <th>Score</th>
+                                        <th>Inspector</th>
+                                        <th>Date</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="all-inspections-table"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- LUCAS Proofs -->
+                <div class="page-content" id="page-lucas-proofs" style="display: none;">
+                    <div class="stats-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 24px;">
+                        <div class="stat-card">
+                            <div class="stat-label">Total Proofs</div>
+                            <div class="stat-value" id="proof-total">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">This Month</div>
+                            <div class="stat-value" id="proof-month">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Downloads</div>
+                            <div class="stat-value" id="proof-downloads">0</div>
                         </div>
                     </div>
                     <div class="card">
-                        <div class="card-header"><h3 class="card-title">Activity</h3></div>
-                        <div class="activity-list" id="activity-list"><div class="loading"><div class="spinner"></div></div></div>
+                        <div class="card-header">
+                            <h3 class="card-title">Verification Reports</h3>
+                        </div>
+                        <div class="table-wrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Report ID</th>
+                                        <th>Property</th>
+                                        <th>Valuation</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="proofs-table"></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
-            </div>
-            
-            <!-- Properties -->
-            <div class="page-content" id="page-properties" style="display:none">
-                <div class="card">
-                    <div class="card-header"><h3 class="card-title">All Properties</h3><span style="font-size:12px;color:var(--text-secondary)" id="properties-count-label">0 properties</span></div>
-                    <div class="table-container"><table><thead><tr><th>Property</th><th>Type</th><th>Size</th><th>Score</th><th></th></tr></thead><tbody id="properties-table-body"><tr><td colspan="5"><div class="loading"><div class="spinner"></div></div></td></tr></tbody></table></div>
-                </div>
-            </div>
-            
-            <!-- Inspections -->
-            <div class="page-content" id="page-inspections" style="display:none">
-                <div class="card">
-                    <div class="card-header"><h3 class="card-title">All Inspections</h3><select id="status-filter" onchange="filterInspections()" style="background:var(--card);border:1px solid var(--border);border-radius:6px;padding:6px 10px;font-size:12px;cursor:pointer"><option value="all">All</option><option value="completed">Completed</option><option value="scheduled">Scheduled</option><option value="pending">Pending</option></select></div>
-                    <div class="table-container"><table><thead><tr><th>Property</th><th>Status</th><th>Score</th><th>Inspector</th><th>Date</th><th></th></tr></thead><tbody id="all-inspections-body"><tr><td colspan="6"><div class="loading"><div class="spinner"></div></div></td></tr></tbody></table></div>
-                </div>
-            </div>
-            
-            <!-- LUCAS Proofs -->
-            <div class="page-content" id="page-lucas-proofs" style="display:none">
-                <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:20px">
-                    <div class="stat-card"><div class="stat-header"><div class="stat-icon green"><i class="fa-solid fa-file-check"></i></div></div><div class="stat-value" id="proof-total">0</div><div class="stat-label">Total Proofs</div></div>
-                    <div class="stat-card"><div class="stat-header"><div class="stat-icon blue"><i class="fa-solid fa-calendar"></i></div></div><div class="stat-value" id="proof-month">0</div><div class="stat-label">This Month</div></div>
-                    <div class="stat-card"><div class="stat-header"><div class="stat-icon yellow"><i class="fa-solid fa-download"></i></div></div><div class="stat-value" id="proof-downloads">0</div><div class="stat-label">Downloads</div></div>
-                </div>
-                <div class="card"><div class="card-header"><h3 class="card-title">LUCAS Proofs</h3></div><div class="table-container"><table><thead><tr><th>ID</th><th>Property</th><th>Value</th><th>Status</th><th>Date</th><th></th></tr></thead><tbody id="lucas-proofs-body"></tbody></table></div></div>
-            </div>
-            
-            <!-- On-Chain -->
-            <div class="page-content" id="page-onchain" style="display:none">
-                <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:20px">
-                    <div class="stat-card"><div class="stat-header"><div class="stat-icon green"><i class="fa-solid fa-cube"></i></div></div><div class="stat-value" id="chain-total">0</div><div class="stat-label">Total</div></div>
-                    <div class="stat-card"><div class="stat-header"><div class="stat-icon blue"><i class="fa-solid fa-check-double"></i></div></div><div class="stat-value" id="chain-verified">0</div><div class="stat-label">Verified</div></div>
-                    <div class="stat-card"><div class="stat-header"><div class="stat-icon yellow"><i class="fa-solid fa-clock"></i></div></div><div class="stat-value" id="chain-pending">0</div><div class="stat-label">Pending</div></div>
-                </div>
-                <div class="card" style="margin-bottom:20px"><div class="card-header"><h3 class="card-title">Network</h3></div><div style="padding:16px;display:flex;gap:24px;flex-wrap:wrap"><div style="display:flex;align-items:center;gap:10px"><div style="width:8px;height:8px;background:#22c55e;border-radius:50%"></div><div><div style="font-weight:600;font-size:13px">Base Sepolia</div><div style="font-size:11px;color:var(--text-secondary)">Testnet</div></div></div><div><div style="font-size:11px;color:var(--text-secondary)">Contract</div><div style="font-family:monospace;font-size:12px;color:var(--green)">0x7a3B...4f2E</div></div></div></div>
-                <div class="card"><div class="card-header"><h3 class="card-title">On-Chain Proofs</h3></div><div class="table-container"><table><thead><tr><th>Tx Hash</th><th>Property</th><th>Type</th><th>Status</th><th>Date</th><th></th></tr></thead><tbody id="onchain-proofs-body"></tbody></table></div></div>
-            </div>
-            
-            <!-- Settings -->
-            <div class="page-content" id="page-settings" style="display:none">
-                <div class="card" style="margin-bottom:20px">
-                    <div class="card-header"><h3 class="card-title">Notifications</h3></div>
-                    <div style="padding:16px">
-                        <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)"><div><div style="font-weight:600;font-size:13px">Email Notifications</div><div style="font-size:12px;color:var(--text-secondary)">Receive inspection updates</div></div><label class="toggle-switch"><input type="checkbox" checked onchange="updateSetting('email',this.checked)"><span class="toggle-slider"></span></label></div>
-                        <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0"><div><div style="font-weight:600;font-size:13px">Weekly Summary</div><div style="font-size:12px;color:var(--text-secondary)">Portfolio report every Monday</div></div><label class="toggle-switch"><input type="checkbox" onchange="updateSetting('weekly',this.checked)"><span class="toggle-slider"></span></label></div>
+                
+                <!-- On-Chain -->
+                <div class="page-content" id="page-onchain" style="display: none;">
+                    <div class="card" style="margin-bottom: 24px; padding: 20px;">
+                        <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div style="width: 8px; height: 8px; background: var(--emerald-500); border-radius: 50%;"></div>
+                                <span style="font-weight: 600; color: var(--slate-900);">Base Sepolia</span>
+                                <span style="color: var(--slate-500); font-size: 0.8125rem;">Testnet</span>
+                            </div>
+                            <div style="color: var(--slate-400);">|</div>
+                            <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.8125rem; color: var(--slate-600);">0x7a3B...4f2E</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">On-Chain Proofs</h3>
+                        </div>
+                        <div class="table-wrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Transaction</th>
+                                        <th>Property</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="onchain-table"></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
-                <div class="card" style="margin-bottom:20px">
-                    <div class="card-header"><h3 class="card-title">API</h3></div>
-                    <div style="padding:16px">
-                        <div style="margin-bottom:16px"><div style="font-size:11px;color:var(--text-secondary);text-transform:uppercase;margin-bottom:6px">API Key</div><div style="display:flex;gap:10px"><div style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px 12px;font-family:monospace;font-size:12px;color:var(--text-secondary)">sk_live_••••••••••••</div><button class="btn btn-secondary" style="width:auto;padding:10px 14px" onclick="copyApiKey()"><i class="fa-solid fa-copy"></i></button></div></div>
-                        <div><div style="font-size:11px;color:var(--text-secondary);text-transform:uppercase;margin-bottom:6px">Webhook URL</div><div style="display:flex;gap:10px"><input type="text" id="webhook-url" placeholder="https://..." style="flex:1"><button class="btn btn-primary" style="width:auto;padding:10px 14px" onclick="saveWebhook()">Save</button></div></div>
+                
+                <!-- Settings -->
+                <div class="page-content" id="page-settings" style="display: none;">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Notifications</h3>
+                        </div>
+                        <div style="padding: 0 20px;">
+                            <div class="setting-row">
+                                <div>
+                                    <div class="setting-label">Email notifications</div>
+                                    <div class="setting-desc">Receive updates about inspections</div>
+                                </div>
+                                <label class="toggle">
+                                    <input type="checkbox" checked onchange="saveSetting('email', this.checked)">
+                                    <span class="toggle-track"></span>
+                                </label>
+                            </div>
+                            <div class="setting-row">
+                                <div>
+                                    <div class="setting-label">Weekly digest</div>
+                                    <div class="setting-desc">Summary report every Monday</div>
+                                </div>
+                                <label class="toggle">
+                                    <input type="checkbox" onchange="saveSetting('weekly', this.checked)">
+                                    <span class="toggle-track"></span>
+                                </label>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="card">
-                    <div class="card-header"><h3 class="card-title">Docs</h3></div>
-                    <div style="padding:16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px">
-                        <a href="lucas-api-docs.html" target="_blank" class="doc-link"><i class="fa-solid fa-book"></i><div><div style="font-weight:600;font-size:13px">API Docs</div><div style="font-size:11px;color:var(--text-secondary)">Integration guide</div></div></a>
-                        <a href="mailto:hello@lucas.app" class="doc-link"><i class="fa-solid fa-life-ring"></i><div><div style="font-weight:600;font-size:13px">Support</div><div style="font-size:11px;color:var(--text-secondary)">Get help</div></div></a>
+                    
+                    <div class="card" style="margin-top: 24px;">
+                        <div class="card-header">
+                            <h3 class="card-title">API Access</h3>
+                        </div>
+                        <div style="padding: 20px;">
+                            <div class="form-group">
+                                <label class="form-label">API Key</label>
+                                <div style="display: flex; gap: 8px;">
+                                    <input type="text" class="form-input" value="sk_live_••••••••••••••••" readonly style="flex: 1; font-family: 'JetBrains Mono', monospace;">
+                                    <button class="action-btn" onclick="copyKey()" style="width: 44px; height: 44px;">
+                                        <i class="fa-solid fa-copy"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label class="form-label">Webhook URL</label>
+                                <div style="display: flex; gap: 8px;">
+                                    <input type="text" class="form-input" id="webhook-url" placeholder="https://your-domain.com/webhook" style="flex: 1;">
+                                    <button class="btn btn-primary" onclick="saveWebhook()" style="width: auto;">Save</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </main>
     </div>
     
-    <!-- Modals -->
-    <div class="modal-overlay" id="inspectionModal" onclick="if(event.target===this)closeModal()">
-        <div class="modal"><div class="modal-header"><h3 class="modal-title">Inspection Details</h3><button class="modal-close" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button></div><div class="modal-body" id="modal-content"></div></div>
+    <!-- Inspection Modal -->
+    <div class="modal-overlay" id="inspectionModal" onclick="if(event.target === this) closeModal()">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Inspection Details</h3>
+                <button class="modal-close" onclick="closeModal()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="modal-content"></div>
+        </div>
     </div>
     
-    <div class="modal-overlay" id="requestModal" onclick="if(event.target===this)closeRequestModal()">
-        <div class="modal" style="max-width:420px"><div class="modal-header"><h3 class="modal-title">Request Inspection</h3><button class="modal-close" onclick="closeRequestModal()"><i class="fa-solid fa-xmark"></i></button></div><div class="modal-body" id="request-modal-content"></div></div>
+    <!-- Request Modal -->
+    <div class="modal-overlay" id="requestModal" onclick="if(event.target === this) closeRequestModal()">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Request Inspection</h3>
+                <button class="modal-close" onclick="closeRequestModal()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="request-content"></div>
+        </div>
     </div>
     
     <script>
-        const SUPABASE_URL='https://irztntmenxchzicfegid.supabase.co',SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlyenRudG1lbnhjaHppY2ZlZ2lkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQxMTA4ODQsImV4cCI6MjA3OTY4Njg4NH0.EjaO-HXjzElo_eHqEWzagsqGg-gEVqUxY1ri-MhofPw';
-        let supabase=null;try{if(window.supabase)supabase=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY)}catch(e){}
+        // Supabase
+        const SUPABASE_URL = 'https://irztntmenxchzicfegid.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlyenRudG1lbnhjaHppY2ZlZ2lkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQxMTA4ODQsImV4cCI6MjA3OTY4Njg4NH0.EjaO-HXjzElo_eHqEWzagsqGg-gEVqUxY1ri-MhofPw';
+        let supabase = null;
+        try { if (window.supabase) supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch(e) {}
         
-        function showToast(t,title,msg,d=3500){const c=document.getElementById('toastContainer'),el=document.createElement('div');el.className=`toast ${t}`;el.innerHTML=`<div class="toast-icon"><i class="fa-solid fa-${t==='success'?'check':t==='error'?'xmark':t==='warning'?'exclamation':'info'}"></i></div><div class="toast-content"><div class="toast-title">${title}</div>${msg?`<div class="toast-message">${msg}</div>`:''}</div><button class="toast-close" onclick="this.parentElement.remove()"><i class="fa-solid fa-xmark"></i></button>`;c.appendChild(el);setTimeout(()=>{el.classList.add('removing');setTimeout(()=>el.remove(),300)},d)}
+        // State
+        let currentUser = null;
+        let currentPlatform = null;
+        let properties = [];
+        let inspections = [];
         
-        let currentPlatform=null,currentUser=null,inspections=[],properties=[];
-        const ACCESS_CODES={'lucas2024':{name:'LUCAS Admin',platform:'all',avatar:'LA',role:'Administrator'},'stake2024':{name:'Stake',platform:'Stake',avatar:'ST',role:'Partner'},'smart2024':{name:'SmartCrowd',platform:'SmartCrowd',avatar:'SC',role:'Partner'},'prypco2024':{name:'PRYPCO',platform:'PRYPCO',avatar:'PR',role:'Partner'}};
+        const ACCESS_CODES = {
+            'lucas2024': { name: 'LUCAS Admin', platform: 'all', avatar: 'LA', role: 'Administrator' },
+            'stake2024': { name: 'Stake', platform: 'Stake', avatar: 'ST', role: 'Partner' },
+            'smart2024': { name: 'SmartCrowd', platform: 'SmartCrowd', avatar: 'SC', role: 'Partner' },
+            'prypco2024': { name: 'PRYPCO', platform: 'PRYPCO', avatar: 'PR', role: 'Partner' }
+        };
         
-        async function handleLogin(e){e.preventDefault();const btn=document.getElementById('login-btn'),txt=btn.querySelector('.btn-text'),spin=btn.querySelector('.spinner-small'),err=document.getElementById('login-error'),inp=document.getElementById('access-code');btn.disabled=true;txt.textContent='Signing in...';spin.style.display='block';err.style.display='none';inp.classList.remove('input-error');const code=inp.value.trim();await new Promise(r=>setTimeout(r,500));if(ACCESS_CODES[code]){currentUser=ACCESS_CODES[code];currentPlatform=currentUser.platform;document.getElementById('user-name').textContent=currentUser.name;document.getElementById('user-avatar').textContent=currentUser.avatar;document.getElementById('user-role').textContent=currentUser.role;document.getElementById('loginScreen').style.display='none';document.getElementById('dashboard').classList.add('active');loadDashboardData();showToast('success','Welcome!',`Signed in as ${currentUser.name}`)}else{inp.classList.add('input-error');err.style.display='block';showToast('error','Invalid code','Check your access code')}btn.disabled=false;txt.textContent='Sign In';spin.style.display='none'}
+        // Toast
+        function toast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const el = document.createElement('div');
+            el.className = `toast ${type}`;
+            el.innerHTML = `<i class="fa-solid fa-${type === 'success' ? 'check' : 'xmark'}"></i> ${message}`;
+            container.appendChild(el);
+            setTimeout(() => { el.classList.add('removing'); setTimeout(() => el.remove(), 200); }, 3000);
+        }
         
-        function logout(){currentPlatform=null;currentUser=null;document.getElementById('loginScreen').style.display='flex';document.getElementById('dashboard').classList.remove('active');document.getElementById('access-code').value='';showToast('info','Signed out','')}
+        // Auth
+        async function handleLogin(e) {
+            e.preventDefault();
+            const btn = document.getElementById('login-btn');
+            const text = document.getElementById('login-text');
+            const spinner = document.getElementById('login-spinner');
+            const input = document.getElementById('access-code');
+            const error = document.getElementById('login-error');
+            
+            btn.disabled = true;
+            text.style.display = 'none';
+            spinner.style.display = 'block';
+            error.style.display = 'none';
+            input.classList.remove('error');
+            
+            await new Promise(r => setTimeout(r, 400));
+            
+            const code = input.value.trim();
+            if (ACCESS_CODES[code]) {
+                currentUser = ACCESS_CODES[code];
+                currentPlatform = currentUser.platform;
+                document.getElementById('user-name').textContent = currentUser.name;
+                document.getElementById('user-avatar').textContent = currentUser.avatar;
+                document.getElementById('user-role').textContent = currentUser.role;
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('dashboard').classList.add('active');
+                loadData();
+                toast(`Welcome, ${currentUser.name}`);
+            } else {
+                input.classList.add('error');
+                error.style.display = 'block';
+            }
+            
+            btn.disabled = false;
+            text.style.display = 'block';
+            spinner.style.display = 'none';
+        }
         
-        function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sidebarOverlay').classList.toggle('active')}
-        function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebarOverlay').classList.remove('active')}
-        document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeSidebar();closeModal();closeRequestModal()}});
+        function logout() {
+            currentUser = null;
+            currentPlatform = null;
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('dashboard').classList.remove('active');
+            document.getElementById('access-code').value = '';
+            toast('Signed out');
+        }
         
-        async function loadDashboardData(){if(!supabase){properties=[];inspections=[];updateStats();renderInspectionsTable();renderActivityFeed();return}try{let pq=supabase.from('properties').select('*');if(currentPlatform!=='all')pq=pq.eq('platform',currentPlatform);const{data:pd}=await pq;properties=pd||[];let iq=supabase.from('inspections').select('*,properties(*),inspectors(name,rating)').order('created_at',{ascending:false});const{data:id}=await iq;inspections=currentPlatform!=='all'?(id||[]).filter(i=>i.properties?.platform===currentPlatform):id||[];updateStats();renderInspectionsTable();renderActivityFeed()}catch(e){console.error(e);showToast('error','Load failed','Try refreshing')}}
+        // Sidebar
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('sidebarOverlay').classList.toggle('active');
+        }
         
-        function refreshData(){showToast('info','Refreshing...','');loadDashboardData().then(()=>showToast('success','Refreshed',''))}
+        function closeSidebar() {
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('sidebarOverlay').classList.remove('active');
+        }
         
-        function updateStats(){const pc=properties.length;document.getElementById('stat-properties').textContent=pc;document.getElementById('property-count').textContent=pc;const pl=document.getElementById('properties-count-label');if(pl)pl.textContent=`${pc} propert${pc===1?'y':'ies'}`;const comp=inspections.filter(i=>i.status==='completed');document.getElementById('stat-inspections').textContent=comp.length;const pend=inspections.filter(i=>['pending','scheduled','in_progress'].includes(i.status));document.getElementById('stat-pending').textContent=pend.length;const pb=document.getElementById('pending-count');if(pend.length>0){pb.textContent=pend.length;pb.style.display='block'}else pb.style.display='none';const scores=comp.filter(i=>i.condition_score).map(i=>i.condition_score);document.getElementById('stat-avg-score').textContent=scores.length?Math.round(scores.reduce((a,b)=>a+b,0)/scores.length):'--';const d30=new Date();d30.setDate(d30.getDate()-30);const rp=properties.filter(p=>new Date(p.created_at)>d30).length,ri=comp.filter(i=>new Date(i.completed_at)>d30).length;const pc1=document.getElementById('stat-properties-change'),ic1=document.getElementById('stat-inspections-change');pc1.textContent=rp>0?`+${rp} this month`:'No change';pc1.className=`stat-change ${rp>0?'positive':'neutral'}`;ic1.textContent=ri>0?`+${ri} this month`:'No change';ic1.className=`stat-change ${ri>0?'positive':'neutral'}`}
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeSidebar(); closeModal(); closeRequestModal(); } });
         
-        function renderInspectionsTable(){const tb=document.getElementById('inspections-table');if(!inspections.length){tb.innerHTML=`<tr><td colspan="5"><div class="empty-state"><i class="fa-solid fa-clipboard-list"></i><h3>No inspections</h3><p>Request your first inspection</p><button class="btn btn-primary" onclick="openRequestModal()"><i class="fa-solid fa-plus"></i> New Inspection</button></div></td></tr>`;return}tb.innerHTML=inspections.slice(0,6).map(i=>{const p=i.properties||{},s=i.condition_score,sc=s>=80?'high':s>=60?'medium':'low';return`<tr><td><div class="property-cell"><div class="property-thumb"><i class="fa-solid fa-building"></i></div><div class="property-info"><h4>${p.name||'Unknown'}</h4><span>${p.asset_id||''}</span></div></div></td><td><span class="status-badge ${i.status}">${formatStatus(i.status)}</span></td><td>${s?`<div class="score-cell"><span>${s}</span><div class="score-bar"><div class="score-fill ${sc}" style="width:${s}%"></div></div></div>`:'--'}</td><td>${formatDate(i.completed_at||i.scheduled_date)}</td><td><div class="action-btns"><button class="action-btn" onclick="viewInspection('${i.id}')"><i class="fa-solid fa-eye"></i></button>${i.status==='completed'?`<button class="action-btn" onclick="downloadReport('${i.id}')"><i class="fa-solid fa-download"></i></button>`:''}</div></td></tr>`}).join('')}
+        // Data
+        async function loadData() {
+            if (!supabase) { properties = []; inspections = []; updateUI(); return; }
+            
+            try {
+                let pq = supabase.from('properties').select('*');
+                if (currentPlatform !== 'all') pq = pq.eq('platform', currentPlatform);
+                const { data: pd } = await pq;
+                properties = pd || [];
+                
+                const { data: id } = await supabase.from('inspections').select('*, properties(*), inspectors(name, rating)').order('created_at', { ascending: false });
+                inspections = currentPlatform !== 'all' ? (id || []).filter(i => i.properties?.platform === currentPlatform) : id || [];
+                
+                updateUI();
+            } catch (e) {
+                console.error(e);
+                toast('Failed to load data', 'error');
+            }
+        }
         
-        function renderActivityFeed(){const c=document.getElementById('activity-list');if(!inspections.length){c.innerHTML=`<div class="empty-state" style="padding:30px"><i class="fa-solid fa-clock-rotate-left"></i><p>No activity</p></div>`;return}c.innerHTML=inspections.slice(0,5).map(i=>{const p=i.properties||{};let ic,icl,t;if(i.status==='completed'){ic='fa-circle-check';icl='green';t=`<strong>${p.name||'Property'}</strong> completed — score ${i.condition_score}/100`}else if(i.status==='in_progress'){ic='fa-spinner';icl='purple';t=`<strong>${p.name||'Property'}</strong> in progress`}else if(i.status==='scheduled'){ic='fa-calendar';icl='blue';t=`<strong>${p.name||'Property'}</strong> scheduled`}else{ic='fa-clock';icl='yellow';t=`<strong>${p.name||'Property'}</strong> pending`}return`<div class="activity-item" onclick="viewInspection('${i.id}')"><div class="activity-icon ${icl}"><i class="fa-solid ${ic}"></i></div><div><div class="activity-title">${t}</div><div class="activity-time">${timeAgo(i.updated_at||i.created_at)}</div></div></div>`}).join('')}
+        function refreshData() {
+            toast('Refreshing...');
+            loadData();
+        }
         
-        async function viewInspection(id){const i=inspections.find(x=>x.id===id);if(!i)return;const p=i.properties||{},ins=i.inspectors||{};document.getElementById('modal-content').innerHTML=`<div class="detail-header"><div class="detail-image"><i class="fa-solid fa-building"></i></div><div class="detail-info"><h2>${p.name||'Unknown'}</h2><div class="asset-id">${p.asset_id||'N/A'}</div><div class="detail-badges"><span class="status-badge ${i.status}">${formatStatus(i.status)}</span></div></div></div><div class="detail-stats"><div class="detail-stat"><div class="detail-stat-value">${i.condition_score||'--'}</div><div class="detail-stat-label">Score</div></div><div class="detail-stat"><div class="detail-stat-value">${i.photo_count||0}</div><div class="detail-stat-label">Photos</div></div><div class="detail-stat"><div class="detail-stat-value">${i.issue_count||0}</div><div class="detail-stat-label">Issues</div></div></div>${i.status==='completed'?`<div class="detail-section"><div class="detail-section-title">Checklist</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px"><div class="check-item"><i class="fa-solid ${i.checklist_access?'fa-circle-check':'fa-circle-xmark'}" style="color:${i.checklist_access?'var(--green)':'#ef4444'}"></i>Access</div><div class="check-item"><i class="fa-solid ${i.checklist_address?'fa-circle-check':'fa-circle-xmark'}" style="color:${i.checklist_address?'var(--green)':'#ef4444'}"></i>Address</div><div class="check-item"><i class="fa-solid ${i.checklist_type?'fa-circle-check':'fa-circle-xmark'}" style="color:${i.checklist_type?'var(--green)':'#ef4444'}"></i>Type</div><div class="check-item"><i class="fa-solid ${i.gps_verified?'fa-circle-check':'fa-circle-xmark'}" style="color:${i.gps_verified?'var(--green)':'#ef4444'}"></i>GPS</div></div></div>`:''}<div class="detail-section"><div class="detail-section-title">Inspector</div><div class="check-item"><div><strong>${ins.name||'Assigned'}</strong><div style="font-size:11px;color:var(--text-secondary)">${ins.rating?ins.rating+' ★':'Pending'}</div></div></div></div>${i.proof_hash?`<div class="detail-section"><div class="detail-section-title">On-Chain Proof</div><div class="proof-hash">${i.proof_hash}</div></div>`:''}`;document.getElementById('inspectionModal').classList.add('active')}
-        function closeModal(){document.getElementById('inspectionModal').classList.remove('active')}
+        function updateUI() {
+            // Stats
+            document.getElementById('stat-properties').textContent = properties.length;
+            document.getElementById('property-count').textContent = properties.length;
+            document.getElementById('props-count').textContent = `${properties.length} propert${properties.length === 1 ? 'y' : 'ies'}`;
+            
+            const completed = inspections.filter(i => i.status === 'completed');
+            document.getElementById('stat-completed').textContent = completed.length;
+            
+            const pending = inspections.filter(i => ['pending', 'scheduled', 'in_progress'].includes(i.status));
+            document.getElementById('stat-pending').textContent = pending.length;
+            
+            const scores = completed.filter(i => i.condition_score).map(i => i.condition_score);
+            document.getElementById('stat-score').textContent = scores.length ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : '—';
+            
+            // Change indicators
+            const d30 = new Date(); d30.setDate(d30.getDate() - 30);
+            const recentP = properties.filter(p => new Date(p.created_at) > d30).length;
+            const recentC = completed.filter(i => new Date(i.completed_at) > d30).length;
+            
+            const pc = document.getElementById('stat-properties-change');
+            const cc = document.getElementById('stat-completed-change');
+            pc.textContent = recentP > 0 ? `+${recentP} this month` : 'No change';
+            pc.className = `stat-change ${recentP > 0 ? 'positive' : 'neutral'}`;
+            cc.textContent = recentC > 0 ? `+${recentC} this month` : 'No change';
+            cc.className = `stat-change ${recentC > 0 ? 'positive' : 'neutral'}`;
+            
+            renderInspectionsTable();
+            renderActivityFeed();
+        }
         
-        function openRequestModal(){const m=document.getElementById('requestModal'),c=document.getElementById('request-modal-content');if(!properties.length){c.innerHTML=`<div class="empty-state"><i class="fa-solid fa-building"></i><h3>No properties</h3></div>`;m.classList.add('active');return}c.innerHTML=`<p style="color:var(--text-secondary);margin-bottom:16px">Schedule a property verification</p><div class="input-group"><label>Property</label><select id="request-property">${properties.map(p=>`<option value="${p.id}">${p.name}, ${p.location}</option>`).join('')}</select></div><div class="input-group"><label>Date</label><input type="date" id="request-date" min="${new Date().toISOString().split('T')[0]}"></div><div class="input-group"><label>Notes</label><textarea id="request-notes" rows="2" placeholder="Optional..."></textarea></div><div style="display:flex;gap:10px;margin-top:20px"><button class="btn btn-secondary" onclick="closeRequestModal()">Cancel</button><button class="btn btn-primary" onclick="submitRequest()" id="submit-btn"><span class="btn-text"><i class="fa-solid fa-paper-plane"></i> Submit</span><span class="spinner-small" style="display:none"></span></button></div>`;const tm=new Date();tm.setDate(tm.getDate()+1);document.getElementById('request-date').value=tm.toISOString().split('T')[0];m.classList.add('active')}
-        function closeRequestModal(){document.getElementById('requestModal').classList.remove('active')}
+        // Tables
+        function renderInspectionsTable() {
+            const tbody = document.getElementById('inspections-table');
+            if (!inspections.length) {
+                tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><div class="empty-icon"><i class="fa-solid fa-clipboard-list"></i></div><h3>No inspections yet</h3><p>Request your first property inspection</p><button class="btn btn-primary" onclick="openRequestModal()"><i class="fa-solid fa-plus"></i> New Inspection</button></div></td></tr>`;
+                return;
+            }
+            
+            tbody.innerHTML = inspections.slice(0, 5).map(i => {
+                const p = i.properties || {};
+                const s = i.condition_score;
+                return `<tr>
+                    <td><div class="property-cell"><div class="property-icon"><i class="fa-solid fa-building"></i></div><div><div class="property-name">${p.name || 'Unknown'}</div><div class="property-id">${p.asset_id || ''}</div></div></div></td>
+                    <td><span class="badge badge-${i.status === 'completed' ? 'success' : i.status === 'pending' ? 'warning' : 'info'}">${formatStatus(i.status)}</span></td>
+                    <td>${s ? `<div class="score-display"><span class="score-value">${s}</span><div class="score-bar"><div class="score-fill" style="width: ${s}%"></div></div></div>` : '—'}</td>
+                    <td style="color: var(--slate-500);">${formatDate(i.completed_at || i.scheduled_date)}</td>
+                    <td><button class="action-btn" onclick="viewInspection('${i.id}')"><i class="fa-solid fa-eye"></i></button></td>
+                </tr>`;
+            }).join('');
+        }
         
-        async function submitRequest(){const pid=document.getElementById('request-property').value,dt=document.getElementById('request-date').value,nt=document.getElementById('request-notes').value;if(!pid||!dt){showToast('warning','Missing info','Select property and date');return}const btn=document.getElementById('submit-btn');btn.disabled=true;btn.querySelector('.btn-text').style.display='none';btn.querySelector('.spinner-small').style.display='block';try{if(supabase)await supabase.from('inspections').insert({property_id:pid,status:'scheduled',scheduled_date:dt,notes:nt});closeRequestModal();showToast('success','Submitted!',`Scheduled for ${formatDate(dt)}`);loadDashboardData()}catch(e){showToast('error','Failed','Try again')}btn.disabled=false;btn.querySelector('.btn-text').style.display='flex';btn.querySelector('.spinner-small').style.display='none'}
+        function renderActivityFeed() {
+            const list = document.getElementById('activity-list');
+            if (!inspections.length) {
+                list.innerHTML = `<div class="empty-state" style="padding: 32px;"><div class="empty-icon"><i class="fa-solid fa-clock"></i></div><p>No recent activity</p></div>`;
+                return;
+            }
+            
+            list.innerHTML = inspections.slice(0, 5).map(i => {
+                const p = i.properties || {};
+                let dot = 'info', text = '';
+                if (i.status === 'completed') { dot = 'success'; text = `<strong>${p.name}</strong> scored ${i.condition_score}/100`; }
+                else if (i.status === 'scheduled') { dot = 'info'; text = `<strong>${p.name}</strong> scheduled`; }
+                else { dot = 'warning'; text = `<strong>${p.name}</strong> pending`; }
+                return `<div class="activity-item" onclick="viewInspection('${i.id}')"><div class="activity-dot ${dot}"></div><div class="activity-content"><div class="activity-text">${text}</div><div class="activity-time">${timeAgo(i.updated_at || i.created_at)}</div></div></div>`;
+            }).join('');
+        }
         
-        function exportData(){if(!inspections.length){showToast('warning','No data','');return}const h=['Property','Status','Score','Date'],r=inspections.map(i=>[i.properties?.name||'',i.status,i.condition_score||'',i.completed_at||'']),csv=[h,...r].map(x=>x.map(c=>`"${c}"`).join(',')).join('\n'),b=new Blob([csv],{type:'text/csv'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`lucas-${new Date().toISOString().split('T')[0]}.csv`;a.click();showToast('success','Exported',`${inspections.length} records`)}
+        // View Inspection
+        async function viewInspection(id) {
+            const i = inspections.find(x => x.id === id);
+            if (!i) return;
+            const p = i.properties || {};
+            const ins = i.inspectors || {};
+            
+            document.getElementById('modal-content').innerHTML = `
+                <div class="detail-header">
+                    <div class="detail-icon"><i class="fa-solid fa-building"></i></div>
+                    <div>
+                        <div class="detail-title">${p.name || 'Unknown'}</div>
+                        <div class="detail-id">${p.asset_id || 'N/A'}</div>
+                        <div style="margin-top: 8px;"><span class="badge badge-${i.status === 'completed' ? 'success' : 'warning'}">${formatStatus(i.status)}</span></div>
+                    </div>
+                </div>
+                <div class="detail-stats">
+                    <div class="detail-stat"><div class="detail-stat-value">${i.condition_score || '—'}</div><div class="detail-stat-label">Score</div></div>
+                    <div class="detail-stat"><div class="detail-stat-value">${i.photo_count || 0}</div><div class="detail-stat-label">Photos</div></div>
+                    <div class="detail-stat"><div class="detail-stat-value">${i.issue_count || 0}</div><div class="detail-stat-label">Issues</div></div>
+                </div>
+                ${i.status === 'completed' ? `<div class="detail-section"><div class="detail-section-title">Verification Checklist</div><div class="checklist-grid">
+                    <div class="check-item ${i.checklist_access ? 'pass' : 'fail'}"><i class="fa-solid ${i.checklist_access ? 'fa-circle-check' : 'fa-circle-xmark'}"></i> Access</div>
+                    <div class="check-item ${i.checklist_address ? 'pass' : 'fail'}"><i class="fa-solid ${i.checklist_address ? 'fa-circle-check' : 'fa-circle-xmark'}"></i> Address</div>
+                    <div class="check-item ${i.checklist_type ? 'pass' : 'fail'}"><i class="fa-solid ${i.checklist_type ? 'fa-circle-check' : 'fa-circle-xmark'}"></i> Type</div>
+                    <div class="check-item ${i.gps_verified ? 'pass' : 'fail'}"><i class="fa-solid ${i.gps_verified ? 'fa-circle-check' : 'fa-circle-xmark'}"></i> GPS</div>
+                </div></div>` : ''}
+                <div class="detail-section"><div class="detail-section-title">Inspector</div><div class="check-item"><i class="fa-solid fa-user"></i> ${ins.name || 'Pending assignment'}${ins.rating ? ` · ${ins.rating}★` : ''}</div></div>
+                ${i.proof_hash ? `<div class="detail-section"><div class="detail-section-title">On-Chain Proof</div><div class="proof-hash">${i.proof_hash}</div></div>` : ''}
+            `;
+            document.getElementById('inspectionModal').classList.add('active');
+        }
         
-        function downloadReport(id){const i=inspections.find(x=>x.id===id);if(!i)return;const p=i.properties||{},r=`LUCAS REPORT\n${'='.repeat(40)}\n\nProperty: ${p.name}\nAsset: ${p.asset_id}\nDate: ${formatDate(i.completed_at)}\n\nScore: ${i.condition_score}/100\nPhotos: ${i.photo_count||0}\nIssues: ${i.issue_count||0}\n\nProof: ${i.proof_hash||'N/A'}\n\n${'─'.repeat(40)}\nLUCAS | lucas.app`,b=new Blob([r],{type:'text/plain'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`LUCAS-${p.asset_id||'report'}.txt`;a.click();showToast('success','Downloaded',p.name)}
+        function closeModal() { document.getElementById('inspectionModal').classList.remove('active'); }
         
-        function updateSetting(k,v){const s=JSON.parse(localStorage.getItem('lucas_settings')||'{}');s[k]=v;localStorage.setItem('lucas_settings',JSON.stringify(s));showToast('success','Saved','')}
-        function copyApiKey(){navigator.clipboard.writeText('sk_live_demo');showToast('success','Copied','')}
-        function saveWebhook(){const u=document.getElementById('webhook-url').value;if(!u){showToast('warning','Enter URL','');return}localStorage.setItem('lucas_webhook',u);showToast('success','Saved','')}
+        // Request Modal
+        function openRequestModal() {
+            const content = document.getElementById('request-content');
+            if (!properties.length) {
+                content.innerHTML = `<div class="empty-state"><div class="empty-icon"><i class="fa-solid fa-building"></i></div><h3>No properties</h3><p>Add properties first</p></div>`;
+            } else {
+                const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
+                content.innerHTML = `
+                    <p style="color: var(--slate-500); margin-bottom: 20px;">Schedule a property verification</p>
+                    <div class="form-group"><label class="form-label">Property</label><select class="form-input" id="req-property">${properties.map(p => `<option value="${p.id}">${p.name}, ${p.location}</option>`).join('')}</select></div>
+                    <div class="form-group"><label class="form-label">Preferred Date</label><input type="date" class="form-input" id="req-date" value="${tomorrow.toISOString().split('T')[0]}" min="${new Date().toISOString().split('T')[0]}"></div>
+                    <div class="form-group"><label class="form-label">Notes (optional)</label><textarea class="form-input" id="req-notes" rows="3" style="height: auto; padding: 12px;" placeholder="Special instructions..."></textarea></div>
+                    <div style="display: flex; gap: 12px; margin-top: 24px;"><button class="btn btn-ghost" onclick="closeRequestModal()" style="flex: 1;">Cancel</button><button class="btn btn-primary" onclick="submitRequest()" id="submit-btn" style="flex: 1;"><span id="submit-text">Submit</span><span class="spinner" id="submit-spinner" style="display: none;"></span></button></div>
+                `;
+            }
+            document.getElementById('requestModal').classList.add('active');
+        }
         
-        function showPage(pg){closeSidebar();document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.page===pg));document.querySelectorAll('.page-content').forEach(p=>p.style.display='none');const el=document.getElementById(`page-${pg}`);if(el)el.style.display='block';const t={'overview':{t:'Dashboard',s:'Property verification overview',b:'Overview'},'properties':{t:'Properties',s:'Manage your portfolio',b:'Properties'},'inspections':{t:'Inspections',s:'All inspection reports',b:'Inspections'},'lucas-proofs':{t:'LUCAS Proofs',s:'Verification reports',b:'Proofs'},'onchain':{t:'On-Chain',s:'Immutable records',b:'On-Chain'},'settings':{t:'Settings',s:'Notifications & API',b:'Settings'}}[pg]||{t:'Dashboard',s:'',b:'Overview'};document.getElementById('page-title').textContent=t.t;document.getElementById('page-subtitle').textContent=t.s;document.getElementById('breadcrumb-current').textContent=t.b;if(pg==='properties')renderPropertiesPage();if(pg==='inspections')renderInspectionsPage();if(pg==='lucas-proofs')renderLucasProofsPage();if(pg==='onchain')renderOnChainPage()}
+        function closeRequestModal() { document.getElementById('requestModal').classList.remove('active'); }
         
-        function renderPropertiesPage(){const c=document.getElementById('properties-table-body');if(!c)return;if(!properties.length){c.innerHTML=`<tr><td colspan="5"><div class="empty-state"><i class="fa-solid fa-building"></i><h3>No properties</h3></div></td></tr>`;return}c.innerHTML=properties.map(p=>{const li=inspections.find(i=>i.property_id===p.id&&i.status==='completed');return`<tr><td><div class="property-cell"><div class="property-thumb"><i class="fa-solid fa-building"></i></div><div class="property-info"><h4>${p.name}</h4><span>${p.asset_id}</span></div></div></td><td>${p.bedrooms||0} Bed ${p.property_type||''}</td><td>${p.area_sqft?p.area_sqft.toLocaleString()+' sqft':'--'}</td><td>${li?`<div class="score-cell"><span>${li.condition_score}</span><div class="score-bar"><div class="score-fill ${li.condition_score>=80?'high':'medium'}" style="width:${li.condition_score}%"></div></div></div>`:'--'}</td><td><button class="action-btn" onclick="openRequestModal()"><i class="fa-solid fa-plus"></i></button></td></tr>`}).join('')}
+        async function submitRequest() {
+            const pid = document.getElementById('req-property').value;
+            const date = document.getElementById('req-date').value;
+            if (!pid || !date) { toast('Select property and date', 'error'); return; }
+            
+            const btn = document.getElementById('submit-btn');
+            btn.disabled = true;
+            document.getElementById('submit-text').style.display = 'none';
+            document.getElementById('submit-spinner').style.display = 'block';
+            
+            try {
+                if (supabase) await supabase.from('inspections').insert({ property_id: pid, status: 'scheduled', scheduled_date: date, notes: document.getElementById('req-notes').value });
+                closeRequestModal();
+                toast('Inspection scheduled');
+                loadData();
+            } catch (e) { toast('Request failed', 'error'); }
+            
+            btn.disabled = false;
+            document.getElementById('submit-text').style.display = 'block';
+            document.getElementById('submit-spinner').style.display = 'none';
+        }
         
-        function filterInspections(){renderInspectionsPage(document.getElementById('status-filter').value)}
-        function renderInspectionsPage(f='all'){const c=document.getElementById('all-inspections-body');if(!c)return;const fl=f==='all'?inspections:inspections.filter(i=>i.status===f);if(!fl.length){c.innerHTML=`<tr><td colspan="6"><div class="empty-state"><i class="fa-solid fa-clipboard-list"></i><h3>No inspections</h3></div></td></tr>`;return}c.innerHTML=fl.map(i=>{const p=i.properties||{},ins=i.inspectors||{},s=i.condition_score;return`<tr><td><div class="property-cell"><div class="property-thumb"><i class="fa-solid fa-building"></i></div><div class="property-info"><h4>${p.name||'Unknown'}</h4><span>${p.asset_id||''}</span></div></div></td><td><span class="status-badge ${i.status}">${formatStatus(i.status)}</span></td><td>${s?`<div class="score-cell"><span>${s}</span><div class="score-bar"><div class="score-fill ${s>=80?'high':'medium'}" style="width:${s}%"></div></div></div>`:'--'}</td><td>${ins.name||'Pending'}</td><td>${formatDate(i.completed_at||i.scheduled_date)}</td><td><div class="action-btns"><button class="action-btn" onclick="viewInspection('${i.id}')"><i class="fa-solid fa-eye"></i></button></div></td></tr>`}).join('')}
+        // Pages
+        function showPage(page) {
+            closeSidebar();
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.page === page));
+            document.querySelectorAll('.page-content').forEach(p => p.style.display = 'none');
+            const el = document.getElementById(`page-${page}`);
+            if (el) el.style.display = 'block';
+            
+            const titles = { overview: 'Dashboard', properties: 'Properties', inspections: 'Inspections', 'lucas-proofs': 'LUCAS Proofs', onchain: 'On-Chain', settings: 'Settings' };
+            document.getElementById('page-title').textContent = titles[page] || 'Dashboard';
+            
+            if (page === 'properties') renderPropertiesPage();
+            if (page === 'inspections') renderInspectionsPage();
+            if (page === 'lucas-proofs') renderProofsPage();
+            if (page === 'onchain') renderOnChainPage();
+        }
         
-        function renderLucasProofsPage(){const comp=inspections.filter(i=>i.status==='completed');document.getElementById('proof-total').textContent=comp.length;document.getElementById('proof-month').textContent=comp.filter(i=>new Date(i.completed_at).getMonth()===new Date().getMonth()).length;document.getElementById('proof-downloads').textContent=Math.floor(comp.length*1.5);const c=document.getElementById('lucas-proofs-body');if(!c)return;if(!comp.length){c.innerHTML=`<tr><td colspan="6"><div class="empty-state"><i class="fa-solid fa-file-lines"></i><h3>No proofs yet</h3></div></td></tr>`;return}c.innerHTML=comp.map((i,x)=>{const p=i.properties||{};return`<tr><td><span style="font-family:monospace;color:var(--green)">LCP-${new Date(i.completed_at).getFullYear()}-${String(x+1).padStart(4,'0')}</span></td><td><div class="property-info"><h4>${p.name}</h4><span>${p.asset_id}</span></div></td><td>AED ${((Math.random()*5+2)*1e6).toLocaleString(undefined,{maximumFractionDigits:0})}</td><td><span class="status-badge completed">Verified</span></td><td>${formatDate(i.completed_at)}</td><td><div class="action-btns"><button class="action-btn" onclick="viewInspection('${i.id}')"><i class="fa-solid fa-eye"></i></button><button class="action-btn" onclick="downloadReport('${i.id}')"><i class="fa-solid fa-download"></i></button></div></td></tr>`}).join('')}
+        function renderPropertiesPage() {
+            const tbody = document.getElementById('properties-table');
+            if (!properties.length) { tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><div class="empty-icon"><i class="fa-solid fa-building"></i></div><h3>No properties</h3></div></td></tr>`; return; }
+            tbody.innerHTML = properties.map(p => {
+                const last = inspections.find(i => i.property_id === p.id && i.status === 'completed');
+                return `<tr>
+                    <td><div class="property-cell"><div class="property-icon"><i class="fa-solid fa-building"></i></div><div><div class="property-name">${p.name}</div><div class="property-id">${p.asset_id}</div></div></div></td>
+                    <td>${p.bedrooms || 0} Bed ${p.property_type || ''}</td>
+                    <td>${p.area_sqft ? p.area_sqft.toLocaleString() + ' sqft' : '—'}</td>
+                    <td>${last ? `<div class="score-display"><span class="score-value">${last.condition_score}</span><div class="score-bar"><div class="score-fill" style="width: ${last.condition_score}%"></div></div></div>` : '—'}</td>
+                    <td><button class="action-btn" onclick="openRequestModal()"><i class="fa-solid fa-plus"></i></button></td>
+                </tr>`;
+            }).join('');
+        }
         
-        function renderOnChainPage(){const wp=inspections.filter(i=>i.proof_hash);document.getElementById('chain-total').textContent=wp.length;document.getElementById('chain-verified').textContent=wp.filter(i=>i.status==='completed').length;document.getElementById('chain-pending').textContent=wp.filter(i=>i.status!=='completed').length;const c=document.getElementById('onchain-proofs-body');if(!c)return;if(!wp.length){c.innerHTML=`<tr><td colspan="6"><div class="empty-state"><i class="fa-solid fa-cube"></i><h3>No on-chain proofs</h3></div></td></tr>`;return}c.innerHTML=wp.map(i=>{const p=i.properties||{},h=i.proof_hash;return`<tr><td><span style="font-family:monospace;font-size:11px;color:var(--green)">${h.slice(0,10)}...${h.slice(-6)}</span></td><td><div class="property-info"><h4>${p.name}</h4><span>${p.asset_id}</span></div></td><td>Inspection</td><td><span class="status-badge ${i.status==='completed'?'completed':'pending'}">${i.status==='completed'?'Confirmed':'Pending'}</span></td><td>${formatDate(i.completed_at)}</td><td><button class="action-btn" onclick="navigator.clipboard.writeText('${h}');showToast('success','Copied','')"><i class="fa-solid fa-copy"></i></button></td></tr>`}).join('')}
+        function renderInspectionsPage() {
+            const filter = document.getElementById('status-filter').value;
+            const filtered = filter === 'all' ? inspections : inspections.filter(i => i.status === filter);
+            const tbody = document.getElementById('all-inspections-table');
+            if (!filtered.length) { tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="empty-icon"><i class="fa-solid fa-clipboard-list"></i></div><h3>No inspections</h3></div></td></tr>`; return; }
+            tbody.innerHTML = filtered.map(i => {
+                const p = i.properties || {}; const ins = i.inspectors || {}; const s = i.condition_score;
+                return `<tr>
+                    <td><div class="property-cell"><div class="property-icon"><i class="fa-solid fa-building"></i></div><div><div class="property-name">${p.name || 'Unknown'}</div><div class="property-id">${p.asset_id || ''}</div></div></div></td>
+                    <td><span class="badge badge-${i.status === 'completed' ? 'success' : i.status === 'pending' ? 'warning' : 'info'}">${formatStatus(i.status)}</span></td>
+                    <td>${s ? `<div class="score-display"><span class="score-value">${s}</span><div class="score-bar"><div class="score-fill" style="width: ${s}%"></div></div></div>` : '—'}</td>
+                    <td style="color: var(--slate-500);">${ins.name || 'Pending'}</td>
+                    <td style="color: var(--slate-500);">${formatDate(i.completed_at || i.scheduled_date)}</td>
+                    <td><button class="action-btn" onclick="viewInspection('${i.id}')"><i class="fa-solid fa-eye"></i></button></td>
+                </tr>`;
+            }).join('');
+        }
         
-        function formatStatus(s){return{pending:'Pending',scheduled:'Scheduled',in_progress:'In Progress',completed:'Completed'}[s]||s}
-        function formatDate(d){if(!d)return'--';return new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}
-        function timeAgo(d){if(!d)return'';const df=Date.now()-new Date(d).getTime(),m=Math.floor(df/6e4);if(m<1)return'Just now';if(m<60)return`${m}m ago`;const h=Math.floor(df/36e5);if(h<24)return`${h}h ago`;const dy=Math.floor(df/864e5);if(dy<7)return`${dy}d ago`;return formatDate(d)}
+        function renderProofsPage() {
+            const completed = inspections.filter(i => i.status === 'completed');
+            document.getElementById('proof-total').textContent = completed.length;
+            document.getElementById('proof-month').textContent = completed.filter(i => new Date(i.completed_at).getMonth() === new Date().getMonth()).length;
+            document.getElementById('proof-downloads').textContent = Math.floor(completed.length * 1.5);
+            const tbody = document.getElementById('proofs-table');
+            if (!completed.length) { tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="empty-icon"><i class="fa-solid fa-file-lines"></i></div><h3>No proofs yet</h3></div></td></tr>`; return; }
+            tbody.innerHTML = completed.map((i, x) => {
+                const p = i.properties || {};
+                return `<tr>
+                    <td><span class="mono" style="color: var(--emerald-600);">LCP-${new Date(i.completed_at).getFullYear()}-${String(x + 1).padStart(4, '0')}</span></td>
+                    <td><div class="property-name">${p.name}</div><div class="property-id">${p.asset_id}</div></td>
+                    <td>AED ${((Math.random() * 5 + 2) * 1e6).toLocaleString(undefined, { maximumFractionDigits: 0 })}</td>
+                    <td><span class="badge badge-success">Verified</span></td>
+                    <td style="color: var(--slate-500);">${formatDate(i.completed_at)}</td>
+                    <td><button class="action-btn" onclick="viewInspection('${i.id}')"><i class="fa-solid fa-eye"></i></button></td>
+                </tr>`;
+            }).join('');
+        }
         
-        console.log('LUCAS Dashboard ready');
+        function renderOnChainPage() {
+            const withProof = inspections.filter(i => i.proof_hash);
+            const tbody = document.getElementById('onchain-table');
+            if (!withProof.length) { tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><div class="empty-icon"><i class="fa-solid fa-cube"></i></div><h3>No on-chain proofs</h3></div></td></tr>`; return; }
+            tbody.innerHTML = withProof.map(i => {
+                const p = i.properties || {}; const h = i.proof_hash;
+                return `<tr>
+                    <td><span class="mono" style="color: var(--emerald-600);">${h.slice(0, 10)}...${h.slice(-6)}</span></td>
+                    <td><div class="property-name">${p.name}</div><div class="property-id">${p.asset_id}</div></td>
+                    <td><span class="badge badge-${i.status === 'completed' ? 'success' : 'warning'}">${i.status === 'completed' ? 'Confirmed' : 'Pending'}</span></td>
+                    <td style="color: var(--slate-500);">${formatDate(i.completed_at)}</td>
+                    <td><button class="action-btn" onclick="navigator.clipboard.writeText('${h}'); toast('Copied')"><i class="fa-solid fa-copy"></i></button></td>
+                </tr>`;
+            }).join('');
+        }
+        
+        // Settings
+        function saveSetting(key, value) {
+            const s = JSON.parse(localStorage.getItem('lucas_settings') || '{}');
+            s[key] = value;
+            localStorage.setItem('lucas_settings', JSON.stringify(s));
+            toast('Setting saved');
+        }
+        
+        function copyKey() {
+            navigator.clipboard.writeText('sk_live_demo_key');
+            toast('API key copied');
+        }
+        
+        function saveWebhook() {
+            const url = document.getElementById('webhook-url').value;
+            if (!url) { toast('Enter a URL', 'error'); return; }
+            localStorage.setItem('lucas_webhook', url);
+            toast('Webhook saved');
+        }
+        
+        // Helpers
+        function formatStatus(s) { return { pending: 'Pending', scheduled: 'Scheduled', in_progress: 'In Progress', completed: 'Completed' }[s] || s; }
+        function formatDate(d) { if (!d) return '—'; return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); }
+        function timeAgo(d) {
+            if (!d) return '';
+            const diff = Date.now() - new Date(d).getTime();
+            const mins = Math.floor(diff / 60000);
+            if (mins < 1) return 'Just now';
+            if (mins < 60) return `${mins}m ago`;
+            const hrs = Math.floor(diff / 3600000);
+            if (hrs < 24) return `${hrs}h ago`;
+            return formatDate(d);
+        }
     </script>
 </body>
 </html>
