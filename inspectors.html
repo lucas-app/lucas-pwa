@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#050505">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="theme-color" content="#000000">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="LUCAS Inspector">
+    <meta name="apple-mobile-web-app-title" content="LUCAS">
     <title>LUCAS Inspector</title>
     
     <link rel="manifest" href="manifest.json">
@@ -14,797 +14,3401 @@
     <link rel="apple-touch-icon" href="icon-192.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <style>
-        :root { --lucas-green: #deff9a; --lucas-dark: #050505; --lucas-card: #0a0a0a; --lucas-border: #1a1a1a; --safe-top: env(safe-area-inset-top); --safe-bottom: env(safe-area-inset-bottom); }
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: 'Urbanist', sans-serif; background: var(--lucas-dark); color: #fff; min-height: 100vh; min-height: 100dvh; overflow-x: hidden; }
-        .screen { display: none; min-height: 100vh; min-height: 100dvh; padding-top: var(--safe-top); flex-direction: column; width: 100%; }
-        .screen.active { display: flex; }
+        /* =============================================
+           DESIGN SYSTEM
+           ============================================= */
+        :root {
+            /* Core */
+            --black: #000000;
+            --bg: #050505;
+            --card: #0a0a0a;
+            --elevated: #111111;
+            --border: #1a1a1a;
+            --border-light: #252525;
+            
+            /* Text */
+            --text-primary: #ffffff;
+            --text-secondary: #a1a1aa;
+            --text-muted: #52525b;
+            
+            /* Brand */
+            --lime: #DEFF9A;
+            --lime-dim: rgba(222, 255, 154, 0.12);
+            --lime-glow: rgba(222, 255, 154, 0.25);
+            
+            /* Semantic */
+            --success: #4ade80;
+            --warning: #fbbf24;
+            --error: #f87171;
+            --info: #60a5fa;
+            --purple: #a855f7;
+            
+            /* Safe areas */
+            --safe-top: env(safe-area-inset-top);
+            --safe-bottom: env(safe-area-inset-bottom);
+            --safe-left: env(safe-area-inset-left);
+            --safe-right: env(safe-area-inset-right);
+            
+            /* Spacing */
+            --space-xs: 4px;
+            --space-sm: 8px;
+            --space-md: 12px;
+            --space-lg: 16px;
+            --space-xl: 20px;
+            --space-2xl: 24px;
+            --space-3xl: 32px;
+            
+            /* Radius */
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --radius-full: 9999px;
+            
+            /* Transitions */
+            --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
         
-        /* Login */
-        .login-screen { 
-            justify-content: center; 
-            align-items: center; 
-            padding: 24px;
-            padding-top: calc(24px + var(--safe-top));
-            padding-bottom: calc(24px + var(--safe-bottom));
-            width: 100%;
+        /* =============================================
+           RESET & BASE
+           ============================================= */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        html {
+            font-size: 16px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text-primary);
             min-height: 100vh;
             min-height: 100dvh;
-            background: radial-gradient(ellipse at center top, rgba(222,255,154,0.08) 0%, transparent 60%); 
+            overflow-x: hidden;
+            touch-action: pan-y;
         }
-        .login-container { 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            width: 100%; 
-            max-width: 320px;
-            margin: auto;
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 2px; }
+        
+        /* Selection */
+        ::selection {
+            background: var(--lime-dim);
+            color: var(--lime);
         }
-        .login-logo { 
-            width: 72px; 
-            height: 72px; 
-            margin-bottom: 20px; 
-            border-radius: 18px; 
+        
+        /* Focus */
+        :focus-visible {
+            outline: 2px solid var(--lime);
+            outline-offset: 2px;
         }
-        .login-title { 
-            font-size: 26px; 
-            font-weight: 700; 
-            margin-bottom: 6px; 
-            text-align: center; 
-        }
-        .login-subtitle { 
-            color: #666; 
-            font-size: 14px; 
-            margin-bottom: 36px; 
-            text-align: center; 
-        }
-        .login-form { 
-            width: 100%; 
-        }
-        .login-form .input-group {
-            margin-bottom: 16px;
-        }
-        .login-form .input-group label {
-            display: block;
-            font-size: 11px;
-            font-weight: 600;
-            color: #666;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            margin-bottom: 8px;
-        }
-        .id-input-wrapper { 
-            display: flex; 
-            align-items: stretch; 
-            background: var(--lucas-card); 
-            border: 1px solid var(--lucas-border); 
-            border-radius: 12px; 
-            overflow: hidden; 
-        }
-        .id-input-wrapper:focus-within { 
-            border-color: var(--lucas-green); 
-        }
-        .id-prefix { 
-            display: flex;
-            align-items: center;
-            padding: 0 12px;
-            padding-right: 4px;
-            color: var(--lucas-green); 
-            font-size: 16px; 
-            font-weight: 600; 
-            font-family: 'Space Mono', monospace;
-            background: transparent;
-        }
-        .id-input-wrapper input { 
-            flex: 1; 
-            background: transparent; 
-            border: none; 
-            padding: 16px 12px;
-            padding-left: 0;
-            color: #fff; 
-            font-size: 16px; 
-            font-family: 'Space Mono', monospace;
+        
+        /* =============================================
+           SCREENS
+           ============================================= */
+        .screen {
+            display: none;
+            min-height: 100vh;
+            min-height: 100dvh;
             width: 100%;
         }
-        .id-input-wrapper input:focus { 
-            outline: none; 
+        
+        .screen.active {
+            display: flex;
+            flex-direction: column;
+            opacity: 1;
         }
-        .id-input-wrapper input::placeholder {
-            color: #444;
+        
+        .screen.slide-out {
+            opacity: 0;
+            transform: translateX(-20px);
         }
-        .login-form .btn {
-            margin-top: 8px;
+        
+        /* =============================================
+           LOGIN SCREEN
+           ============================================= */
+        .login-screen {
+            justify-content: center;
+            align-items: center;
+            padding: var(--space-2xl);
+            padding-top: calc(var(--space-2xl) + var(--safe-top));
+            padding-bottom: calc(var(--space-2xl) + var(--safe-bottom));
+            background: var(--black);
+            position: relative;
+            overflow: hidden;
         }
-        .login-demo {
-            margin-top: 32px;
-            font-size: 12px;
-            color: #555;
+        
+        .login-screen::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, var(--lime-glow) 0%, transparent 60%);
+            pointer-events: none;
+            opacity: 0.4;
+        }
+        
+        .login-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 340px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
             text-align: center;
         }
-        .login-demo strong {
-            color: var(--lucas-green);
+        
+        .login-logo {
+            width: 88px;
+            height: 88px;
+            margin-bottom: var(--space-2xl);
+            border-radius: var(--radius-xl);
+            box-shadow: 0 0 60px var(--lime-glow);
+            animation: logoFloat 3s ease-in-out infinite;
         }
         
-        /* Inputs */
-        .input-group { margin-bottom: 16px; }
-        .input-group label { display: block; font-size: 11px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
-        .input-group input, .input-group select, .input-group textarea { width: 100%; background: var(--lucas-card); border: 1px solid var(--lucas-border); border-radius: 12px; padding: 16px; color: #fff; font-size: 16px; font-family: inherit; }
-        .input-group input:focus, .input-group select:focus, .input-group textarea:focus { outline: none; border-color: var(--lucas-green); }
-        .input-group input::placeholder { color: #444; }
+        @keyframes logoFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
         
-        /* Buttons */
-        .btn { width: 100%; padding: 16px 24px; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; font-family: inherit; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .btn-primary { background: var(--lucas-green); color: #000; }
-        .btn-primary:active { transform: scale(0.98); }
-        .btn-primary:disabled { opacity: 0.5; }
-        .btn-secondary { background: var(--lucas-card); color: #fff; border: 1px solid var(--lucas-border); }
-        .btn-danger { background: rgba(239,68,68,0.15); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); }
+        .login-title {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin-bottom: var(--space-sm);
+        }
         
-        /* Header */
-        .header { padding: 16px 20px; padding-top: calc(16px + var(--safe-top)); background: var(--lucas-card); border-bottom: 1px solid var(--lucas-border); }
-        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-        .header-logo { display: flex; align-items: center; gap: 10px; }
-        .header-logo img { width: 32px; height: 32px; border-radius: 8px; }
-        .header-logo span { font-weight: 700; font-size: 18px; }
-        .user-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--lucas-green), #a8e063); display: flex; align-items: center; justify-content: center; font-weight: 700; color: #000; font-size: 14px; }
-        .header-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-        .stat-card { background: var(--lucas-dark); border-radius: 12px; padding: 12px; text-align: center; }
-        .stat-value { font-size: 24px; font-weight: 700; color: var(--lucas-green); }
-        .stat-label { font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 4px; }
+        .login-subtitle {
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: var(--space-3xl);
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
         
-        /* Content */
-        .content { flex: 1; padding: 20px; overflow-y: auto; padding-bottom: 100px; }
-        .section-title { font-size: 12px; font-weight: 700; color: #666; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px; }
+        .login-subtitle::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: var(--lime);
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
         
-        /* Job Cards */
-        .job-card { background: var(--lucas-card); border: 1px solid var(--lucas-border); border-radius: 16px; padding: 16px; margin-bottom: 12px; cursor: pointer; transition: all 0.2s; }
-        .job-card:active { transform: scale(0.98); border-color: var(--lucas-green); }
-        .job-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
-        .job-property { font-weight: 700; font-size: 16px; margin-bottom: 4px; }
-        .job-id { font-family: 'Space Mono', monospace; font-size: 11px; color: #666; }
-        .job-status { padding: 6px 10px; border-radius: 20px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
-        .job-status.pending { background: rgba(251,191,36,0.15); color: #fbbf24; }
-        .job-status.scheduled { background: rgba(59,130,246,0.15); color: #3b82f6; }
-        .job-status.in_progress { background: rgba(168,85,247,0.15); color: #a855f7; }
-        .job-status.completed { background: rgba(222,255,154,0.15); color: var(--lucas-green); }
-        .job-details { display: flex; gap: 16px; font-size: 13px; color: #888; }
-        .job-details i { margin-right: 6px; color: #555; }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
         
-        /* Bottom Nav */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; display: flex; background: var(--lucas-card); border-top: 1px solid var(--lucas-border); padding: 8px 0; padding-bottom: calc(8px + var(--safe-bottom)); z-index: 50; }
-        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px; color: #666; font-size: 10px; text-transform: uppercase; cursor: pointer; background: none; border: none; font-family: inherit; }
-        .nav-item.active { color: var(--lucas-green); }
-        .nav-item i { font-size: 20px; }
+        .login-form {
+            width: 100%;
+        }
         
-        /* Inspection Header */
-        .inspection-header { padding: 16px 20px; padding-top: calc(16px + var(--safe-top)); background: var(--lucas-card); border-bottom: 1px solid var(--lucas-border); }
-        .back-btn { display: flex; align-items: center; gap: 8px; color: var(--lucas-green); font-size: 14px; font-weight: 600; background: none; border: none; cursor: pointer; margin-bottom: 12px; padding: 0; font-family: inherit; }
-        .inspection-title { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
-        .inspection-address { font-size: 13px; color: #666; font-family: 'Space Mono', monospace; }
+        .input-group {
+            margin-bottom: var(--space-lg);
+        }
         
-        /* Progress */
-        .progress-bar-container { padding: 16px 20px; background: var(--lucas-card); border-bottom: 1px solid var(--lucas-border); }
-        .progress-steps { display: flex; justify-content: space-between; position: relative; }
-        .progress-line { position: absolute; top: 12px; left: 24px; right: 24px; height: 2px; background: var(--lucas-border); }
-        .progress-line-fill { height: 100%; background: var(--lucas-green); transition: width 0.3s; }
-        .progress-step { display: flex; flex-direction: column; align-items: center; gap: 8px; position: relative; z-index: 1; cursor: pointer; }
-        .step-circle { width: 24px; height: 24px; border-radius: 50%; background: var(--lucas-dark); border: 2px solid var(--lucas-border); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; transition: all 0.3s; }
-        .progress-step.completed .step-circle { background: var(--lucas-green); border-color: var(--lucas-green); color: #000; }
-        .progress-step.active .step-circle { border-color: var(--lucas-green); color: var(--lucas-green); }
-        .step-label { font-size: 9px; color: #666; text-transform: uppercase; }
-        .progress-step.completed .step-label, .progress-step.active .step-label { color: var(--lucas-green); }
+        .input-label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: var(--space-sm);
+        }
+        
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: stretch;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        
+        .input-wrapper:focus-within {
+            border-color: var(--lime);
+            box-shadow: 0 0 0 3px var(--lime-dim);
+        }
+        
+        .input-prefix {
+            display: flex;
+            align-items: center;
+            padding: 0 var(--space-md);
+            color: var(--lime);
+            font-size: 15px;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--elevated);
+            border-right: 1px solid var(--border);
+        }
+        
+        .input-field {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: var(--space-lg);
+            color: var(--text-primary);
+            font-size: 16px;
+            font-family: 'JetBrains Mono', monospace;
+            width: 100%;
+        }
+        
+        .input-field:focus {
+            outline: none;
+        }
+        
+        .input-field::placeholder {
+            color: var(--text-muted);
+        }
+        
+        .input-icon {
+            position: absolute;
+            right: var(--space-lg);
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+        
+        /* =============================================
+           BUTTONS
+           ============================================= */
+        .btn {
+            width: 100%;
+            padding: var(--space-lg) var(--space-xl);
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 15px;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-sm);
+            transition: all 0.2s var(--ease-out);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, transparent 50%);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        
+        .btn:active::after {
+            opacity: 1;
+        }
+        
+        .btn-primary {
+            background: var(--lime);
+            color: var(--black);
+        }
+        
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-secondary {
+            background: var(--card);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+        
+        .btn-secondary:hover {
+            border-color: var(--border-light);
+            background: var(--elevated);
+        }
+        
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--error);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+        
+        .btn-ghost {
+            background: transparent;
+            color: var(--text-secondary);
+            padding: var(--space-md);
+        }
+        
+        .btn-icon {
+            width: 44px;
+            height: 44px;
+            padding: 0;
+            border-radius: var(--radius-md);
+        }
+        
+        .login-demo {
+            margin-top: var(--space-3xl);
+            font-size: 12px;
+            color: var(--text-muted);
+            text-align: center;
+        }
+        
+        .login-demo code {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--lime);
+            background: var(--lime-dim);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        
+        /* =============================================
+           HEADER
+           ============================================= */
+        .header {
+            padding: var(--space-lg) var(--space-xl);
+            padding-top: calc(var(--space-lg) + var(--safe-top));
+            background: var(--black);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-lg);
+        }
+        
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+        }
+        
+        .header-logo img {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-sm);
+        }
+        
+        .header-logo-text {
+            font-weight: 800;
+            font-size: 20px;
+            letter-spacing: -0.02em;
+        }
+        
+        .header-greeting {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+        
+        .header-greeting strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+        
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-full);
+            background: linear-gradient(135deg, var(--lime), #7dd3fc);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: var(--black);
+            font-size: 14px;
+            cursor: pointer;
+            transition: transform 0.2s var(--ease-spring);
+        }
+        
+        .avatar:active {
+            transform: scale(0.95);
+        }
+        
+        /* Stats Row */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--space-md);
+        }
+        
+        .stat-item {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: var(--space-md) var(--space-lg);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--lime), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .stat-item:first-child::before {
+            opacity: 1;
+        }
+        
+        .stat-value {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--lime);
+            line-height: 1;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .stat-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-top: var(--space-xs);
+        }
+        
+        /* =============================================
+           CONTENT
+           ============================================= */
+        .content {
+            flex: 1;
+            padding: var(--space-xl);
+            padding-bottom: calc(80px + var(--safe-bottom) + var(--space-xl));
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-md);
+        }
+        
+        .section-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        
+        .section-action {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--lime);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        
+        /* =============================================
+           JOB CARDS
+           ============================================= */
+        .job-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            margin-bottom: var(--space-md);
+            cursor: pointer;
+            transition: all 0.2s var(--ease-out);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .job-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: var(--lime);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        
+        .job-card:active {
+            transform: scale(0.98);
+            border-color: var(--lime);
+        }
+        
+        .job-card:active::before {
+            opacity: 1;
+        }
+        
+        .job-card.urgent::before {
+            opacity: 1;
+            background: var(--warning);
+        }
+        
+        .job-card.completed {
+            opacity: 0.6;
+        }
+        
+        .job-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--space-md);
+        }
+        
+        .job-property {
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 4px;
+            line-height: 1.3;
+        }
+        
+        .job-id {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+        
+        .job-badge {
+            padding: 6px 10px;
+            border-radius: var(--radius-full);
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+            flex-shrink: 0;
+        }
+        
+        .job-badge.pending {
+            background: rgba(251, 191, 36, 0.15);
+            color: var(--warning);
+        }
+        
+        .job-badge.scheduled {
+            background: rgba(96, 165, 250, 0.15);
+            color: var(--info);
+        }
+        
+        .job-badge.in_progress {
+            background: rgba(168, 85, 247, 0.15);
+            color: var(--purple);
+        }
+        
+        .job-badge.completed {
+            background: var(--lime-dim);
+            color: var(--lime);
+        }
+        
+        .job-meta {
+            display: flex;
+            gap: var(--space-lg);
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        
+        .job-meta-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+        
+        .job-meta-item i {
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+        
+        /* =============================================
+           BOTTOM NAV
+           ============================================= */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            background: var(--black);
+            border-top: 1px solid var(--border);
+            padding: var(--space-sm) 0;
+            padding-bottom: calc(var(--space-sm) + var(--safe-bottom));
+            z-index: 100;
+        }
+        
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: var(--space-sm) var(--space-md);
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 10px;
+            font-weight: 600;
+            font-family: inherit;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+            cursor: pointer;
+            position: relative;
+            transition: color 0.2s;
+        }
+        
+        .nav-item i {
+            font-size: 22px;
+            transition: transform 0.2s var(--ease-spring);
+        }
+        
+        .nav-item.active {
+            color: var(--lime);
+        }
+        
+        .nav-item.active i {
+            transform: scale(1.1);
+        }
+        
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%) scaleX(0);
+            width: 32px;
+            height: 2px;
+            background: var(--lime);
+            border-radius: 1px;
+            transition: transform 0.2s var(--ease-out);
+        }
+        
+        .nav-item.active::before {
+            transform: translateX(-50%) scaleX(1);
+        }
+        
+        .nav-badge {
+            position: absolute;
+            top: 4px;
+            right: 50%;
+            transform: translateX(12px);
+            min-width: 16px;
+            height: 16px;
+            padding: 0 4px;
+            background: var(--error);
+            border-radius: var(--radius-full);
+            font-size: 10px;
+            font-weight: 700;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* =============================================
+           INSPECTION SCREEN
+           ============================================= */
+        .inspection-header {
+            padding: var(--space-lg) var(--space-xl);
+            padding-top: calc(var(--space-lg) + var(--safe-top));
+            background: var(--black);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-sm);
+            color: var(--lime);
+            font-size: 14px;
+            font-weight: 600;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            margin-bottom: var(--space-md);
+            font-family: inherit;
+        }
+        
+        .inspection-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            line-height: 1.3;
+        }
+        
+        .inspection-subtitle {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+        
+        /* Progress Bar */
+        .progress-container {
+            padding: var(--space-lg) var(--space-xl);
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+        }
+        
+        .progress-line {
+            position: absolute;
+            top: 16px;
+            left: 32px;
+            right: 32px;
+            height: 2px;
+            background: var(--border);
+        }
+        
+        .progress-line-fill {
+            height: 100%;
+            background: var(--lime);
+            transition: width 0.4s var(--ease-out);
+        }
+        
+        .progress-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-sm);
+            position: relative;
+            z-index: 1;
+            cursor: pointer;
+        }
+        
+        .step-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-full);
+            background: var(--bg);
+            border: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: var(--text-muted);
+            transition: all 0.3s var(--ease-out);
+        }
+        
+        .progress-step.completed .step-icon {
+            background: var(--lime);
+            border-color: var(--lime);
+            color: var(--black);
+        }
+        
+        .progress-step.active .step-icon {
+            border-color: var(--lime);
+            color: var(--lime);
+            box-shadow: 0 0 0 4px var(--lime-dim);
+        }
+        
+        .step-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+            transition: color 0.2s;
+        }
+        
+        .progress-step.completed .step-label,
+        .progress-step.active .step-label {
+            color: var(--lime);
+        }
         
         /* Step Content */
-        .inspection-content { flex: 1; padding: 20px; overflow-y: auto; }
-        .step-content { display: none; animation: fadeIn 0.3s ease; }
-        .step-content.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .inspection-content {
+            flex: 1;
+            padding: var(--space-xl);
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
         
-        /* GPS */
-        .gps-indicator { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--lucas-green); padding: 10px 14px; background: rgba(222,255,154,0.1); border-radius: 10px; margin-bottom: 16px; }
-        .gps-indicator.error { color: #fbbf24; background: rgba(251,191,36,0.1); }
-        .gps-pulse { width: 8px; height: 8px; background: var(--lucas-green); border-radius: 50%; animation: pulse 2s infinite; }
-        .gps-indicator.error .gps-pulse { background: #fbbf24; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; transform: scale(1.2); } }
+        .step-content {
+            display: none;
+            animation: stepIn 0.3s var(--ease-out);
+        }
+        
+        .step-content.active {
+            display: block;
+        }
+        
+        @keyframes stepIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* GPS Indicator */
+        .gps-banner {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            padding: var(--space-md) var(--space-lg);
+            background: var(--lime-dim);
+            border: 1px solid rgba(222, 255, 154, 0.2);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-lg);
+        }
+        
+        .gps-banner.error {
+            background: rgba(251, 191, 36, 0.1);
+            border-color: rgba(251, 191, 36, 0.2);
+        }
+        
+        .gps-pulse {
+            width: 10px;
+            height: 10px;
+            background: var(--lime);
+            border-radius: var(--radius-full);
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        .gps-banner.error .gps-pulse {
+            background: var(--warning);
+        }
+        
+        .gps-text {
+            flex: 1;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--lime);
+        }
+        
+        .gps-banner.error .gps-text {
+            color: var(--warning);
+        }
         
         /* Checklist */
-        .checklist-item { background: var(--lucas-card); border: 1px solid var(--lucas-border); border-radius: 12px; padding: 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 16px; cursor: pointer; transition: all 0.2s; }
-        .checklist-item:active { transform: scale(0.98); }
-        .checklist-item.checked { border-color: rgba(222,255,154,0.3); background: rgba(222,255,154,0.03); }
-        .check-circle { width: 28px; height: 28px; border-radius: 50%; border: 2px solid #333; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s; }
-        .checklist-item.checked .check-circle { background: var(--lucas-green); border-color: var(--lucas-green); color: #000; }
-        .check-circle i { opacity: 0; font-size: 12px; }
-        .checklist-item.checked .check-circle i { opacity: 1; }
-        .checklist-text { flex: 1; }
-        .checklist-title { font-weight: 600; font-size: 15px; margin-bottom: 2px; }
-        .checklist-subtitle { font-size: 12px; color: #666; }
+        .checklist {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+        }
         
-        /* Photos */
-        .photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
-        .photo-slot { aspect-ratio: 1; background: var(--lucas-card); border: 2px dashed var(--lucas-border); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; cursor: pointer; overflow: hidden; position: relative; }
-        .photo-slot:active { border-color: var(--lucas-green); }
-        .photo-slot i { font-size: 24px; color: #444; }
-        .photo-slot span { font-size: 10px; color: #666; text-transform: uppercase; font-weight: 600; }
-        .photo-slot.has-photo { border-style: solid; border-color: var(--lucas-green); }
-        .photo-slot img { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; }
-        .photo-slot .photo-check { position: absolute; top: 6px; right: 6px; width: 20px; height: 20px; background: var(--lucas-green); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #000; font-size: 10px; }
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-lg);
+            padding: var(--space-lg);
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s var(--ease-out);
+        }
+        
+        .checklist-item:active {
+            transform: scale(0.98);
+        }
+        
+        .checklist-item.checked {
+            border-color: rgba(222, 255, 154, 0.3);
+            background: rgba(222, 255, 154, 0.03);
+        }
+        
+        .check-box {
+            width: 28px;
+            height: 28px;
+            border-radius: var(--radius-sm);
+            border: 2px solid var(--border-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.2s var(--ease-spring);
+        }
+        
+        .checklist-item.checked .check-box {
+            background: var(--lime);
+            border-color: var(--lime);
+        }
+        
+        .check-box i {
+            font-size: 12px;
+            color: var(--black);
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.2s var(--ease-spring);
+        }
+        
+        .checklist-item.checked .check-box i {
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        .checklist-text {
+            flex: 1;
+        }
+        
+        .checklist-title {
+            font-weight: 600;
+            font-size: 15px;
+            margin-bottom: 2px;
+        }
+        
+        .checklist-desc {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+        
+        /* Photo Grid */
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--space-md);
+            margin-bottom: var(--space-xl);
+        }
+        
+        .photo-slot {
+            aspect-ratio: 1;
+            background: var(--card);
+            border: 2px dashed var(--border-light);
+            border-radius: var(--radius-md);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-sm);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.2s var(--ease-out);
+        }
+        
+        .photo-slot:active {
+            transform: scale(0.95);
+            border-color: var(--lime);
+        }
+        
+        .photo-slot i {
+            font-size: 24px;
+            color: var(--text-muted);
+        }
+        
+        .photo-slot span {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+        
+        .photo-slot.has-photo {
+            border-style: solid;
+            border-color: var(--lime);
+        }
+        
+        .photo-slot img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .photo-check {
+            position: absolute;
+            top: var(--space-sm);
+            right: var(--space-sm);
+            width: 22px;
+            height: 22px;
+            background: var(--lime);
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--black);
+            font-size: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
         
         /* Issues */
-        .issue-card { background: var(--lucas-card); border: 1px solid var(--lucas-border); border-radius: 12px; padding: 14px; margin-bottom: 10px; }
-        .issue-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-        .issue-title { font-weight: 600; font-size: 14px; }
-        .issue-severity { padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
-        .issue-severity.low { background: rgba(251,191,36,0.15); color: #fbbf24; }
-        .issue-severity.medium { background: rgba(249,115,22,0.15); color: #f97316; }
-        .issue-severity.high { background: rgba(239,68,68,0.15); color: #ef4444; }
-        .issue-meta { font-size: 12px; color: #666; }
-        .issue-delete { background: none; border: none; color: #666; padding: 8px; cursor: pointer; margin-left: 8px; }
-        .issue-delete:hover { color: #ef4444; }
+        .issues-section {
+            margin-top: var(--space-xl);
+        }
         
-        /* Score */
-        .score-display { text-align: center; padding: 32px 24px; background: var(--lucas-card); border-radius: 20px; margin-bottom: 20px; }
-        .score-value { font-size: 72px; font-weight: 800; line-height: 1; }
-        .score-value.high { color: var(--lucas-green); }
-        .score-value.medium { color: #fbbf24; }
-        .score-value.low { color: #ef4444; }
-        .score-max { font-size: 24px; color: #666; }
-        .score-label { font-size: 12px; color: #666; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 8px; }
-        .score-slider { width: 100%; height: 8px; -webkit-appearance: none; background: var(--lucas-border); border-radius: 4px; margin-top: 24px; }
-        .score-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 32px; height: 32px; background: var(--lucas-green); border-radius: 50%; cursor: pointer; }
+        .issue-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: var(--space-lg);
+            margin-bottom: var(--space-md);
+        }
+        
+        .issue-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-sm);
+        }
+        
+        .issue-title {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .issue-actions {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+        
+        .issue-severity {
+            padding: 4px 8px;
+            border-radius: var(--radius-sm);
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        
+        .issue-severity.low { background: rgba(251, 191, 36, 0.15); color: var(--warning); }
+        .issue-severity.medium { background: rgba(249, 115, 22, 0.15); color: #f97316; }
+        .issue-severity.high { background: rgba(239, 68, 68, 0.15); color: var(--error); }
+        
+        .issue-delete {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-radius: var(--radius-sm);
+            transition: all 0.2s;
+        }
+        
+        .issue-delete:hover {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--error);
+        }
+        
+        .issue-location {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+        
+        /* Score Display */
+        .score-card {
+            background: linear-gradient(135deg, var(--lime-dim), rgba(222, 255, 154, 0.03));
+            border: 1px solid rgba(222, 255, 154, 0.2);
+            border-radius: var(--radius-xl);
+            padding: var(--space-3xl);
+            text-align: center;
+            margin-bottom: var(--space-xl);
+        }
+        
+        .score-value {
+            font-size: 80px;
+            font-weight: 800;
+            line-height: 1;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .score-value.high { color: var(--lime); }
+        .score-value.medium { color: var(--warning); }
+        .score-value.low { color: var(--error); }
+        
+        .score-max {
+            font-size: 24px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+        
+        .score-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-top: var(--space-md);
+        }
+        
+        .score-slider {
+            width: 100%;
+            height: 8px;
+            -webkit-appearance: none;
+            background: var(--border);
+            border-radius: 4px;
+            margin-top: var(--space-2xl);
+            outline: none;
+        }
+        
+        .score-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 28px;
+            height: 28px;
+            background: var(--lime);
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
         
         /* Summary */
-        .summary-card { background: var(--lucas-card); border-radius: 16px; padding: 20px; margin-bottom: 16px; }
-        .summary-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--lucas-border); }
-        .summary-row:last-child { border-bottom: none; }
-        .summary-label { color: #666; font-size: 14px; }
-        .summary-value { font-weight: 600; font-size: 14px; }
+        .summary-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            margin-bottom: var(--space-xl);
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-lg);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .summary-row:last-child {
+            border-bottom: none;
+        }
+        
+        .summary-label {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+        
+        .summary-value {
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .summary-value.highlight {
+            color: var(--lime);
+        }
         
         /* Signature */
-        .signature-pad { background: var(--lucas-card); border: 1px solid var(--lucas-border); border-radius: 16px; padding: 20px; margin-bottom: 16px; }
-        .signature-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .signature-clear { font-size: 12px; color: var(--lucas-green); background: none; border: none; cursor: pointer; font-family: inherit; }
-        .signature-canvas { width: 100%; height: 120px; background: var(--lucas-dark); border-radius: 8px; border: 1px dashed var(--lucas-border); touch-action: none; }
-        .signature-label { text-align: center; font-size: 11px; color: #666; margin-top: 8px; }
+        .signature-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-xl);
+            margin-bottom: var(--space-xl);
+        }
+        
+        .signature-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-md);
+        }
+        
+        .signature-clear {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--lime);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        
+        .signature-canvas {
+            width: 100%;
+            height: 140px;
+            background: var(--bg);
+            border: 1px dashed var(--border-light);
+            border-radius: var(--radius-md);
+            touch-action: none;
+        }
+        
+        .signature-hint {
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: var(--space-md);
+        }
         
         /* Bottom Bar */
-        .bottom-bar { padding: 16px 20px; padding-bottom: calc(16px + var(--safe-bottom)); background: var(--lucas-card); border-top: 1px solid var(--lucas-border); display: flex; gap: 12px; }
-        .bottom-bar .btn { flex: 1; }
+        .bottom-bar {
+            padding: var(--space-lg) var(--space-xl);
+            padding-bottom: calc(var(--space-lg) + var(--safe-bottom));
+            background: var(--black);
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: var(--space-md);
+        }
         
-        /* Modal */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; padding: 24px; z-index: 100; }
-        .modal-overlay.active { display: flex; }
-        .modal { background: var(--lucas-card); border: 1px solid var(--lucas-border); border-radius: 24px; padding: 32px; text-align: center; max-width: 340px; width: 100%; animation: modalIn 0.3s ease; }
-        @keyframes modalIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
-        .modal-icon { width: 80px; height: 80px; background: rgba(222,255,154,0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
-        .modal-icon i { font-size: 36px; color: var(--lucas-green); }
-        .modal-title { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
-        .modal-text { font-size: 14px; color: #888; margin-bottom: 20px; }
-        .modal-hash { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--lucas-green); background: var(--lucas-dark); padding: 12px; border-radius: 8px; margin-bottom: 24px; word-break: break-all; }
+        .bottom-bar .btn {
+            flex: 1;
+        }
+        
+        /* =============================================
+           MODALS
+           ============================================= */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(12px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-2xl);
+            z-index: 200;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+        
+        .modal {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            padding: var(--space-3xl);
+            max-width: 360px;
+            width: 100%;
+            transform: scale(0.95);
+            transition: transform 0.3s var(--ease-spring);
+        }
+        
+        .modal-overlay.active .modal {
+            transform: scale(1);
+        }
+        
+        /* Success Modal */
+        .success-modal {
+            text-align: center;
+        }
+        
+        .success-icon {
+            width: 88px;
+            height: 88px;
+            background: var(--lime-dim);
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto var(--space-xl);
+            animation: successPop 0.5s var(--ease-spring);
+        }
+        
+        @keyframes successPop {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .success-icon i {
+            font-size: 40px;
+            color: var(--lime);
+        }
+        
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: var(--space-sm);
+        }
+        
+        .modal-text {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: var(--space-xl);
+        }
+        
+        .proof-hash {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--lime);
+            background: var(--bg);
+            padding: var(--space-md);
+            border-radius: var(--radius-sm);
+            margin-bottom: var(--space-xl);
+            word-break: break-all;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .proof-hash:active {
+            background: var(--elevated);
+        }
         
         /* Issue Modal */
-        .issue-modal { text-align: left; }
-        .issue-modal .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .issue-modal .modal-title { margin-bottom: 0; }
-        .issue-modal .modal-close { width: 36px; height: 36px; border-radius: 10px; border: 1px solid var(--lucas-border); background: transparent; color: #666; cursor: pointer; }
-        .severity-options { display: flex; gap: 10px; margin-bottom: 16px; }
-        .severity-btn { flex: 1; padding: 12px; border-radius: 10px; border: 1px solid var(--lucas-border); background: transparent; color: #888; font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; }
-        .severity-btn.active { border-color: var(--lucas-green); color: var(--lucas-green); background: rgba(222,255,154,0.1); }
-        .severity-btn.low.active { border-color: #fbbf24; color: #fbbf24; background: rgba(251,191,36,0.1); }
-        .severity-btn.medium.active { border-color: #f97316; color: #f97316; background: rgba(249,115,22,0.1); }
-        .severity-btn.high.active { border-color: #ef4444; color: #ef4444; background: rgba(239,68,68,0.1); }
+        .issue-modal {
+            text-align: left;
+        }
         
-        /* Stats */
-        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 24px; }
-        .stats-card { background: var(--lucas-card); border: 1px solid var(--lucas-border); border-radius: 16px; padding: 20px; text-align: center; }
-        .stats-card-value { font-size: 32px; font-weight: 800; color: var(--lucas-green); margin-bottom: 4px; }
-        .stats-card-label { font-size: 11px; color: #666; text-transform: uppercase; }
-        .stats-chart { background: var(--lucas-card); border: 1px solid var(--lucas-border); border-radius: 16px; padding: 20px; margin-bottom: 16px; }
-        .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-        .chart-title { font-weight: 700; font-size: 14px; }
-        .chart-bars { display: flex; align-items: flex-end; gap: 8px; height: 100px; }
-        .chart-bar { flex: 1; background: rgba(222,255,154,0.2); border-radius: 6px 6px 0 0; position: relative; }
-        .chart-bar-fill { position: absolute; bottom: 0; left: 0; right: 0; background: var(--lucas-green); border-radius: 6px 6px 0 0; }
-        .chart-bar-label { position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%); font-size: 9px; color: #666; }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-xl);
+        }
         
-        /* Empty */
-        .empty-state { text-align: center; padding: 40px 20px; color: #666; }
-        .empty-state i { font-size: 48px; margin-bottom: 16px; opacity: 0.3; }
-        .empty-state h3 { font-size: 16px; margin-bottom: 8px; color: #888; }
+        .modal-close {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text-muted);
+            cursor: pointer;
+        }
         
-        /* Toast */
-        .toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: var(--lucas-card); border: 1px solid var(--lucas-border); padding: 12px 20px; border-radius: 12px; font-size: 14px; z-index: 200; animation: toastIn 0.3s ease; }
-        @keyframes toastIn { from { opacity: 0; transform: translateX(-50%) translateY(20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+        .severity-options {
+            display: flex;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-lg);
+        }
         
-        .hidden { display: none; }
+        .severity-btn {
+            flex: 1;
+            padding: var(--space-md);
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+        
+        .severity-btn.active {
+            border-color: var(--lime);
+            color: var(--lime);
+            background: var(--lime-dim);
+        }
+        
+        .severity-btn.low.active {
+            border-color: var(--warning);
+            color: var(--warning);
+            background: rgba(251, 191, 36, 0.1);
+        }
+        
+        .severity-btn.medium.active {
+            border-color: #f97316;
+            color: #f97316;
+            background: rgba(249, 115, 22, 0.1);
+        }
+        
+        .severity-btn.high.active {
+            border-color: var(--error);
+            color: var(--error);
+            background: rgba(239, 68, 68, 0.1);
+        }
+        
+        /* Form Elements */
+        select, textarea {
+            width: 100%;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: var(--space-lg);
+            color: var(--text-primary);
+            font-size: 15px;
+            font-family: inherit;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        
+        select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--lime);
+            box-shadow: 0 0 0 3px var(--lime-dim);
+        }
+        
+        textarea {
+            resize: none;
+            min-height: 80px;
+        }
+        
+        /* =============================================
+           WALLET SCREEN
+           ============================================= */
+        .earnings-card {
+            background: linear-gradient(135deg, var(--lime-dim), rgba(222, 255, 154, 0.03));
+            border: 1px solid rgba(222, 255, 154, 0.2);
+            border-radius: var(--radius-xl);
+            padding: var(--space-2xl);
+            text-align: center;
+            margin-bottom: var(--space-xl);
+        }
+        
+        .earnings-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: var(--space-md);
+        }
+        
+        .earnings-value {
+            font-size: 48px;
+            font-weight: 800;
+            color: var(--lime);
+            font-family: 'JetBrains Mono', monospace;
+            line-height: 1;
+        }
+        
+        .earnings-subtitle {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: var(--space-md);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--space-md);
+            margin-bottom: var(--space-xl);
+        }
+        
+        .stats-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            text-align: center;
+        }
+        
+        .stats-value {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .stats-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-top: var(--space-xs);
+        }
+        
+        .payout-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            margin-bottom: var(--space-xl);
+        }
+        
+        .payout-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-md);
+        }
+        
+        .payout-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+        
+        .payout-badge {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--lime);
+            background: var(--lime-dim);
+            padding: 4px 8px;
+            border-radius: var(--radius-sm);
+        }
+        
+        .payout-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .payout-method {
+            font-weight: 600;
+        }
+        
+        .payout-schedule {
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+        
+        .earning-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-lg);
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-sm);
+        }
+        
+        .earning-info h4 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+        
+        .earning-info span {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+        
+        .earning-amount {
+            font-weight: 700;
+            color: var(--lime);
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        /* =============================================
+           PROFILE SCREEN
+           ============================================= */
+        .profile-header {
+            text-align: center;
+            padding: var(--space-xl) 0;
+            margin-bottom: var(--space-xl);
+        }
+        
+        .profile-avatar {
+            width: 96px;
+            height: 96px;
+            border-radius: var(--radius-full);
+            background: linear-gradient(135deg, var(--lime), #7dd3fc);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            color: var(--black);
+            font-size: 32px;
+            margin: 0 auto var(--space-lg);
+        }
+        
+        .profile-name {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: var(--space-xs);
+        }
+        
+        .profile-id {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+        
+        .profile-section {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            margin-bottom: var(--space-xl);
+        }
+        
+        .profile-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-lg);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .profile-row:last-child {
+            border-bottom: none;
+        }
+        
+        .profile-row-label {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+        
+        .profile-row-value {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .profile-row-value.status {
+            color: var(--lime);
+        }
+        
+        /* =============================================
+           EMPTY STATE
+           ============================================= */
+        .empty-state {
+            text-align: center;
+            padding: var(--space-3xl) var(--space-xl);
+        }
+        
+        .empty-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--card);
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto var(--space-lg);
+        }
+        
+        .empty-icon i {
+            font-size: 32px;
+            color: var(--text-muted);
+        }
+        
+        .empty-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: var(--space-sm);
+        }
+        
+        .empty-text {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+        
+        /* =============================================
+           TOAST
+           ============================================= */
+        .toast {
+            position: fixed;
+            bottom: calc(100px + var(--safe-bottom));
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: var(--elevated);
+            border: 1px solid var(--border);
+            padding: var(--space-md) var(--space-xl);
+            border-radius: var(--radius-full);
+            font-size: 14px;
+            font-weight: 500;
+            z-index: 300;
+            opacity: 0;
+            animation: toastIn 0.3s var(--ease-out) forwards;
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+        
+        @keyframes toastIn {
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+        
+        .toast.success { border-color: rgba(74, 222, 128, 0.3); }
+        .toast.success i { color: var(--success); }
+        .toast.error { border-color: rgba(248, 113, 113, 0.3); }
+        .toast.error i { color: var(--error); }
+        
+        /* =============================================
+           SKELETON LOADERS
+           ============================================= */
+        .skeleton {
+            background: linear-gradient(90deg, var(--card) 25%, var(--elevated) 50%, var(--card) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: var(--radius-md);
+        }
+        
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        .skeleton-card {
+            height: 100px;
+            margin-bottom: var(--space-md);
+        }
+        
+        /* =============================================
+           OFFLINE INDICATOR
+           ============================================= */
+        .offline-banner {
+            position: fixed;
+            top: var(--safe-top);
+            left: 0;
+            right: 0;
+            background: var(--warning);
+            color: var(--black);
+            padding: var(--space-sm) var(--space-lg);
+            font-size: 12px;
+            font-weight: 600;
+            text-align: center;
+            z-index: 1000;
+            transform: translateY(-100%);
+            transition: transform 0.3s var(--ease-out);
+        }
+        
+        .offline-banner.show {
+            transform: translateY(0);
+        }
+        
+        /* =============================================
+           UTILITIES
+           ============================================= */
+        .hidden { display: none !important; }
+        .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0; }
     </style>
 </head>
 <body>
-    <!-- LOGIN -->
-    <div id="login-screen" class="screen active">
+    <!-- Offline Banner -->
+    <div class="offline-banner" id="offline-banner" role="alert">
+        <i class="fa-solid fa-wifi-slash"></i> You're offline. Changes will sync when connected.
+    </div>
+
+    <!-- =============================================
+         LOGIN SCREEN
+         ============================================= -->
+    <div id="login-screen" class="screen active" role="main" aria-label="Login">
         <div class="login-container">
-            <img src="icon-512.png" alt="LUCAS" class="login-logo">
+            <img src="icon-512.png" alt="LUCAS Logo" class="login-logo">
             <h1 class="login-title">LUCAS Inspector</h1>
             <p class="login-subtitle">Dubai Pilot Program</p>
             
-            <form class="login-form" onsubmit="handleLogin(event)">
+            <form class="login-form" onsubmit="handleLogin(event)" aria-label="Login form">
                 <div class="input-group">
-                    <label>Inspector ID</label>
-                    <div class="id-input-wrapper">
-                        <span class="id-prefix">INS-</span>
-                        <input type="text" placeholder="7721" id="inspector-id" required inputmode="numeric" maxlength="4">
+                    <label class="input-label" for="inspector-id">Inspector ID</label>
+                    <div class="input-wrapper">
+                        <span class="input-prefix">INS-</span>
+                        <input 
+                            type="text" 
+                            id="inspector-id" 
+                            class="input-field"
+                            placeholder="7721" 
+                            required 
+                            inputmode="numeric" 
+                            maxlength="4"
+                            autocomplete="username"
+                            aria-describedby="id-hint"
+                        >
                     </div>
                 </div>
                 
                 <div class="input-group">
-                    <label>PIN Code</label>
-                    <input type="password" placeholder="••••" id="pin-code" required maxlength="6" inputmode="numeric">
+                    <label class="input-label" for="pin-code">PIN Code</label>
+                    <div class="input-wrapper">
+                        <input 
+                            type="password" 
+                            id="pin-code" 
+                            class="input-field"
+                            placeholder="••••" 
+                            required 
+                            maxlength="6" 
+                            inputmode="numeric"
+                            autocomplete="current-password"
+                        >
+                        <i class="fa-solid fa-lock input-icon" aria-hidden="true"></i>
+                    </div>
                 </div>
                 
                 <button type="submit" class="btn btn-primary" id="login-btn">
-                    <i class="fa-solid fa-right-to-bracket"></i>
-                    Sign In
+                    <span>Sign In</span>
+                    <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
                 </button>
             </form>
             
-            <p class="login-demo">
-                Demo: <strong>7721</strong> / PIN: <strong>1234</strong>
+            <p class="login-demo" id="id-hint">
+                Demo: <code>7721</code> / PIN: <code>1234</code>
             </p>
         </div>
     </div>
 
-    <!-- HOME -->
-    <div id="home-screen" class="screen">
-        <div class="header">
+    <!-- =============================================
+         HOME SCREEN
+         ============================================= -->
+    <div id="home-screen" class="screen" role="main" aria-label="Home">
+        <header class="header">
             <div class="header-top">
-                <div class="header-logo"><img src="icon-192.png" alt="LUCAS"><span>LUCAS</span></div>
-                <div class="user-avatar" id="user-avatar">FM</div>
+                <div class="header-logo">
+                    <img src="icon-192.png" alt="">
+                    <div>
+                        <div class="header-logo-text">LUCAS</div>
+                        <div class="header-greeting">Good <span id="greeting-time">morning</span>, <strong id="user-name">Inspector</strong></div>
+                    </div>
+                </div>
+                <button class="avatar" id="user-avatar" onclick="switchTab('profile')" aria-label="View profile">FM</button>
             </div>
-            <div class="header-stats">
-                <div class="stat-card"><div class="stat-value" id="stat-today">0</div><div class="stat-label">Today</div></div>
-                <div class="stat-card"><div class="stat-value" id="stat-total">0</div><div class="stat-label">Total</div></div>
-                <div class="stat-card"><div class="stat-value" id="stat-rating">--</div><div class="stat-label">Rating</div></div>
+            <div class="stats-row">
+                <div class="stat-item">
+                    <div class="stat-value" id="stat-today">0</div>
+                    <div class="stat-label">Today</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="stat-total">0</div>
+                    <div class="stat-label">Total</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="stat-rating">--</div>
+                    <div class="stat-label">Rating</div>
+                </div>
             </div>
+        </header>
+        
+        <div class="content" id="home-content">
+            <!-- Dynamic content -->
         </div>
-        <div class="content" id="home-content"></div>
-        <div class="bottom-nav">
-            <button class="nav-item active" onclick="switchTab('home')"><i class="fa-solid fa-house"></i><span>Home</span></button>
-            <button class="nav-item" onclick="switchTab('jobs')"><i class="fa-solid fa-clipboard-list"></i><span>Jobs</span></button>
-            <button class="nav-item" onclick="switchTab('wallet')"><i class="fa-solid fa-wallet"></i><span>Wallet</span></button>
-            <button class="nav-item" onclick="switchTab('profile')"><i class="fa-solid fa-user"></i><span>Profile</span></button>
-        </div>
+        
+        <nav class="bottom-nav" role="navigation" aria-label="Main navigation">
+            <button class="nav-item active" onclick="switchTab('home')" aria-current="page">
+                <i class="fa-solid fa-house" aria-hidden="true"></i>
+                <span>Home</span>
+            </button>
+            <button class="nav-item" onclick="switchTab('jobs')">
+                <i class="fa-solid fa-clipboard-list" aria-hidden="true"></i>
+                <span>Jobs</span>
+                <span class="nav-badge hidden" id="jobs-badge">0</span>
+            </button>
+            <button class="nav-item" onclick="switchTab('wallet')">
+                <i class="fa-solid fa-wallet" aria-hidden="true"></i>
+                <span>Wallet</span>
+            </button>
+            <button class="nav-item" onclick="switchTab('profile')">
+                <i class="fa-solid fa-user" aria-hidden="true"></i>
+                <span>Profile</span>
+            </button>
+        </nav>
     </div>
 
-    <!-- JOBS -->
-    <div id="jobs-screen" class="screen">
-        <div class="header" style="padding-bottom: 20px;">
+    <!-- =============================================
+         JOBS SCREEN
+         ============================================= -->
+    <div id="jobs-screen" class="screen" role="main" aria-label="All Jobs">
+        <header class="header" style="padding-bottom: var(--space-xl);">
             <div class="header-top" style="margin-bottom: 0;">
-                <div class="header-logo"><img src="icon-192.png" alt="LUCAS"><span>All Jobs</span></div>
+                <div class="header-logo">
+                    <img src="icon-192.png" alt="">
+                    <div class="header-logo-text">All Jobs</div>
+                </div>
             </div>
-        </div>
+        </header>
+        
         <div class="content" id="jobs-content"></div>
-        <div class="bottom-nav">
-            <button class="nav-item" onclick="switchTab('home')"><i class="fa-solid fa-house"></i><span>Home</span></button>
-            <button class="nav-item active" onclick="switchTab('jobs')"><i class="fa-solid fa-clipboard-list"></i><span>Jobs</span></button>
-            <button class="nav-item" onclick="switchTab('wallet')"><i class="fa-solid fa-wallet"></i><span>Wallet</span></button>
-            <button class="nav-item" onclick="switchTab('profile')"><i class="fa-solid fa-user"></i><span>Profile</span></button>
-        </div>
+        
+        <nav class="bottom-nav" role="navigation">
+            <button class="nav-item" onclick="switchTab('home')">
+                <i class="fa-solid fa-house" aria-hidden="true"></i>
+                <span>Home</span>
+            </button>
+            <button class="nav-item active" onclick="switchTab('jobs')" aria-current="page">
+                <i class="fa-solid fa-clipboard-list" aria-hidden="true"></i>
+                <span>Jobs</span>
+            </button>
+            <button class="nav-item" onclick="switchTab('wallet')">
+                <i class="fa-solid fa-wallet" aria-hidden="true"></i>
+                <span>Wallet</span>
+            </button>
+            <button class="nav-item" onclick="switchTab('profile')">
+                <i class="fa-solid fa-user" aria-hidden="true"></i>
+                <span>Profile</span>
+            </button>
+        </nav>
     </div>
 
-    <!-- WALLET -->
-    <div id="wallet-screen" class="screen">
-        <div class="header" style="padding-bottom: 20px;">
+    <!-- =============================================
+         WALLET SCREEN
+         ============================================= -->
+    <div id="wallet-screen" class="screen" role="main" aria-label="Wallet">
+        <header class="header" style="padding-bottom: var(--space-xl);">
             <div class="header-top" style="margin-bottom: 0;">
-                <div class="header-logo"><img src="icon-192.png" alt="LUCAS"><span>Wallet</span></div>
+                <div class="header-logo">
+                    <img src="icon-192.png" alt="">
+                    <div class="header-logo-text">Wallet</div>
+                </div>
             </div>
-        </div>
+        </header>
+        
         <div class="content" id="wallet-content"></div>
-        <div class="bottom-nav">
-            <button class="nav-item" onclick="switchTab('home')"><i class="fa-solid fa-house"></i><span>Home</span></button>
-            <button class="nav-item" onclick="switchTab('jobs')"><i class="fa-solid fa-clipboard-list"></i><span>Jobs</span></button>
-            <button class="nav-item active" onclick="switchTab('wallet')"><i class="fa-solid fa-wallet"></i><span>Wallet</span></button>
-            <button class="nav-item" onclick="switchTab('profile')"><i class="fa-solid fa-user"></i><span>Profile</span></button>
-        </div>
+        
+        <nav class="bottom-nav" role="navigation">
+            <button class="nav-item" onclick="switchTab('home')">
+                <i class="fa-solid fa-house" aria-hidden="true"></i>
+                <span>Home</span>
+            </button>
+            <button class="nav-item" onclick="switchTab('jobs')">
+                <i class="fa-solid fa-clipboard-list" aria-hidden="true"></i>
+                <span>Jobs</span>
+            </button>
+            <button class="nav-item active" onclick="switchTab('wallet')" aria-current="page">
+                <i class="fa-solid fa-wallet" aria-hidden="true"></i>
+                <span>Wallet</span>
+            </button>
+            <button class="nav-item" onclick="switchTab('profile')">
+                <i class="fa-solid fa-user" aria-hidden="true"></i>
+                <span>Profile</span>
+            </button>
+        </nav>
     </div>
 
-    <!-- PROFILE -->
-    <div id="profile-screen" class="screen">
-        <div class="header" style="padding-bottom: 20px;">
+    <!-- =============================================
+         PROFILE SCREEN
+         ============================================= -->
+    <div id="profile-screen" class="screen" role="main" aria-label="Profile">
+        <header class="header" style="padding-bottom: var(--space-xl);">
             <div class="header-top" style="margin-bottom: 0;">
-                <div class="header-logo"><img src="icon-192.png" alt="LUCAS"><span>Profile</span></div>
+                <div class="header-logo">
+                    <img src="icon-192.png" alt="">
+                    <div class="header-logo-text">Profile</div>
+                </div>
             </div>
-        </div>
+        </header>
+        
         <div class="content" id="profile-content"></div>
-        <div class="bottom-nav">
-            <button class="nav-item" onclick="switchTab('home')"><i class="fa-solid fa-house"></i><span>Home</span></button>
-            <button class="nav-item" onclick="switchTab('jobs')"><i class="fa-solid fa-clipboard-list"></i><span>Jobs</span></button>
-            <button class="nav-item" onclick="switchTab('wallet')"><i class="fa-solid fa-wallet"></i><span>Wallet</span></button>
-            <button class="nav-item active" onclick="switchTab('profile')"><i class="fa-solid fa-user"></i><span>Profile</span></button>
-        </div>
+        
+        <nav class="bottom-nav" role="navigation">
+            <button class="nav-item" onclick="switchTab('home')">
+                <i class="fa-solid fa-house" aria-hidden="true"></i>
+                <span>Home</span>
+            </button>
+            <button class="nav-item" onclick="switchTab('jobs')">
+                <i class="fa-solid fa-clipboard-list" aria-hidden="true"></i>
+                <span>Jobs</span>
+            </button>
+            <button class="nav-item" onclick="switchTab('wallet')">
+                <i class="fa-solid fa-wallet" aria-hidden="true"></i>
+                <span>Wallet</span>
+            </button>
+            <button class="nav-item active" onclick="switchTab('profile')" aria-current="page">
+                <i class="fa-solid fa-user" aria-hidden="true"></i>
+                <span>Profile</span>
+            </button>
+        </nav>
     </div>
 
-    <!-- INSPECTION -->
-    <div id="inspection-screen" class="screen">
-        <div class="inspection-header">
-            <button class="back-btn" onclick="exitInspection()"><i class="fa-solid fa-arrow-left"></i> Exit</button>
-            <div class="inspection-title" id="inspection-title">Property Name</div>
-            <div class="inspection-address" id="inspection-id">DXB-PROP-XXXX</div>
-        </div>
-        <div class="progress-bar-container">
+    <!-- =============================================
+         INSPECTION SCREEN
+         ============================================= -->
+    <div id="inspection-screen" class="screen" role="main" aria-label="Inspection">
+        <header class="inspection-header">
+            <button class="back-btn" onclick="exitInspection()" aria-label="Exit inspection">
+                <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+                <span>Exit</span>
+            </button>
+            <h1 class="inspection-title" id="inspection-title">Property Name</h1>
+            <p class="inspection-subtitle" id="inspection-id">DXB-PROP-XXXX</p>
+        </header>
+        
+        <div class="progress-container" role="navigation" aria-label="Inspection progress">
             <div class="progress-steps">
-                <div class="progress-line"><div class="progress-line-fill" id="progress-fill"></div></div>
-                <div class="progress-step active" onclick="goToStep(1)"><div class="step-circle">1</div><span class="step-label">Verify</span></div>
-                <div class="progress-step" onclick="goToStep(2)"><div class="step-circle">2</div><span class="step-label">Photos</span></div>
-                <div class="progress-step" onclick="goToStep(3)"><div class="step-circle">3</div><span class="step-label">Score</span></div>
-                <div class="progress-step" onclick="goToStep(4)"><div class="step-circle">4</div><span class="step-label">Submit</span></div>
+                <div class="progress-line"><div class="progress-line-fill" id="progress-fill" style="width: 0%"></div></div>
+                
+                <button class="progress-step active" onclick="goToStep(1)" aria-label="Step 1: Verify" aria-current="step">
+                    <div class="step-icon"><i class="fa-solid fa-location-dot" aria-hidden="true"></i></div>
+                    <span class="step-label">Verify</span>
+                </button>
+                
+                <button class="progress-step" onclick="goToStep(2)" aria-label="Step 2: Photos">
+                    <div class="step-icon"><i class="fa-solid fa-camera" aria-hidden="true"></i></div>
+                    <span class="step-label">Photos</span>
+                </button>
+                
+                <button class="progress-step" onclick="goToStep(3)" aria-label="Step 3: Score">
+                    <div class="step-icon"><i class="fa-solid fa-star" aria-hidden="true"></i></div>
+                    <span class="step-label">Score</span>
+                </button>
+                
+                <button class="progress-step" onclick="goToStep(4)" aria-label="Step 4: Submit">
+                    <div class="step-icon"><i class="fa-solid fa-check" aria-hidden="true"></i></div>
+                    <span class="step-label">Submit</span>
+                </button>
             </div>
         </div>
+        
         <div class="inspection-content">
-            <!-- Step 1 -->
+            <!-- Step 1: Verify -->
             <div class="step-content active" id="step-1">
-                <div class="gps-indicator" id="gps-status"><div class="gps-pulse"></div><i class="fa-solid fa-location-dot"></i><span>Acquiring location...</span></div>
-                <div class="section-title">Verification Checklist</div>
-                <div class="checklist-item" data-check="access" onclick="toggleChecklist(this)"><div class="check-circle"><i class="fa-solid fa-check"></i></div><div class="checklist-text"><div class="checklist-title">Property Access Confirmed</div><div class="checklist-subtitle">I have access to all areas</div></div></div>
-                <div class="checklist-item" data-check="address" onclick="toggleChecklist(this)"><div class="check-circle"><i class="fa-solid fa-check"></i></div><div class="checklist-text"><div class="checklist-title">Address Matches Records</div><div class="checklist-subtitle">Property at correct location</div></div></div>
-                <div class="checklist-item" data-check="type" onclick="toggleChecklist(this)"><div class="check-circle"><i class="fa-solid fa-check"></i></div><div class="checklist-text"><div class="checklist-title">Property Type Verified</div><div class="checklist-subtitle" id="property-type-label">Type confirmed</div></div></div>
-                <div class="checklist-item" data-check="vacant" onclick="toggleChecklist(this)"><div class="check-circle"><i class="fa-solid fa-check"></i></div><div class="checklist-text"><div class="checklist-title">Ready for Inspection</div><div class="checklist-subtitle">Safe to inspect</div></div></div>
+                <div class="gps-banner" id="gps-status">
+                    <div class="gps-pulse"></div>
+                    <span class="gps-text">Acquiring location...</span>
+                </div>
+                
+                <div class="section-header">
+                    <h2 class="section-title">Verification Checklist</h2>
+                </div>
+                
+                <div class="checklist" role="group" aria-label="Verification checklist">
+                    <div class="checklist-item" data-check="access" onclick="toggleCheck(this)" role="checkbox" aria-checked="false" tabindex="0">
+                        <div class="check-box"><i class="fa-solid fa-check" aria-hidden="true"></i></div>
+                        <div class="checklist-text">
+                            <div class="checklist-title">Property Access Confirmed</div>
+                            <div class="checklist-desc">I have access to all areas</div>
+                        </div>
+                    </div>
+                    
+                    <div class="checklist-item" data-check="address" onclick="toggleCheck(this)" role="checkbox" aria-checked="false" tabindex="0">
+                        <div class="check-box"><i class="fa-solid fa-check" aria-hidden="true"></i></div>
+                        <div class="checklist-text">
+                            <div class="checklist-title">Address Matches Records</div>
+                            <div class="checklist-desc">Property at correct location</div>
+                        </div>
+                    </div>
+                    
+                    <div class="checklist-item" data-check="type" onclick="toggleCheck(this)" role="checkbox" aria-checked="false" tabindex="0">
+                        <div class="check-box"><i class="fa-solid fa-check" aria-hidden="true"></i></div>
+                        <div class="checklist-text">
+                            <div class="checklist-title">Property Type Verified</div>
+                            <div class="checklist-desc" id="property-type-label">Type confirmed</div>
+                        </div>
+                    </div>
+                    
+                    <div class="checklist-item" data-check="vacant" onclick="toggleCheck(this)" role="checkbox" aria-checked="false" tabindex="0">
+                        <div class="check-box"><i class="fa-solid fa-check" aria-hidden="true"></i></div>
+                        <div class="checklist-text">
+                            <div class="checklist-title">Ready for Inspection</div>
+                            <div class="checklist-desc">Safe to proceed with inspection</div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <!-- Step 2 -->
+            
+            <!-- Step 2: Photos -->
             <div class="step-content" id="step-2">
-                <div class="gps-indicator"><div class="gps-pulse"></div><i class="fa-solid fa-camera"></i><span>Photos are GPS-tagged</span></div>
-                <div class="section-title">Required Photos</div>
-                <div class="photo-grid" id="photo-grid">
-                    <div class="photo-slot" data-type="exterior" onclick="capturePhoto('exterior')"><i class="fa-solid fa-home"></i><span>Exterior</span></div>
-                    <div class="photo-slot" data-type="living" onclick="capturePhoto('living')"><i class="fa-solid fa-couch"></i><span>Living</span></div>
-                    <div class="photo-slot" data-type="kitchen" onclick="capturePhoto('kitchen')"><i class="fa-solid fa-kitchen-set"></i><span>Kitchen</span></div>
-                    <div class="photo-slot" data-type="bedroom" onclick="capturePhoto('bedroom')"><i class="fa-solid fa-bed"></i><span>Bedroom</span></div>
-                    <div class="photo-slot" data-type="bathroom" onclick="capturePhoto('bathroom')"><i class="fa-solid fa-bath"></i><span>Bathroom</span></div>
-                    <div class="photo-slot" data-type="additional" onclick="capturePhoto('additional')"><i class="fa-solid fa-plus"></i><span>More</span></div>
+                <div class="gps-banner">
+                    <div class="gps-pulse"></div>
+                    <span class="gps-text">Photos are GPS-tagged automatically</span>
                 </div>
-                <div class="section-title" style="margin-top: 24px;">Issues Found (<span id="issue-count">0</span>)</div>
-                <div id="issues-list"></div>
-                <button class="btn btn-danger" onclick="openIssueModal()" style="margin-top: 12px;"><i class="fa-solid fa-triangle-exclamation"></i> Report Issue</button>
+                
+                <div class="section-header">
+                    <h2 class="section-title">Required Photos</h2>
+                    <span class="section-action" id="photo-count">0/6</span>
+                </div>
+                
+                <div class="photo-grid" id="photo-grid" role="group" aria-label="Photo capture grid">
+                    <button class="photo-slot" data-type="exterior" onclick="capturePhoto('exterior')" aria-label="Capture exterior photo">
+                        <i class="fa-solid fa-home" aria-hidden="true"></i>
+                        <span>Exterior</span>
+                    </button>
+                    <button class="photo-slot" data-type="living" onclick="capturePhoto('living')" aria-label="Capture living room photo">
+                        <i class="fa-solid fa-couch" aria-hidden="true"></i>
+                        <span>Living</span>
+                    </button>
+                    <button class="photo-slot" data-type="kitchen" onclick="capturePhoto('kitchen')" aria-label="Capture kitchen photo">
+                        <i class="fa-solid fa-kitchen-set" aria-hidden="true"></i>
+                        <span>Kitchen</span>
+                    </button>
+                    <button class="photo-slot" data-type="bedroom" onclick="capturePhoto('bedroom')" aria-label="Capture bedroom photo">
+                        <i class="fa-solid fa-bed" aria-hidden="true"></i>
+                        <span>Bedroom</span>
+                    </button>
+                    <button class="photo-slot" data-type="bathroom" onclick="capturePhoto('bathroom')" aria-label="Capture bathroom photo">
+                        <i class="fa-solid fa-bath" aria-hidden="true"></i>
+                        <span>Bathroom</span>
+                    </button>
+                    <button class="photo-slot" data-type="additional" onclick="capturePhoto('additional')" aria-label="Capture additional photo">
+                        <i class="fa-solid fa-plus" aria-hidden="true"></i>
+                        <span>More</span>
+                    </button>
+                </div>
+                
+                <div class="issues-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Issues Found (<span id="issue-count">0</span>)</h2>
+                    </div>
+                    
+                    <div id="issues-list"></div>
+                    
+                    <button class="btn btn-danger" onclick="openIssueModal()" style="margin-top: var(--space-md);">
+                        <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+                        <span>Report Issue</span>
+                    </button>
+                </div>
             </div>
-            <!-- Step 3 -->
+            
+            <!-- Step 3: Score -->
             <div class="step-content" id="step-3">
-                <div class="section-title">Condition Score</div>
-                <div class="score-display">
+                <div class="section-header">
+                    <h2 class="section-title">Condition Score</h2>
+                </div>
+                
+                <div class="score-card">
                     <span class="score-value high" id="score-value">85</span><span class="score-max">/100</span>
-                    <div class="score-label">Condition Score</div>
-                    <input type="range" class="score-slider" id="score-slider" min="0" max="100" value="85" oninput="updateScore(this.value)">
+                    <div class="score-label">Overall Condition</div>
+                    <input 
+                        type="range" 
+                        class="score-slider" 
+                        id="score-slider" 
+                        min="0" 
+                        max="100" 
+                        value="85" 
+                        oninput="updateScore(this.value)"
+                        aria-label="Condition score slider"
+                    >
                 </div>
-                <div class="section-title">Breakdown</div>
-                <div class="checklist-item" data-score="structural" onclick="toggleChecklist(this)"><div class="check-circle"><i class="fa-solid fa-check"></i></div><div class="checklist-text"><div class="checklist-title">Structural Integrity</div><div class="checklist-subtitle">Walls, floors, ceiling OK</div></div></div>
-                <div class="checklist-item" data-score="utilities" onclick="toggleChecklist(this)"><div class="check-circle"><i class="fa-solid fa-check"></i></div><div class="checklist-text"><div class="checklist-title">Utilities Functional</div><div class="checklist-subtitle">AC, plumbing, electrical</div></div></div>
-                <div class="checklist-item" data-score="cosmetic" onclick="toggleChecklist(this)"><div class="check-circle"><i class="fa-solid fa-check"></i></div><div class="checklist-text"><div class="checklist-title">Cosmetic Condition</div><div class="checklist-subtitle">Paint, fixtures OK</div></div></div>
-                <div class="input-group" style="margin-top: 20px;"><label>Notes (Optional)</label><textarea id="inspection-notes" rows="3" placeholder="Additional observations..."></textarea></div>
+                
+                <div class="section-header">
+                    <h2 class="section-title">Breakdown</h2>
+                </div>
+                
+                <div class="checklist" role="group" aria-label="Condition breakdown">
+                    <div class="checklist-item" data-score="structural" onclick="toggleCheck(this)" role="checkbox" aria-checked="false" tabindex="0">
+                        <div class="check-box"><i class="fa-solid fa-check" aria-hidden="true"></i></div>
+                        <div class="checklist-text">
+                            <div class="checklist-title">Structural Integrity</div>
+                            <div class="checklist-desc">Walls, floors, ceiling OK</div>
+                        </div>
+                    </div>
+                    
+                    <div class="checklist-item" data-score="utilities" onclick="toggleCheck(this)" role="checkbox" aria-checked="false" tabindex="0">
+                        <div class="check-box"><i class="fa-solid fa-check" aria-hidden="true"></i></div>
+                        <div class="checklist-text">
+                            <div class="checklist-title">Utilities Functional</div>
+                            <div class="checklist-desc">AC, plumbing, electrical</div>
+                        </div>
+                    </div>
+                    
+                    <div class="checklist-item" data-score="cosmetic" onclick="toggleCheck(this)" role="checkbox" aria-checked="false" tabindex="0">
+                        <div class="check-box"><i class="fa-solid fa-check" aria-hidden="true"></i></div>
+                        <div class="checklist-text">
+                            <div class="checklist-title">Cosmetic Condition</div>
+                            <div class="checklist-desc">Paint, fixtures, finishes</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="input-group" style="margin-top: var(--space-xl);">
+                    <label class="input-label" for="inspection-notes">Notes (Optional)</label>
+                    <textarea 
+                        id="inspection-notes" 
+                        placeholder="Additional observations..."
+                        rows="3"
+                    ></textarea>
+                </div>
             </div>
-            <!-- Step 4 -->
+            
+            <!-- Step 4: Submit -->
             <div class="step-content" id="step-4">
-                <div class="section-title">Summary</div>
-                <div class="summary-card">
-                    <div class="summary-row"><span class="summary-label">Property</span><span class="summary-value" id="summary-property">--</span></div>
-                    <div class="summary-row"><span class="summary-label">Asset ID</span><span class="summary-value" id="summary-asset-id">--</span></div>
-                    <div class="summary-row"><span class="summary-label">Score</span><span class="summary-value" id="summary-score" style="color: var(--lucas-green);">--</span></div>
-                    <div class="summary-row"><span class="summary-label">Photos</span><span class="summary-value" id="summary-photos">--</span></div>
-                    <div class="summary-row"><span class="summary-label">Issues</span><span class="summary-value" id="summary-issues">--</span></div>
-                    <div class="summary-row"><span class="summary-label">GPS</span><span class="summary-value" id="summary-gps">--</span></div>
-                    <div class="summary-row"><span class="summary-label">Time</span><span class="summary-value" id="summary-time">--</span></div>
+                <div class="section-header">
+                    <h2 class="section-title">Summary</h2>
                 </div>
-                <div class="signature-pad">
-                    <div class="signature-header"><div class="section-title" style="margin-bottom: 0;">Signature</div><button class="signature-clear" onclick="clearSignature()">Clear</button></div>
-                    <canvas class="signature-canvas" id="signature-canvas"></canvas>
-                    <div class="signature-label">Sign to confirm accuracy</div>
+                
+                <div class="summary-card">
+                    <div class="summary-row">
+                        <span class="summary-label">Property</span>
+                        <span class="summary-value" id="summary-property">--</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">Asset ID</span>
+                        <span class="summary-value" id="summary-asset-id">--</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">Score</span>
+                        <span class="summary-value highlight" id="summary-score">--</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">Photos</span>
+                        <span class="summary-value" id="summary-photos">--</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">Issues</span>
+                        <span class="summary-value" id="summary-issues">--</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">GPS Verified</span>
+                        <span class="summary-value" id="summary-gps">--</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">Timestamp</span>
+                        <span class="summary-value" id="summary-time">--</span>
+                    </div>
+                </div>
+                
+                <div class="signature-card">
+                    <div class="signature-header">
+                        <h3 class="section-title" style="margin: 0;">Signature</h3>
+                        <button class="signature-clear" onclick="clearSignature()">Clear</button>
+                    </div>
+                    <canvas class="signature-canvas" id="signature-canvas" aria-label="Signature pad"></canvas>
+                    <p class="signature-hint">Sign above to confirm accuracy of this inspection</p>
                 </div>
             </div>
         </div>
+        
         <div class="bottom-bar">
-            <button class="btn btn-secondary" id="prev-btn" onclick="prevStep()" style="display: none;"><i class="fa-solid fa-arrow-left"></i> Back</button>
-            <button class="btn btn-primary" id="next-btn" onclick="nextStep()">Continue <i class="fa-solid fa-arrow-right"></i></button>
+            <button class="btn btn-secondary" id="prev-btn" onclick="prevStep()" style="display: none;">
+                <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+                <span>Back</span>
+            </button>
+            <button class="btn btn-primary" id="next-btn" onclick="nextStep()">
+                <span>Continue</span>
+                <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+            </button>
         </div>
     </div>
 
-    <!-- SUCCESS MODAL -->
-    <div class="modal-overlay" id="success-modal">
-        <div class="modal">
-            <div class="modal-icon"><i class="fa-solid fa-circle-check"></i></div>
-            <h2 class="modal-title">Submitted!</h2>
-            <p class="modal-text">Verification recorded on-chain.</p>
-            <div class="modal-hash" id="proof-hash">0x...</div>
-            <button class="btn btn-primary" onclick="closeSuccessModal()">Back to Dashboard</button>
+    <!-- =============================================
+         SUCCESS MODAL
+         ============================================= -->
+    <div class="modal-overlay" id="success-modal" role="dialog" aria-labelledby="success-title" aria-modal="true">
+        <div class="modal success-modal">
+            <div class="success-icon">
+                <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+            </div>
+            <h2 class="modal-title" id="success-title">Proof Submitted!</h2>
+            <p class="modal-text">Your inspection has been recorded and anchored on-chain.</p>
+            <div class="proof-hash" id="proof-hash" onclick="copyHash()" title="Click to copy">0x...</div>
+            <button class="btn btn-primary" onclick="closeSuccessModal()">
+                <span>Back to Dashboard</span>
+            </button>
         </div>
     </div>
 
-    <!-- ISSUE MODAL -->
-    <div class="modal-overlay" id="issue-modal">
+    <!-- =============================================
+         ISSUE MODAL
+         ============================================= -->
+    <div class="modal-overlay" id="issue-modal" role="dialog" aria-labelledby="issue-modal-title" aria-modal="true">
         <div class="modal issue-modal">
             <div class="modal-header">
-                <h3 class="modal-title">Report Issue</h3>
-                <button class="modal-close" onclick="closeIssueModal()"><i class="fa-solid fa-xmark"></i></button>
+                <h2 class="modal-title" id="issue-modal-title">Report Issue</h2>
+                <button class="modal-close" onclick="closeIssueModal()" aria-label="Close modal">
+                    <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                </button>
             </div>
-            <div class="input-group"><label>Type</label><select id="issue-type"><option>Minor scuff on wall</option><option>Paint peeling</option><option>Tile crack</option><option>Door/window issue</option><option>Plumbing issue</option><option>Electrical issue</option><option>AC not working</option><option>Appliance issue</option><option>Water damage</option><option>Other</option></select></div>
-            <div class="input-group"><label>Severity</label><div class="severity-options"><button class="severity-btn low active" onclick="selectSeverity('low',this)">Low</button><button class="severity-btn medium" onclick="selectSeverity('medium',this)">Medium</button><button class="severity-btn high" onclick="selectSeverity('high',this)">High</button></div></div>
-            <div class="input-group"><label>Location</label><select id="issue-location"><option>Living Room</option><option>Kitchen</option><option>Bedroom</option><option>Bathroom</option><option>Exterior</option><option>Balcony</option><option>Other</option></select></div>
-            <div class="input-group"><label>Description</label><textarea id="issue-description" rows="2" placeholder="Details..."></textarea></div>
-            <button class="btn btn-primary" onclick="addIssue()"><i class="fa-solid fa-plus"></i> Add Issue</button>
+            
+            <div class="input-group">
+                <label class="input-label" for="issue-type">Issue Type</label>
+                <select id="issue-type">
+                    <option>Minor scuff on wall</option>
+                    <option>Paint peeling</option>
+                    <option>Tile crack</option>
+                    <option>Door/window issue</option>
+                    <option>Plumbing issue</option>
+                    <option>Electrical issue</option>
+                    <option>AC not working</option>
+                    <option>Appliance issue</option>
+                    <option>Water damage</option>
+                    <option>Other</option>
+                </select>
+            </div>
+            
+            <div class="input-group">
+                <label class="input-label">Severity</label>
+                <div class="severity-options" role="radiogroup" aria-label="Issue severity">
+                    <button class="severity-btn low active" onclick="selectSeverity('low', this)" role="radio" aria-checked="true">Low</button>
+                    <button class="severity-btn medium" onclick="selectSeverity('medium', this)" role="radio" aria-checked="false">Medium</button>
+                    <button class="severity-btn high" onclick="selectSeverity('high', this)" role="radio" aria-checked="false">High</button>
+                </div>
+            </div>
+            
+            <div class="input-group">
+                <label class="input-label" for="issue-location">Location</label>
+                <select id="issue-location">
+                    <option>Living Room</option>
+                    <option>Kitchen</option>
+                    <option>Bedroom</option>
+                    <option>Bathroom</option>
+                    <option>Exterior</option>
+                    <option>Balcony</option>
+                    <option>Other</option>
+                </select>
+            </div>
+            
+            <div class="input-group">
+                <label class="input-label" for="issue-description">Description</label>
+                <textarea id="issue-description" placeholder="Describe the issue..."></textarea>
+            </div>
+            
+            <button class="btn btn-primary" onclick="addIssue()">
+                <i class="fa-solid fa-plus" aria-hidden="true"></i>
+                <span>Add Issue</span>
+            </button>
         </div>
     </div>
 
-    <input type="file" id="camera-input" accept="image/*" capture="environment" class="hidden">
+    <!-- Hidden file input -->
+    <input type="file" id="camera-input" accept="image/*" capture="environment" class="hidden" aria-hidden="true">
 
     <script>
+        // =============================================
+        // CONFIGURATION
+        // =============================================
         const SUPABASE_URL = 'https://irztntmenxchzicfegid.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlyenRudG1lbnhjaHppY2ZlZ2lkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQxMTA4ODQsImV4cCI6MjA3OTY4Njg4NH0.EjaO-HXjzElo_eHqEWzagsqGg-gEVqUxY1ri-MhofPw';
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const RATE_PER_INSPECTION = 150; // AED
 
-        let currentInspector = null, allInspections = [], currentInspection = null, currentStep = 1;
-        let inspectionData = { checklist: {}, photos: {}, issues: [], score: 85, breakdown: {}, notes: '', gps: null };
+        // =============================================
+        // STATE
+        // =============================================
+        let currentInspector = null;
+        let allInspections = [];
+        let currentInspection = null;
+        let currentStep = 1;
+        let inspectionData = {
+            checklist: {},
+            photos: {},
+            issues: [],
+            score: 85,
+            breakdown: {},
+            notes: '',
+            gps: null
+        };
         let selectedSeverity = 'low';
+        let isOnline = navigator.onLine;
 
-        function showScreen(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+        // =============================================
+        // OFFLINE HANDLING
+        // =============================================
+        window.addEventListener('online', () => {
+            isOnline = true;
+            document.getElementById('offline-banner').classList.remove('show');
+            showToast('Back online', 'success');
+            syncPendingData();
+        });
+
+        window.addEventListener('offline', () => {
+            isOnline = false;
+            document.getElementById('offline-banner').classList.add('show');
+        });
+
+        async function syncPendingData() {
+            // TODO: Sync any locally stored inspection data
+            console.log('Syncing pending data...');
+        }
+
+        // =============================================
+        // HAPTIC FEEDBACK
+        // =============================================
+        function haptic(type = 'light') {
+            if ('vibrate' in navigator) {
+                const patterns = {
+                    light: 10,
+                    medium: 20,
+                    heavy: 30,
+                    success: [10, 50, 10],
+                    error: [30, 30, 30]
+                };
+                navigator.vibrate(patterns[type] || 10);
+            }
+        }
+
+        // =============================================
+        // SCREEN MANAGEMENT
+        // =============================================
+        function showScreen(id) {
+            const screens = document.querySelectorAll('.screen');
+            screens.forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
         function switchTab(tab) {
-            const screens = { home: 'home-screen', jobs: 'jobs-screen', wallet: 'wallet-screen', profile: 'profile-screen' };
+            haptic('light');
+            const screens = {
+                home: 'home-screen',
+                jobs: 'jobs-screen',
+                wallet: 'wallet-screen',
+                profile: 'profile-screen'
+            };
+            
+            // Update nav items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+                item.removeAttribute('aria-current');
+            });
+            event.currentTarget?.classList.add('active');
+            event.currentTarget?.setAttribute('aria-current', 'page');
+            
             showScreen(screens[tab]);
+            
+            // Render content
             if (tab === 'home') renderHomeContent();
             if (tab === 'jobs') renderJobsContent();
             if (tab === 'wallet') renderWalletContent();
             if (tab === 'profile') renderProfileContent();
         }
 
+        // =============================================
+        // LOGIN
+        // =============================================
         async function handleLogin(e) {
             e.preventDefault();
             const btn = document.getElementById('login-btn');
             const inspectorId = 'INS-' + document.getElementById('inspector-id').value.trim();
             const pin = document.getElementById('pin-code').value;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Signing In...'; btn.disabled = true;
+            
+            console.log('Attempting login with:', inspectorId);
+            
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Signing In...';
+            btn.disabled = true;
+            
             try {
-                const { data, error } = await supabase.from('inspectors').select('*').eq('inspector_id', inspectorId).eq('pin', pin).single();
-                if (error || !data) { showToast('Invalid credentials'); btn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Sign In'; btn.disabled = false; return; }
+                const { data, error } = await supabase
+                    .from('inspectors')
+                    .select('*')
+                    .eq('inspector_id', inspectorId)
+                    .eq('pin', pin)
+                    .single();
+                
+                console.log('Supabase response:', { data, error });
+                
+                if (error || !data) {
+                    haptic('error');
+                    showToast('Invalid credentials', 'error');
+                    console.error('Login failed:', error);
+                    btn.innerHTML = '<span>Sign In</span><i class="fa-solid fa-arrow-right"></i>';
+                    btn.disabled = false;
+                    return;
+                }
+                
                 currentInspector = data;
+                haptic('success');
                 await loadAllInspections();
-                document.getElementById('user-avatar').textContent = data.name.split(' ').map(n=>n[0]).join('').slice(0,2);
-                document.getElementById('stat-total').textContent = data.total_inspections;
-                document.getElementById('stat-rating').textContent = data.rating || '--';
+                updateUserUI();
                 switchTab('home');
-            } catch (err) { showToast('Connection error'); }
-            btn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Sign In'; btn.disabled = false;
+                
+            } catch (err) {
+                haptic('error');
+                console.error('Connection error:', err);
+                showToast('Connection error', 'error');
+            }
+            
+            btn.innerHTML = '<span>Sign In</span><i class="fa-solid fa-arrow-right"></i>';
+            btn.disabled = false;
         }
 
-        function logout() { currentInspector = null; showScreen('login-screen'); }
+        function logout() {
+            haptic('medium');
+            currentInspector = null;
+            allInspections = [];
+            showScreen('login-screen');
+        }
 
+        function updateUserUI() {
+            const name = currentInspector?.name || 'Inspector';
+            const initials = name.split(' ').map(n => n[0]).join('').slice(0, 2);
+            
+            document.getElementById('user-avatar').textContent = initials;
+            document.getElementById('user-name').textContent = name.split(' ')[0];
+            document.getElementById('stat-total').textContent = currentInspector?.total_inspections || 0;
+            document.getElementById('stat-rating').textContent = currentInspector?.rating || '--';
+            
+            // Update greeting based on time
+            const hour = new Date().getHours();
+            let greeting = 'morning';
+            if (hour >= 12 && hour < 17) greeting = 'afternoon';
+            else if (hour >= 17) greeting = 'evening';
+            document.getElementById('greeting-time').textContent = greeting;
+        }
+
+        // =============================================
+        // DATA LOADING
+        // =============================================
         async function loadAllInspections() {
-            const { data } = await supabase.from('inspections').select('*, properties(*)').eq('inspector_id', currentInspector.id).order('created_at', { ascending: false });
-            allInspections = data || [];
-            const today = new Date().toDateString();
-            document.getElementById('stat-today').textContent = allInspections.filter(i => i.status === 'completed' && new Date(i.completed_at).toDateString() === today).length;
+            try {
+                const { data } = await supabase
+                    .from('inspections')
+                    .select('*, properties(*)')
+                    .eq('inspector_id', currentInspector.id)
+                    .order('created_at', { ascending: false });
+                
+                allInspections = data || [];
+                
+                // Update today's count
+                const today = new Date().toDateString();
+                const todayCount = allInspections.filter(i => 
+                    i.status === 'completed' && 
+                    new Date(i.completed_at).toDateString() === today
+                ).length;
+                document.getElementById('stat-today').textContent = todayCount;
+                
+                // Update jobs badge
+                const pendingCount = allInspections.filter(i => 
+                    ['pending', 'scheduled', 'in_progress'].includes(i.status)
+                ).length;
+                const badge = document.getElementById('jobs-badge');
+                if (pendingCount > 0) {
+                    badge.textContent = pendingCount;
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
+                
+            } catch (err) {
+                console.error('Failed to load inspections:', err);
+            }
         }
 
+        // =============================================
+        // HOME CONTENT
+        // =============================================
         function renderHomeContent() {
-            const c = document.getElementById('home-content');
-            const pending = allInspections.filter(i => ['pending','scheduled','in_progress'].includes(i.status));
+            const container = document.getElementById('home-content');
+            const pending = allInspections.filter(i => ['pending', 'scheduled', 'in_progress'].includes(i.status));
             const completed = allInspections.filter(i => i.status === 'completed').slice(0, 3);
-            let html = '<div class="section-title">Pending Inspections</div>';
-            if (!pending.length) html += '<div class="empty-state"><i class="fa-solid fa-clipboard-check"></i><h3>No pending inspections</h3></div>';
-            else pending.forEach(i => html += renderJobCard(i));
-            if (completed.length) { html += '<div class="section-title" style="margin-top:24px">Recently Completed</div>'; completed.forEach(i => html += renderJobCard(i, true)); }
-            c.innerHTML = html;
+            
+            let html = '';
+            
+            // Pending section
+            html += `<div class="section-header"><h2 class="section-title">Pending Inspections</h2></div>`;
+            
+            if (pending.length === 0) {
+                html += `
+                    <div class="empty-state">
+                        <div class="empty-icon"><i class="fa-solid fa-clipboard-check"></i></div>
+                        <h3 class="empty-title">All caught up!</h3>
+                        <p class="empty-text">No pending inspections right now.</p>
+                    </div>
+                `;
+            } else {
+                pending.forEach(i => html += renderJobCard(i));
+            }
+            
+            // Recent completed
+            if (completed.length > 0) {
+                html += `<div class="section-header" style="margin-top: var(--space-xl);"><h2 class="section-title">Recently Completed</h2><button class="section-action" onclick="switchTab('jobs')">See All</button></div>`;
+                completed.forEach(i => html += renderJobCard(i, true));
+            }
+            
+            container.innerHTML = html;
         }
 
+        // =============================================
+        // JOBS CONTENT
+        // =============================================
         function renderJobsContent() {
-            const c = document.getElementById('jobs-content');
-            if (!allInspections.length) { c.innerHTML = '<div class="empty-state"><i class="fa-solid fa-clipboard-list"></i><h3>No jobs yet</h3></div>'; return; }
-            c.innerHTML = allInspections.map(i => renderJobCard(i, i.status === 'completed')).join('');
+            const container = document.getElementById('jobs-content');
+            
+            if (allInspections.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon"><i class="fa-solid fa-clipboard-list"></i></div>
+                        <h3 class="empty-title">No jobs yet</h3>
+                        <p class="empty-text">Your assigned inspections will appear here.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = allInspections.map(i => 
+                renderJobCard(i, i.status === 'completed')
+            ).join('');
         }
 
-        function renderJobCard(i, faded = false) {
-            const p = i.properties || {};
-            const status = { pending: 'Urgent', scheduled: formatDate(i.scheduled_date), in_progress: 'In Progress', completed: 'Done' }[i.status] || i.status;
-            return `<div class="job-card" style="${faded?'opacity:0.6':''}" onclick="startInspection('${i.id}')"><div class="job-header"><div><div class="job-property">${p.name||'Property'}, ${p.location||''}</div><div class="job-id">${p.asset_id||''}</div></div><span class="job-status ${i.status}">${status}</span></div><div class="job-details"><span><i class="fa-solid fa-${i.status==='completed'?'check':'clock'}"></i>${i.status==='completed'?'Score: '+i.condition_score:formatDate(i.scheduled_date)}</span><span><i class="fa-solid fa-ruler-combined"></i>${p.bedrooms||0} Bed ${p.property_type||''}</span></div></div>`;
-        }
-
-        function renderWalletContent() {
-            const c = document.getElementById('wallet-content');
-            const completed = allInspections.filter(i => i.status === 'completed');
-            const rate = 150; // AED per inspection
-            const totalEarnings = completed.length * rate;
-            const pendingCount = allInspections.filter(i => ['pending','scheduled','in_progress'].includes(i.status)).length;
-            const scores = completed.map(i => i.condition_score).filter(Boolean);
-            const avgScore = scores.length ? Math.round(scores.reduce((a,b)=>a+b,0)/scores.length) : 0;
+        function renderJobCard(inspection, faded = false) {
+            const p = inspection.properties || {};
+            const statusLabels = {
+                pending: 'Urgent',
+                scheduled: formatDate(inspection.scheduled_date),
+                in_progress: 'In Progress',
+                completed: 'Completed'
+            };
             
-            // Calculate this week's earnings
-            const weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate() - 7);
-            const thisWeek = completed.filter(i => new Date(i.completed_at) > weekAgo);
-            const weekEarnings = thisWeek.length * rate;
+            const isUrgent = inspection.status === 'pending';
             
-            c.innerHTML = `
-                <div style="background: linear-gradient(135deg, rgba(222,255,154,0.15), rgba(222,255,154,0.05)); border: 1px solid rgba(222,255,154,0.2); border-radius: 20px; padding: 24px; margin-bottom: 20px; text-align: center;">
-                    <div style="font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;">Total Earnings</div>
-                    <div style="font-size: 48px; font-weight: 800; color: var(--lucas-green);">AED ${totalEarnings.toLocaleString()}</div>
-                    <div style="font-size: 13px; color: #666; margin-top: 8px;">${completed.length} inspections × AED ${rate}</div>
-                </div>
-                
-                <div class="stats-grid">
-                    <div class="stats-card">
-                        <div class="stats-card-value" style="font-size: 24px;">AED ${weekEarnings}</div>
-                        <div class="stats-card-label">This Week</div>
-                    </div>
-                    <div class="stats-card">
-                        <div class="stats-card-value" style="font-size: 24px;">${pendingCount}</div>
-                        <div class="stats-card-label">Pending Jobs</div>
-                    </div>
-                </div>
-                
-                <div style="background: var(--lucas-card); border: 1px solid var(--lucas-border); border-radius: 16px; padding: 16px; margin-bottom: 20px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                        <span style="font-size: 12px; color: #666; text-transform: uppercase;">Next Payout</span>
-                        <span style="font-size: 12px; color: var(--lucas-green);">Weekly</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span style="font-weight: 700;">Bank Transfer</span>
-                        <span style="color: #888;">Every Sunday</span>
-                    </div>
-                </div>
-                
-                <div class="section-title">Performance</div>
-                <div class="stats-grid">
-                    <div class="stats-card">
-                        <div class="stats-card-value">${currentInspector?.total_inspections||0}</div>
-                        <div class="stats-card-label">Total Jobs</div>
-                    </div>
-                    <div class="stats-card">
-                        <div class="stats-card-value">${avgScore || '--'}</div>
-                        <div class="stats-card-label">Avg Score</div>
-                    </div>
-                    <div class="stats-card">
-                        <div class="stats-card-value">${currentInspector?.rating||'--'}</div>
-                        <div class="stats-card-label">Rating</div>
-                    </div>
-                    <div class="stats-card">
-                        <div class="stats-card-value">${allInspections.filter(i=>i.issue_count>0).length}</div>
-                        <div class="stats-card-label">Issues Found</div>
-                    </div>
-                </div>
-                
-                <div class="section-title" style="margin-top: 20px;">Recent Earnings</div>
-                ${completed.slice(0, 5).map(i => {
-                    const p = i.properties || {};
-                    return `<div class="job-card" style="cursor: default; padding: 14px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <div>
-                                <div style="font-weight: 600; font-size: 14px;">${p.name||'Property'}, ${p.location||''}</div>
-                                <div style="font-size: 11px; color: #666;">${formatDate(i.completed_at)}</div>
-                            </div>
-                            <div style="color: var(--lucas-green); font-weight: 700;">+AED ${rate}</div>
+            return `
+                <article class="job-card ${faded ? 'completed' : ''} ${isUrgent ? 'urgent' : ''}" 
+                         onclick="startInspection('${inspection.id}')"
+                         role="button"
+                         tabindex="0"
+                         aria-label="${p.name}, ${p.location}. Status: ${statusLabels[inspection.status]}">
+                    <div class="job-header">
+                        <div>
+                            <h3 class="job-property">${p.name || 'Property'}, ${p.location || ''}</h3>
+                            <p class="job-id">${p.asset_id || ''}</p>
                         </div>
-                    </div>`;
-                }).join('') || '<div style="text-align: center; padding: 20px; color: #666;">No earnings yet</div>'}
+                        <span class="job-badge ${inspection.status}">${statusLabels[inspection.status]}</span>
+                    </div>
+                    <div class="job-meta">
+                        <span class="job-meta-item">
+                            <i class="fa-solid fa-${inspection.status === 'completed' ? 'check' : 'calendar'}" aria-hidden="true"></i>
+                            ${inspection.status === 'completed' ? 'Score: ' + inspection.condition_score : formatDate(inspection.scheduled_date)}
+                        </span>
+                        <span class="job-meta-item">
+                            <i class="fa-solid fa-bed" aria-hidden="true"></i>
+                            ${p.bedrooms || 0} Bed ${p.property_type || ''}
+                        </span>
+                    </div>
+                </article>
             `;
         }
 
-        function renderProfileContent() {
-            const c = document.getElementById('profile-content');
-            const n = currentInspector?.name||'Inspector';
-            c.innerHTML = `<div style="text-align:center;padding:20px 0"><div class="user-avatar" style="width:80px;height:80px;font-size:28px;margin:0 auto 16px">${n.split(' ').map(x=>x[0]).join('').slice(0,2)}</div><h2 style="font-size:22px;font-weight:700">${n}</h2><p style="color:#666;font-family:'Space Mono',monospace">${currentInspector?.inspector_id||''}</p></div><div class="section-title" style="margin-top:24px">Account</div><div class="job-card" style="cursor:default"><div style="display:flex;justify-content:space-between;margin-bottom:12px"><span style="color:#666">Email</span><span>${currentInspector?.email||'--'}</span></div><div style="display:flex;justify-content:space-between;margin-bottom:12px"><span style="color:#666">City</span><span>${currentInspector?.city||'Dubai'}</span></div><div style="display:flex;justify-content:space-between"><span style="color:#666">Status</span><span style="color:var(--lucas-green)">${currentInspector?.status||'Active'}</span></div></div><button class="btn btn-secondary" style="margin-top:24px" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Sign Out</button>`;
+        // =============================================
+        // WALLET CONTENT
+        // =============================================
+        function renderWalletContent() {
+            const container = document.getElementById('wallet-content');
+            const completed = allInspections.filter(i => i.status === 'completed');
+            const totalEarnings = completed.length * RATE_PER_INSPECTION;
+            
+            // This week
+            const weekAgo = new Date();
+            weekAgo.setDate(weekAgo.getDate() - 7);
+            const thisWeek = completed.filter(i => new Date(i.completed_at) > weekAgo);
+            const weekEarnings = thisWeek.length * RATE_PER_INSPECTION;
+            
+            // Pending count
+            const pendingCount = allInspections.filter(i => 
+                ['pending', 'scheduled', 'in_progress'].includes(i.status)
+            ).length;
+            
+            // Avg score
+            const scores = completed.map(i => i.condition_score).filter(Boolean);
+            const avgScore = scores.length ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 0;
+            
+            container.innerHTML = `
+                <div class="earnings-card">
+                    <div class="earnings-label">Total Earnings</div>
+                    <div class="earnings-value">AED ${totalEarnings.toLocaleString()}</div>
+                    <div class="earnings-subtitle">${completed.length} inspections × AED ${RATE_PER_INSPECTION}</div>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stats-card">
+                        <div class="stats-value">AED ${weekEarnings}</div>
+                        <div class="stats-label">This Week</div>
+                    </div>
+                    <div class="stats-card">
+                        <div class="stats-value">${pendingCount}</div>
+                        <div class="stats-label">Pending Jobs</div>
+                    </div>
+                </div>
+                
+                <div class="payout-card">
+                    <div class="payout-header">
+                        <span class="payout-label">Next Payout</span>
+                        <span class="payout-badge">Weekly</span>
+                    </div>
+                    <div class="payout-row">
+                        <span class="payout-method">Bank Transfer</span>
+                        <span class="payout-schedule">Every Sunday</span>
+                    </div>
+                </div>
+                
+                <div class="section-header">
+                    <h2 class="section-title">Performance</h2>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stats-card">
+                        <div class="stats-value">${currentInspector?.total_inspections || 0}</div>
+                        <div class="stats-label">Total Jobs</div>
+                    </div>
+                    <div class="stats-card">
+                        <div class="stats-value">${avgScore || '--'}</div>
+                        <div class="stats-label">Avg Score</div>
+                    </div>
+                    <div class="stats-card">
+                        <div class="stats-value">${currentInspector?.rating || '--'}</div>
+                        <div class="stats-label">Rating</div>
+                    </div>
+                    <div class="stats-card">
+                        <div class="stats-value">${allInspections.filter(i => i.issue_count > 0).length}</div>
+                        <div class="stats-label">Issues Found</div>
+                    </div>
+                </div>
+                
+                <div class="section-header" style="margin-top: var(--space-xl);">
+                    <h2 class="section-title">Recent Earnings</h2>
+                </div>
+                
+                ${completed.slice(0, 5).map(i => {
+                    const p = i.properties || {};
+                    return `
+                        <div class="earning-item">
+                            <div class="earning-info">
+                                <h4>${p.name || 'Property'}, ${p.location || ''}</h4>
+                                <span>${formatDate(i.completed_at)}</span>
+                            </div>
+                            <div class="earning-amount">+AED ${RATE_PER_INSPECTION}</div>
+                        </div>
+                    `;
+                }).join('') || '<p class="empty-text" style="text-align: center; padding: var(--space-xl);">No earnings yet</p>'}
+            `;
         }
 
+        // =============================================
+        // PROFILE CONTENT
+        // =============================================
+        function renderProfileContent() {
+            const container = document.getElementById('profile-content');
+            const name = currentInspector?.name || 'Inspector';
+            const initials = name.split(' ').map(n => n[0]).join('').slice(0, 2);
+            
+            container.innerHTML = `
+                <div class="profile-header">
+                    <div class="profile-avatar">${initials}</div>
+                    <h2 class="profile-name">${name}</h2>
+                    <p class="profile-id">${currentInspector?.inspector_id || ''}</p>
+                </div>
+                
+                <div class="section-header">
+                    <h2 class="section-title">Account</h2>
+                </div>
+                
+                <div class="profile-section">
+                    <div class="profile-row">
+                        <span class="profile-row-label">Email</span>
+                        <span class="profile-row-value">${currentInspector?.email || '--'}</span>
+                    </div>
+                    <div class="profile-row">
+                        <span class="profile-row-label">City</span>
+                        <span class="profile-row-value">${currentInspector?.city || 'Dubai'}</span>
+                    </div>
+                    <div class="profile-row">
+                        <span class="profile-row-label">Status</span>
+                        <span class="profile-row-value status">${currentInspector?.status || 'Active'}</span>
+                    </div>
+                    <div class="profile-row">
+                        <span class="profile-row-label">Member Since</span>
+                        <span class="profile-row-value">${formatDate(currentInspector?.created_at) || '--'}</span>
+                    </div>
+                </div>
+                
+                <div class="section-header">
+                    <h2 class="section-title">App</h2>
+                </div>
+                
+                <div class="profile-section">
+                    <div class="profile-row">
+                        <span class="profile-row-label">Version</span>
+                        <span class="profile-row-value">2.0.0</span>
+                    </div>
+                    <div class="profile-row">
+                        <span class="profile-row-label">Offline Mode</span>
+                        <span class="profile-row-value status">Enabled</span>
+                    </div>
+                </div>
+                
+                <button class="btn btn-secondary" onclick="logout()" style="margin-top: var(--space-xl);">
+                    <i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i>
+                    <span>Sign Out</span>
+                </button>
+            `;
+        }
+
+        // =============================================
+        // INSPECTION FLOW
+        // =============================================
         async function startInspection(id) {
-            const i = allInspections.find(x => x.id === id);
-            if (!i) return;
-            if (i.status === 'completed') { showToast('Already completed'); return; }
-            currentInspection = i; currentStep = 1;
-            inspectionData = { checklist: {}, photos: {}, issues: [], score: 85, breakdown: {}, notes: '', gps: null };
-            const p = i.properties || {};
-            document.getElementById('inspection-title').textContent = `${p.name||''}, ${p.location||''}`;
+            const inspection = allInspections.find(i => i.id === id);
+            if (!inspection) return;
+            
+            if (inspection.status === 'completed') {
+                showToast('Inspection already completed', 'error');
+                return;
+            }
+            
+            haptic('medium');
+            currentInspection = inspection;
+            currentStep = 1;
+            
+            // Reset inspection data
+            inspectionData = {
+                checklist: {},
+                photos: {},
+                issues: [],
+                score: 85,
+                breakdown: {},
+                notes: '',
+                gps: null
+            };
+            
+            // Update UI
+            const p = inspection.properties || {};
+            document.getElementById('inspection-title').textContent = `${p.name || ''}, ${p.location || ''}`;
             document.getElementById('inspection-id').textContent = p.asset_id || '';
-            document.getElementById('property-type-label').textContent = `${p.bedrooms||0} Bed ${p.property_type||''} confirmed`;
-            document.querySelectorAll('.checklist-item').forEach(x => x.classList.remove('checked'));
-            resetPhotoGrid(); document.getElementById('issues-list').innerHTML = ''; document.getElementById('issue-count').textContent = '0';
-            document.getElementById('score-slider').value = 85; document.getElementById('score-value').textContent = '85';
-            await supabase.from('inspections').update({ status: 'in_progress', started_at: new Date().toISOString() }).eq('id', id);
-            updateProgress(); showScreen('inspection-screen'); getLocation(); initSignature();
+            document.getElementById('property-type-label').textContent = `${p.bedrooms || 0} Bed ${p.property_type || ''} confirmed`;
+            
+            // Reset checklist items
+            document.querySelectorAll('.checklist-item').forEach(item => {
+                item.classList.remove('checked');
+                item.setAttribute('aria-checked', 'false');
+            });
+            
+            // Reset photo grid
+            resetPhotoGrid();
+            
+            // Reset issues
+            document.getElementById('issues-list').innerHTML = '';
+            document.getElementById('issue-count').textContent = '0';
+            
+            // Reset score
+            document.getElementById('score-slider').value = 85;
+            document.getElementById('score-value').textContent = '85';
+            
+            // Update inspection status
+            await supabase
+                .from('inspections')
+                .update({ 
+                    status: 'in_progress', 
+                    started_at: new Date().toISOString() 
+                })
+                .eq('id', id);
+            
+            updateProgress();
+            showScreen('inspection-screen');
+            getLocation();
+            initSignature();
         }
 
         function resetPhotoGrid() {
-            const icons = { exterior:'fa-home', living:'fa-couch', kitchen:'fa-kitchen-set', bedroom:'fa-bed', bathroom:'fa-bath', additional:'fa-plus' };
-            const labels = { exterior:'Exterior', living:'Living', kitchen:'Kitchen', bedroom:'Bedroom', bathroom:'Bathroom', additional:'More' };
-            document.querySelectorAll('.photo-slot').forEach(s => { const t = s.dataset.type; s.classList.remove('has-photo'); s.innerHTML = `<i class="fa-solid ${icons[t]}"></i><span>${labels[t]}</span>`; });
+            const icons = {
+                exterior: 'fa-home',
+                living: 'fa-couch',
+                kitchen: 'fa-kitchen-set',
+                bedroom: 'fa-bed',
+                bathroom: 'fa-bath',
+                additional: 'fa-plus'
+            };
+            const labels = {
+                exterior: 'Exterior',
+                living: 'Living',
+                kitchen: 'Kitchen',
+                bedroom: 'Bedroom',
+                bathroom: 'Bathroom',
+                additional: 'More'
+            };
+            
+            document.querySelectorAll('.photo-slot').forEach(slot => {
+                const type = slot.dataset.type;
+                slot.classList.remove('has-photo');
+                slot.innerHTML = `
+                    <i class="fa-solid ${icons[type]}" aria-hidden="true"></i>
+                    <span>${labels[type]}</span>
+                `;
+            });
+            
+            updatePhotoCount();
         }
 
-        function exitInspection() { if (confirm('Exit? Progress saved.')) loadAllInspections().then(() => switchTab('home')); }
+        function exitInspection() {
+            haptic('medium');
+            if (confirm('Exit inspection? Your progress will be saved.')) {
+                loadAllInspections().then(() => switchTab('home'));
+            }
+        }
 
+        // =============================================
+        // PROGRESS & STEPS
+        // =============================================
         function updateProgress() {
-            document.querySelectorAll('.progress-step').forEach((s, i) => { s.classList.remove('active','completed'); if (i+1 < currentStep) s.classList.add('completed'); else if (i+1 === currentStep) s.classList.add('active'); });
-            document.getElementById('progress-fill').style.width = `${((currentStep-1)/3)*100}%`;
-            document.querySelectorAll('.step-content').forEach((c, i) => c.classList.toggle('active', i+1 === currentStep));
+            const steps = document.querySelectorAll('.progress-step');
+            const fill = document.getElementById('progress-fill');
+            
+            steps.forEach((step, i) => {
+                step.classList.remove('active', 'completed');
+                step.removeAttribute('aria-current');
+                
+                if (i + 1 < currentStep) {
+                    step.classList.add('completed');
+                } else if (i + 1 === currentStep) {
+                    step.classList.add('active');
+                    step.setAttribute('aria-current', 'step');
+                }
+            });
+            
+            fill.style.width = `${((currentStep - 1) / 3) * 100}%`;
+            
+            // Show/hide step content
+            document.querySelectorAll('.step-content').forEach((content, i) => {
+                content.classList.toggle('active', i + 1 === currentStep);
+            });
+            
+            // Update buttons
             document.getElementById('prev-btn').style.display = currentStep > 1 ? 'flex' : 'none';
-            document.getElementById('next-btn').innerHTML = currentStep === 4 ? '<i class="fa-solid fa-paper-plane"></i> Submit' : 'Continue <i class="fa-solid fa-arrow-right"></i>';
+            
+            const nextBtn = document.getElementById('next-btn');
+            if (currentStep === 4) {
+                nextBtn.innerHTML = '<i class="fa-solid fa-paper-plane" aria-hidden="true"></i><span>Submit Proof</span>';
+            } else {
+                nextBtn.innerHTML = '<span>Continue</span><i class="fa-solid fa-arrow-right" aria-hidden="true"></i>';
+            }
         }
 
-        function goToStep(s) { if (s <= currentStep) { currentStep = s; updateProgress(); } }
-        function nextStep() { if (currentStep < 4) { currentStep++; updateProgress(); if (currentStep === 4) updateSummary(); } else submitInspection(); }
-        function prevStep() { if (currentStep > 1) { currentStep--; updateProgress(); } }
+        function goToStep(step) {
+            if (step <= currentStep) {
+                haptic('light');
+                currentStep = step;
+                updateProgress();
+            }
+        }
 
-        function toggleChecklist(el) { el.classList.toggle('checked'); const k = el.dataset.check || el.dataset.score; if (k) { if (el.dataset.check) inspectionData.checklist[k] = el.classList.contains('checked'); else inspectionData.breakdown[k] = el.classList.contains('checked'); } }
+        function nextStep() {
+            haptic('light');
+            if (currentStep < 4) {
+                currentStep++;
+                updateProgress();
+                if (currentStep === 4) updateSummary();
+            } else {
+                submitInspection();
+            }
+        }
 
+        function prevStep() {
+            haptic('light');
+            if (currentStep > 1) {
+                currentStep--;
+                updateProgress();
+            }
+        }
+
+        // =============================================
+        // CHECKLIST
+        // =============================================
+        function toggleCheck(el) {
+            haptic('light');
+            const isChecked = el.classList.toggle('checked');
+            el.setAttribute('aria-checked', isChecked);
+            
+            const key = el.dataset.check || el.dataset.score;
+            if (key) {
+                if (el.dataset.check) {
+                    inspectionData.checklist[key] = isChecked;
+                } else {
+                    inspectionData.breakdown[key] = isChecked;
+                }
+            }
+        }
+
+        // =============================================
+        // GPS
+        // =============================================
         function getLocation() {
-            const ind = document.getElementById('gps-status');
-            if (!navigator.geolocation) { ind.classList.add('error'); ind.querySelector('span').textContent = 'GPS not supported'; return; }
-            navigator.geolocation.getCurrentPosition(p => { inspectionData.gps = { lat: p.coords.latitude, lng: p.coords.longitude }; ind.classList.remove('error'); ind.querySelector('span').textContent = `Location verified: ${currentInspection?.properties?.location||'Dubai'}`; }, () => { ind.classList.add('error'); ind.querySelector('span').textContent = 'Location unavailable'; });
+            const indicator = document.getElementById('gps-status');
+            
+            if (!navigator.geolocation) {
+                indicator.classList.add('error');
+                indicator.querySelector('.gps-text').textContent = 'GPS not supported on this device';
+                return;
+            }
+            
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    inspectionData.gps = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude,
+                        accuracy: position.coords.accuracy
+                    };
+                    indicator.classList.remove('error');
+                    indicator.querySelector('.gps-text').textContent = `Location verified: ${currentInspection?.properties?.location || 'Dubai'}`;
+                },
+                (error) => {
+                    indicator.classList.add('error');
+                    indicator.querySelector('.gps-text').textContent = 'Location unavailable. Enable GPS.';
+                },
+                { enableHighAccuracy: true, timeout: 10000 }
+            );
         }
 
+        // =============================================
+        // PHOTOS
+        // =============================================
         let currentPhotoType = null;
         const cameraInput = document.getElementById('camera-input');
-        function capturePhoto(type) { currentPhotoType = type; cameraInput.click(); }
-        cameraInput.addEventListener('change', e => {
-            const file = e.target.files[0]; if (!file || !currentPhotoType) return;
-            const reader = new FileReader();
-            reader.onload = ev => { const slot = document.querySelector(`.photo-slot[data-type="${currentPhotoType}"]`); if (slot) { slot.classList.add('has-photo'); slot.innerHTML = `<img src="${ev.target.result}"><div class="photo-check"><i class="fa-solid fa-check"></i></div>`; inspectionData.photos[currentPhotoType] = ev.target.result; } };
-            reader.readAsDataURL(file); cameraInput.value = '';
+
+        function capturePhoto(type) {
+            haptic('light');
+            currentPhotoType = type;
+            cameraInput.click();
+        }
+
+        cameraInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file || !currentPhotoType) return;
+            
+            try {
+                // Compress image
+                const compressed = await compressImage(file, 1200, 0.8);
+                
+                const slot = document.querySelector(`.photo-slot[data-type="${currentPhotoType}"]`);
+                if (slot) {
+                    slot.classList.add('has-photo');
+                    slot.innerHTML = `
+                        <img src="${compressed}" alt="Captured ${currentPhotoType} photo">
+                        <div class="photo-check"><i class="fa-solid fa-check" aria-hidden="true"></i></div>
+                    `;
+                    inspectionData.photos[currentPhotoType] = compressed;
+                    haptic('success');
+                    updatePhotoCount();
+                }
+            } catch (err) {
+                showToast('Failed to process photo', 'error');
+            }
+            
+            cameraInput.value = '';
         });
 
-        function openIssueModal() { document.getElementById('issue-modal').classList.add('active'); selectedSeverity = 'low'; document.querySelectorAll('.severity-btn').forEach(b => b.classList.toggle('active', b.classList.contains('low'))); }
-        function closeIssueModal() { document.getElementById('issue-modal').classList.remove('active'); }
-        function selectSeverity(s, btn) { selectedSeverity = s; document.querySelectorAll('.severity-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
+        async function compressImage(file, maxWidth, quality) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        let width = img.width;
+                        let height = img.height;
+                        
+                        if (width > maxWidth) {
+                            height = (height * maxWidth) / width;
+                            width = maxWidth;
+                        }
+                        
+                        canvas.width = width;
+                        canvas.height = height;
+                        
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        
+                        resolve(canvas.toDataURL('image/jpeg', quality));
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function updatePhotoCount() {
+            const count = Object.keys(inspectionData.photos).length;
+            document.getElementById('photo-count').textContent = `${count}/6`;
+        }
+
+        // =============================================
+        // ISSUES
+        // =============================================
+        function openIssueModal() {
+            haptic('light');
+            document.getElementById('issue-modal').classList.add('active');
+            selectedSeverity = 'low';
+            document.querySelectorAll('.severity-btn').forEach(btn => {
+                const isLow = btn.classList.contains('low');
+                btn.classList.toggle('active', isLow);
+                btn.setAttribute('aria-checked', isLow);
+            });
+        }
+
+        function closeIssueModal() {
+            document.getElementById('issue-modal').classList.remove('active');
+        }
+
+        function selectSeverity(severity, btn) {
+            haptic('light');
+            selectedSeverity = severity;
+            document.querySelectorAll('.severity-btn').forEach(b => {
+                const isActive = b === btn;
+                b.classList.toggle('active', isActive);
+                b.setAttribute('aria-checked', isActive);
+            });
+        }
+
         function addIssue() {
-            const issue = { id: Date.now(), title: document.getElementById('issue-type').value, severity: selectedSeverity, location: document.getElementById('issue-location').value, description: document.getElementById('issue-description').value };
-            inspectionData.issues.push(issue); renderIssues(); closeIssueModal(); document.getElementById('issue-description').value = '';
+            haptic('success');
+            const issue = {
+                id: Date.now(),
+                title: document.getElementById('issue-type').value,
+                severity: selectedSeverity,
+                location: document.getElementById('issue-location').value,
+                description: document.getElementById('issue-description').value
+            };
+            
+            inspectionData.issues.push(issue);
+            renderIssues();
+            closeIssueModal();
+            document.getElementById('issue-description').value = '';
+            showToast('Issue added', 'success');
         }
-        function removeIssue(id) { inspectionData.issues = inspectionData.issues.filter(i => i.id !== id); renderIssues(); }
+
+        function removeIssue(id) {
+            haptic('light');
+            inspectionData.issues = inspectionData.issues.filter(i => i.id !== id);
+            renderIssues();
+        }
+
         function renderIssues() {
-            document.getElementById('issue-count').textContent = inspectionData.issues.length;
-            document.getElementById('issues-list').innerHTML = inspectionData.issues.map(i => `<div class="issue-card"><div class="issue-header"><span class="issue-title">${i.title}</span><div style="display:flex;align-items:center"><span class="issue-severity ${i.severity}">${i.severity}</span><button class="issue-delete" onclick="removeIssue(${i.id})"><i class="fa-solid fa-trash"></i></button></div></div><div class="issue-meta">${i.location}</div></div>`).join('');
+            const count = inspectionData.issues.length;
+            document.getElementById('issue-count').textContent = count;
+            
+            document.getElementById('issues-list').innerHTML = inspectionData.issues.map(issue => `
+                <article class="issue-card">
+                    <div class="issue-header">
+                        <span class="issue-title">${issue.title}</span>
+                        <div class="issue-actions">
+                            <span class="issue-severity ${issue.severity}">${issue.severity}</span>
+                            <button class="issue-delete" onclick="removeIssue(${issue.id})" aria-label="Remove issue">
+                                <i class="fa-solid fa-trash" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <span class="issue-location">${issue.location}</span>
+                </article>
+            `).join('');
         }
 
-        function updateScore(v) { const el = document.getElementById('score-value'); el.textContent = v; el.className = 'score-value ' + (v >= 70 ? 'high' : v >= 50 ? 'medium' : 'low'); inspectionData.score = parseInt(v); }
+        // =============================================
+        // SCORE
+        // =============================================
+        function updateScore(value) {
+            const el = document.getElementById('score-value');
+            el.textContent = value;
+            el.className = 'score-value ' + (value >= 70 ? 'high' : value >= 50 ? 'medium' : 'low');
+            inspectionData.score = parseInt(value);
+        }
 
+        // =============================================
+        // SUMMARY
+        // =============================================
         function updateSummary() {
             const p = currentInspection?.properties || {};
-            document.getElementById('summary-property').textContent = `${p.name||''}, ${p.location||''}`;
+            
+            document.getElementById('summary-property').textContent = `${p.name || ''}, ${p.location || ''}`;
             document.getElementById('summary-asset-id').textContent = p.asset_id || '';
             document.getElementById('summary-score').textContent = `${inspectionData.score}/100`;
             document.getElementById('summary-photos').textContent = `${Object.keys(inspectionData.photos).length} photos`;
             document.getElementById('summary-issues').textContent = `${inspectionData.issues.length} issues`;
-            document.getElementById('summary-gps').textContent = inspectionData.gps ? 'Yes ✓' : 'No';
+            document.getElementById('summary-gps').textContent = inspectionData.gps ? '✓ Verified' : '✗ Not verified';
             document.getElementById('summary-time').textContent = new Date().toLocaleString();
+            
             inspectionData.notes = document.getElementById('inspection-notes').value;
         }
 
+        // =============================================
+        // SIGNATURE
+        // =============================================
         let sigCanvas, sigCtx, drawing = false;
+
         function initSignature() {
-            sigCanvas = document.getElementById('signature-canvas'); sigCtx = sigCanvas.getContext('2d');
-            const r = sigCanvas.getBoundingClientRect(); sigCanvas.width = r.width * 2; sigCanvas.height = r.height * 2;
-            sigCtx.scale(2, 2); sigCtx.strokeStyle = '#deff9a'; sigCtx.lineWidth = 2; sigCtx.lineCap = 'round';
-            sigCanvas.ontouchstart = sigCanvas.onmousedown = e => { drawing = true; const pos = getPos(e); sigCtx.beginPath(); sigCtx.moveTo(pos.x, pos.y); e.preventDefault(); };
-            sigCanvas.ontouchmove = sigCanvas.onmousemove = e => { if (!drawing) return; const pos = getPos(e); sigCtx.lineTo(pos.x, pos.y); sigCtx.stroke(); e.preventDefault(); };
-            sigCanvas.ontouchend = sigCanvas.onmouseup = sigCanvas.onmouseleave = () => drawing = false;
+            sigCanvas = document.getElementById('signature-canvas');
+            sigCtx = sigCanvas.getContext('2d');
+            
+            const rect = sigCanvas.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
+            
+            sigCanvas.width = rect.width * dpr;
+            sigCanvas.height = rect.height * dpr;
+            sigCtx.scale(dpr, dpr);
+            
+            sigCtx.strokeStyle = '#DEFF9A';
+            sigCtx.lineWidth = 3;
+            sigCtx.lineCap = 'round';
+            sigCtx.lineJoin = 'round';
+            
+            // Touch events
+            sigCanvas.addEventListener('touchstart', startDrawing, { passive: false });
+            sigCanvas.addEventListener('touchmove', draw, { passive: false });
+            sigCanvas.addEventListener('touchend', stopDrawing);
+            
+            // Mouse events
+            sigCanvas.addEventListener('mousedown', startDrawing);
+            sigCanvas.addEventListener('mousemove', draw);
+            sigCanvas.addEventListener('mouseup', stopDrawing);
+            sigCanvas.addEventListener('mouseleave', stopDrawing);
         }
-        function getPos(e) { const r = sigCanvas.getBoundingClientRect(), t = e.touches ? e.touches[0] : e; return { x: t.clientX - r.left, y: t.clientY - r.top }; }
-        function clearSignature() { sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height); }
 
+        function startDrawing(e) {
+            e.preventDefault();
+            drawing = true;
+            const pos = getPointerPos(e);
+            sigCtx.beginPath();
+            sigCtx.moveTo(pos.x, pos.y);
+        }
+
+        function draw(e) {
+            if (!drawing) return;
+            e.preventDefault();
+            const pos = getPointerPos(e);
+            sigCtx.lineTo(pos.x, pos.y);
+            sigCtx.stroke();
+        }
+
+        function stopDrawing() {
+            drawing = false;
+        }
+
+        function getPointerPos(e) {
+            const rect = sigCanvas.getBoundingClientRect();
+            const touch = e.touches ? e.touches[0] : e;
+            return {
+                x: touch.clientX - rect.left,
+                y: touch.clientY - rect.top
+            };
+        }
+
+        function clearSignature() {
+            haptic('light');
+            sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height);
+        }
+
+        // =============================================
+        // SUBMISSION
+        // =============================================
         async function submitInspection() {
-            const btn = document.getElementById('next-btn'); btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Submitting...'; btn.disabled = true;
+            const btn = document.getElementById('next-btn');
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i><span>Submitting...</span>';
+            btn.disabled = true;
+            
             try {
-                const hash = '0x' + Array.from({length:64}, () => Math.floor(Math.random()*16).toString(16)).join('');
-                await supabase.from('inspections').update({ status: 'completed', completed_at: new Date().toISOString(), condition_score: inspectionData.score, photo_count: Object.keys(inspectionData.photos).length, issue_count: inspectionData.issues.length, gps_lat: inspectionData.gps?.lat, gps_lng: inspectionData.gps?.lng, gps_verified: !!inspectionData.gps, checklist_access: inspectionData.checklist.access, checklist_address: inspectionData.checklist.address, checklist_type: inspectionData.checklist.type, checklist_vacant: inspectionData.checklist.vacant, notes: inspectionData.notes, proof_hash: hash }).eq('id', currentInspection.id);
-                if (inspectionData.issues.length) await supabase.from('inspection_issues').insert(inspectionData.issues.map(i => ({ inspection_id: currentInspection.id, title: i.title, severity: i.severity, location: i.location, description: i.description })));
-                await supabase.from('inspectors').update({ total_inspections: (currentInspector.total_inspections||0)+1 }).eq('id', currentInspector.id);
-                currentInspector.total_inspections = (currentInspector.total_inspections||0)+1;
-                document.getElementById('proof-hash').textContent = hash.slice(0,10)+'...'+hash.slice(-8);
+                // Generate proof hash
+                const hash = '0x' + Array.from({ length: 64 }, () => 
+                    Math.floor(Math.random() * 16).toString(16)
+                ).join('');
+                
+                // Update inspection
+                await supabase
+                    .from('inspections')
+                    .update({
+                        status: 'completed',
+                        completed_at: new Date().toISOString(),
+                        condition_score: inspectionData.score,
+                        photo_count: Object.keys(inspectionData.photos).length,
+                        issue_count: inspectionData.issues.length,
+                        gps_lat: inspectionData.gps?.lat,
+                        gps_lng: inspectionData.gps?.lng,
+                        gps_verified: !!inspectionData.gps,
+                        checklist_access: inspectionData.checklist.access,
+                        checklist_address: inspectionData.checklist.address,
+                        checklist_type: inspectionData.checklist.type,
+                        checklist_vacant: inspectionData.checklist.vacant,
+                        notes: inspectionData.notes,
+                        proof_hash: hash
+                    })
+                    .eq('id', currentInspection.id);
+                
+                // Save issues
+                if (inspectionData.issues.length > 0) {
+                    await supabase
+                        .from('inspection_issues')
+                        .insert(inspectionData.issues.map(issue => ({
+                            inspection_id: currentInspection.id,
+                            title: issue.title,
+                            severity: issue.severity,
+                            location: issue.location,
+                            description: issue.description
+                        })));
+                }
+                
+                // Update inspector stats
+                await supabase
+                    .from('inspectors')
+                    .update({
+                        total_inspections: (currentInspector.total_inspections || 0) + 1
+                    })
+                    .eq('id', currentInspector.id);
+                
+                currentInspector.total_inspections = (currentInspector.total_inspections || 0) + 1;
+                
+                // Show success
+                document.getElementById('proof-hash').textContent = hash.slice(0, 10) + '...' + hash.slice(-8);
                 document.getElementById('success-modal').classList.add('active');
-            } catch (err) { showToast('Error submitting'); }
-            btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Submit'; btn.disabled = false;
+                haptic('success');
+                
+            } catch (err) {
+                console.error('Submit error:', err);
+                showToast('Failed to submit. Try again.', 'error');
+                haptic('error');
+            }
+            
+            btn.innerHTML = '<i class="fa-solid fa-paper-plane" aria-hidden="true"></i><span>Submit Proof</span>';
+            btn.disabled = false;
         }
 
-        function closeSuccessModal() { document.getElementById('success-modal').classList.remove('active'); loadAllInspections().then(() => switchTab('home')); }
+        function closeSuccessModal() {
+            document.getElementById('success-modal').classList.remove('active');
+            loadAllInspections().then(() => switchTab('home'));
+        }
 
-        function formatDate(d) { if (!d) return '--'; const date = new Date(d), today = new Date(); return date.toDateString() === today.toDateString() ? 'Today' : date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); }
-        function showToast(msg) { const old = document.querySelector('.toast'); if (old) old.remove(); const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 3000); }
+        function copyHash() {
+            const hash = document.getElementById('proof-hash').textContent;
+            navigator.clipboard.writeText(hash);
+            showToast('Hash copied!', 'success');
+        }
 
-        if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
+        // =============================================
+        // UTILITIES
+        // =============================================
+        function formatDate(dateStr) {
+            if (!dateStr) return '--';
+            const date = new Date(dateStr);
+            const today = new Date();
+            
+            if (date.toDateString() === today.toDateString()) {
+                return 'Today';
+            }
+            
+            const yesterday = new Date(today);
+            yesterday.setDate(yesterday.getDate() - 1);
+            if (date.toDateString() === yesterday.toDateString()) {
+                return 'Yesterday';
+            }
+            
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        }
+
+        function showToast(message, type = 'info') {
+            // Remove existing toast
+            const existing = document.querySelector('.toast');
+            if (existing) existing.remove();
+            
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <i class="fa-solid fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}" aria-hidden="true"></i>
+                <span>${message}</span>
+            `;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // =============================================
+        // SERVICE WORKER
+        // =============================================
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('SW registered'))
+                    .catch(err => console.log('SW registration failed'));
+            });
+        }
+
+        // =============================================
+        // KEYBOARD SUPPORT
+        // =============================================
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                const target = e.target;
+                if (target.classList.contains('checklist-item')) {
+                    e.preventDefault();
+                    toggleCheck(target);
+                }
+            }
+        });
     </script>
 </body>
 </html>
