@@ -123,6 +123,7 @@
            ============================================= */
         .screen {
             display: none;
+            flex-direction: column;
             min-height: 100vh;
             min-height: 100dvh;
             width: 100%;
@@ -130,24 +131,18 @@
         
         .screen.active {
             display: flex;
-            flex-direction: column;
-            opacity: 1;
-        }
-        
-        .screen.slide-out {
-            opacity: 0;
-            transform: translateX(-20px);
         }
         
         /* =============================================
            LOGIN SCREEN
            ============================================= */
-        .login-screen {
+        .login-screen.active {
+            display: flex;
             justify-content: center;
             align-items: center;
-            padding: var(--space-2xl);
-            padding-top: calc(var(--space-2xl) + var(--safe-top));
-            padding-bottom: calc(var(--space-2xl) + var(--safe-bottom));
+            padding: 24px;
+            padding-top: calc(24px + var(--safe-top));
+            padding-bottom: calc(24px + var(--safe-bottom));
             background: var(--black);
             position: relative;
             overflow: hidden;
@@ -2362,7 +2357,21 @@
         // =============================================
         const SUPABASE_URL = 'https://irztntmenxchzicfegid.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlyenRudG1lbnhjaHppY2ZlZ2lkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQxMTA4ODQsImV4cCI6MjA3OTY4Njg4NH0.EjaO-HXjzElo_eHqEWzagsqGg-gEVqUxY1ri-MhofPw';
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        
+        let supabase;
+        try {
+            if (window.supabase) {
+                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                console.log('Supabase initialized successfully');
+            } else {
+                console.error('Supabase library not loaded');
+                document.querySelector('.login-demo').innerHTML = '<span style="color: #f87171;">⚠ Database library failed to load. Check internet connection.</span>';
+            }
+        } catch (e) {
+            console.error('Failed to initialize Supabase:', e);
+            document.querySelector('.login-demo').innerHTML = '<span style="color: #f87171;">⚠ Connection error: ' + e.message + '</span>';
+        }
+        
         const RATE_PER_INSPECTION = 150; // AED
 
         // =============================================
@@ -2466,6 +2475,12 @@
             
             console.log('Attempting login with:', inspectorId);
             
+            if (!supabase) {
+                showToast('Database not connected', 'error');
+                console.error('Supabase client not initialized');
+                return;
+            }
+            
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Signing In...';
             btn.disabled = true;
             
@@ -2479,10 +2494,22 @@
                 
                 console.log('Supabase response:', { data, error });
                 
-                if (error || !data) {
+                if (error) {
+                    haptic('error');
+                    console.error('Login error:', error.message, error.code);
+                    if (error.code === 'PGRST116') {
+                        showToast('Invalid credentials', 'error');
+                    } else {
+                        showToast('Database error: ' + error.message, 'error');
+                    }
+                    btn.innerHTML = '<span>Sign In</span><i class="fa-solid fa-arrow-right"></i>';
+                    btn.disabled = false;
+                    return;
+                }
+                
+                if (!data) {
                     haptic('error');
                     showToast('Invalid credentials', 'error');
-                    console.error('Login failed:', error);
                     btn.innerHTML = '<span>Sign In</span><i class="fa-solid fa-arrow-right"></i>';
                     btn.disabled = false;
                     return;
@@ -2497,7 +2524,7 @@
             } catch (err) {
                 haptic('error');
                 console.error('Connection error:', err);
-                showToast('Connection error', 'error');
+                showToast('Connection error: ' + (err.message || 'Check network'), 'error');
             }
             
             btn.innerHTML = '<span>Sign In</span><i class="fa-solid fa-arrow-right"></i>';
