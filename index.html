@@ -10,6 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     
     <style>
         /* ========================================
@@ -697,6 +698,84 @@
             gap: 24px;
         }
         
+        /* ========================================
+           CHARTS
+           ======================================== */
+        .charts-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+        
+        .chart-card {
+            background: white;
+            border: 1px solid var(--slate-200);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+        }
+        
+        .chart-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .chart-title {
+            font-size: 0.9375rem;
+            font-weight: 600;
+            color: var(--slate-900);
+        }
+        
+        .chart-subtitle {
+            font-size: 0.75rem;
+            color: var(--slate-500);
+            margin-top: 2px;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 240px;
+        }
+        
+        .chart-container-sm {
+            position: relative;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .chart-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--slate-100);
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8125rem;
+            color: var(--slate-600);
+        }
+        
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        
+        .legend-value {
+            font-weight: 600;
+            color: var(--slate-900);
+            margin-left: 4px;
+        }
+        
         .card {
             background: white;
             border: 1px solid var(--slate-200);
@@ -1224,6 +1303,9 @@
             .content-grid {
                 grid-template-columns: 1fr;
             }
+            .charts-row {
+                grid-template-columns: 1fr;
+            }
         }
         
         @media (max-width: 768px) {
@@ -1266,6 +1348,23 @@
             
             .stat-value {
                 font-size: 1.5rem;
+            }
+            
+            .charts-row {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            
+            .chart-card {
+                padding: 20px;
+            }
+            
+            .chart-container {
+                height: 200px;
+            }
+            
+            .chart-legend {
+                gap: 12px;
             }
             
             .detail-header {
@@ -1459,6 +1558,34 @@
                             <div class="stat-label">Avg Score</div>
                             <div class="stat-value" id="stat-score">—</div>
                             <div class="stat-change neutral">Condition rating</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Charts Row -->
+                    <div class="charts-row">
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <div>
+                                    <div class="chart-title">Inspections Over Time</div>
+                                    <div class="chart-subtitle">Last 6 months</div>
+                                </div>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="inspectionsChart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <div>
+                                    <div class="chart-title">Status Breakdown</div>
+                                    <div class="chart-subtitle">All inspections</div>
+                                </div>
+                            </div>
+                            <div class="chart-container-sm">
+                                <canvas id="statusChart"></canvas>
+                            </div>
+                            <div class="chart-legend" id="statusLegend"></div>
                         </div>
                     </div>
                     
@@ -1847,6 +1974,224 @@
             
             renderInspectionsTable();
             renderActivityFeed();
+            renderCharts();
+        }
+        
+        // Charts
+        let inspectionsChart = null;
+        let statusChart = null;
+        
+        function renderCharts() {
+            renderInspectionsChart();
+            renderStatusChart();
+        }
+        
+        function renderInspectionsChart() {
+            const ctx = document.getElementById('inspectionsChart');
+            if (!ctx) return;
+            
+            // Generate last 6 months
+            const months = [];
+            const completedData = [];
+            const scheduledData = [];
+            
+            for (let i = 5; i >= 0; i--) {
+                const date = new Date();
+                date.setMonth(date.getMonth() - i);
+                const monthName = date.toLocaleDateString('en-US', { month: 'short' });
+                months.push(monthName);
+                
+                // Count inspections for this month
+                const monthStart = new Date(date.getFullYear(), date.getMonth(), 1);
+                const monthEnd = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+                
+                const completedCount = inspections.filter(insp => {
+                    if (insp.status !== 'completed' || !insp.completed_at) return false;
+                    const d = new Date(insp.completed_at);
+                    return d >= monthStart && d <= monthEnd;
+                }).length;
+                
+                const scheduledCount = inspections.filter(insp => {
+                    if (!['scheduled', 'pending', 'in_progress'].includes(insp.status)) return false;
+                    const d = new Date(insp.scheduled_date || insp.created_at);
+                    return d >= monthStart && d <= monthEnd;
+                }).length;
+                
+                completedData.push(completedCount);
+                scheduledData.push(scheduledCount);
+            }
+            
+            // Destroy existing chart
+            if (inspectionsChart) {
+                inspectionsChart.destroy();
+            }
+            
+            inspectionsChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: months,
+                    datasets: [
+                        {
+                            label: 'Completed',
+                            data: completedData,
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            borderWidth: 2,
+                            pointRadius: 4,
+                            pointBackgroundColor: '#10b981',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2
+                        },
+                        {
+                            label: 'Scheduled',
+                            data: scheduledData,
+                            borderColor: '#94a3b8',
+                            backgroundColor: 'transparent',
+                            fill: false,
+                            tension: 0.4,
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            pointRadius: 4,
+                            pointBackgroundColor: '#94a3b8',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            align: 'end',
+                            labels: {
+                                boxWidth: 8,
+                                boxHeight: 8,
+                                usePointStyle: true,
+                                pointStyle: 'circle',
+                                padding: 16,
+                                font: { size: 12, family: "'Plus Jakarta Sans', sans-serif" },
+                                color: '#64748b'
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: '#0f172a',
+                            titleFont: { size: 13, family: "'Plus Jakarta Sans', sans-serif" },
+                            bodyFont: { size: 12, family: "'Plus Jakarta Sans', sans-serif" },
+                            padding: 12,
+                            cornerRadius: 8,
+                            displayColors: true,
+                            boxWidth: 8,
+                            boxHeight: 8,
+                            usePointStyle: true
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: {
+                                font: { size: 11, family: "'Plus Jakarta Sans', sans-serif" },
+                                color: '#94a3b8'
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#f1f5f9' },
+                            ticks: {
+                                font: { size: 11, family: "'Plus Jakarta Sans', sans-serif" },
+                                color: '#94a3b8',
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function renderStatusChart() {
+            const ctx = document.getElementById('statusChart');
+            if (!ctx) return;
+            
+            const completed = inspections.filter(i => i.status === 'completed').length;
+            const scheduled = inspections.filter(i => i.status === 'scheduled').length;
+            const pending = inspections.filter(i => i.status === 'pending').length;
+            const inProgress = inspections.filter(i => i.status === 'in_progress').length;
+            
+            // Update legend
+            const legendEl = document.getElementById('statusLegend');
+            if (legendEl) {
+                legendEl.innerHTML = `
+                    <div class="legend-item">
+                        <span class="legend-dot" style="background: #10b981;"></span>
+                        Completed <span class="legend-value">${completed}</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-dot" style="background: #3b82f6;"></span>
+                        Scheduled <span class="legend-value">${scheduled}</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-dot" style="background: #f59e0b;"></span>
+                        Pending <span class="legend-value">${pending}</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-dot" style="background: #8b5cf6;"></span>
+                        In Progress <span class="legend-value">${inProgress}</span>
+                    </div>
+                `;
+            }
+            
+            // Destroy existing chart
+            if (statusChart) {
+                statusChart.destroy();
+            }
+            
+            const total = completed + scheduled + pending + inProgress;
+            
+            statusChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Completed', 'Scheduled', 'Pending', 'In Progress'],
+                    datasets: [{
+                        data: total > 0 ? [completed, scheduled, pending, inProgress] : [1, 0, 0, 0],
+                        backgroundColor: total > 0 
+                            ? ['#10b981', '#3b82f6', '#f59e0b', '#8b5cf6']
+                            : ['#e2e8f0'],
+                        borderWidth: 0,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            enabled: total > 0,
+                            backgroundColor: '#0f172a',
+                            titleFont: { size: 13, family: "'Plus Jakarta Sans', sans-serif" },
+                            bodyFont: { size: 12, family: "'Plus Jakarta Sans', sans-serif" },
+                            padding: 12,
+                            cornerRadius: 8,
+                            callbacks: {
+                                label: function(context) {
+                                    const value = context.raw;
+                                    const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
+                                    return `${context.label}: ${value} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
         }
         
         // Tables
